@@ -1,6 +1,6 @@
 ---
 name: specs
-description: Organize and structure specification files. Use when creating spec files, organizing requirements documentation, or setting up project spec structure. For EARS syntax, use the ears skill.
+description: Organize spec files. Use when creating specs. For EARS syntax, use the ears skill.
 ---
 
 # Writing Specs
@@ -69,6 +69,7 @@ Code samples (optional, at end only)
 ## Anti-Patterns
 
 **Don't:**
+
 - Use deep heading nesting (`###`, `####`)
 - Write implementation details (use "database" not "PostgreSQL 14")
 - Duplicate requirements from other specs
@@ -77,6 +78,7 @@ Code samples (optional, at end only)
 - Write vague requirements ("work properly", "be fast")
 
 **Do:**
+
 - Link to related specs instead of duplicating
 - Keep requirements testable and verifiable
 - Use present tense for actions
