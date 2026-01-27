@@ -1,6 +1,6 @@
 ---
 name: rust
-description: Write Rust code following best practices. Use when writing, editing, or reviewing Rust code, implementing error handling, working with async/await, or organizing Rust modules.
+description: Write Rust code. Use when writing Rust.
 ---
 
 # Rust Specification
@@ -8,6 +8,99 @@ description: Write Rust code following best practices. Use when writing, editing
 ## Overview
 
 This specification defines Rust-specific patterns and requirements for writing robust, maintainable Rust code.
+
+## Project Initialization
+
+THE system SHALL create a `flake.nix` file in the project root for Nix-based development environments.
+
+THE flake SHALL use `rust-overlay` to pin the exact Rust version.
+
+THE flake SHALL include a welcome message displaying tool versions on shell entry.
+
+THE flake SHALL include common Rust development tools: `cargo-nextest`, `cargo-watch`, `just`, `nushell`, `ripgrep`, `sqlx-cli`, `taplo`.
+
+THE Rust version in the flake SHALL match the version in `rust-toolchain.toml`.
+
+THE flake template is available at `skills/rust/flake.nix`.
+
+WHERE the project requires additional targets THE flake SHALL specify them in the rust override:
+
+```nix
+rust = pkgs.rust-bin.stable.${rustVersion}.default.override {
+  extensions = [ "rust-analyzer" "rust-src" ];
+  targets = [ "wasm32-wasip1" ];
+};
+```
+
+## Code Paradigm: Functional Only
+
+THE system SHALL use pure functions for ALL logic.
+
+THE system SHALL NEVER define traits.
+
+THE system SHALL NEVER implement traits (except for required derives).
+
+THE system SHALL NEVER use `impl` blocks for custom methods on structs or enums.
+
+THE system SHALL NEVER use object-oriented patterns (inheritance, polymorphism via traits, method chaining on custom types).
+
+THE system SHALL pass data explicitly through function parameters.
+
+THE system SHALL return data explicitly from functions.
+
+THE system SHALL use structs and enums ONLY as data containers, NEVER with associated methods.
+
+WHERE behavior is needed THE system SHALL write a free function that takes the data as a parameter.
+
+WHERE multiple related functions exist THE system SHALL organize them in a module, NOT as methods on a type.
+
+THE system SHALL treat all types as plain data structures.
+
+Example (correct - functional style):
+
+```rust
+pub struct User {
+    pub id: i64,
+    pub name: String,
+    pub email: String,
+}
+
+pub fn create_user(name: String, email: String) -> User {
+    User { id: 0, name, email }
+}
+
+pub fn validate_email(user: &User) -> bool {
+    user.email.contains('@')
+}
+
+pub fn format_display_name(user: &User) -> String {
+    format!("{} <{}>", user.name, user.email)
+}
+```
+
+Example (incorrect - object-oriented style, NEVER do this):
+
+```rust
+pub struct User {
+    id: i64,
+    name: String,
+    email: String,
+}
+
+impl User {
+    pub fn new(name: String, email: String) -> Self {
+        Self { id: 0, name, email }
+    }
+
+    pub fn validate_email(&self) -> bool {
+        self.email.contains('@')
+    }
+
+    pub fn display_name(&self) -> String {
+        format!("{} <{}>", self.name, self.email)
+    }
+}
+```
 
 ## Rust Version Configuration
 
@@ -19,25 +112,19 @@ THE toolchain configuration SHALL use a pinned version number, not channel names
 
 WHERE the project targets unconventional platforms THE `rust-toolchain.toml` SHALL declare explicit targets.
 
-WHERE the project requires specific components THE `rust-toolchain.toml` SHALL declare them explicitly.
+THE toolchain configuration template is available at `skills/rust/rust-toolchain.toml`.
 
-Example (standard project):
-
-```toml
-[toolchain]
-channel = "1.91.0"
-```
-
-Example (WASM project):
+WHERE the project targets unconventional platforms THE toolchain SHALL declare explicit targets:
 
 ```toml
 [toolchain]
-channel = "1.91.0"
+channel = "1.92.0"
 targets = ["wasm32-wasip1"]
-components = ["rustfmt", "clippy"]
 ```
 
 ## Error Handling
+
+All errors must be raised, never hidden. Never provide defaults or failsafes.
 
 ### What NOT to Do
 
@@ -81,38 +168,32 @@ WHERE defining custom errors THE system SHALL use `#[error("message")]`.
 
 WHERE error messages need data THE system SHALL use field interpolation with `{0}` or `{field_name}`.
 
-WHERE wrapping external errors THE system SHALL ALWAYS use `#[source]` attribute to preserve the error chain.
-
 WHERE wrapping external errors THE system SHALL NOT use `{0}` interpolation for the wrapped error.
 
-WHERE external errors have a 1:1 mapping to error variants THE system SHALL add `#[from]` for automatic conversion.
+WHERE external errors have a 1:1 mapping to error variants THE system SHALL use `#[from]` for automatic conversion.
 
-WHERE external errors need categorization THE system SHALL use match statements to inspect and categorize errors.
+THE `#[from]` attribute implies `#[source]`, so both attributes SHALL NOT be used together.
+
+WHERE external errors need categorization THE system SHALL use `#[source]` alone (without `#[from]`) and match statements to inspect and categorize errors.
 
 THE system SHALL NOT use `.map_err()` for error conversion.
 
-THE system SHALL NOT use `#[error(transparent)]`.
+WHERE a variant is a 1:1 wrapper with `#[from]` THE system SHALL use `#[error(transparent)]` to avoid redundant error messages.
+
+WHERE a variant adds context (file path, operation name, etc.) THE system SHALL NOT use `#[error(transparent)]`.
 
 ### Error Handling Examples
 
-Example (1:1 mapping - automatic conversion):
+Example (1:1 mapping - automatic conversion with transparent):
 
 ```rust
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("Database error")]
-    Database(
-        #[source]
-        #[from]
-        sqlx::Error,
-    ),
+    #[error(transparent)]
+    Database(#[from] sqlx::Error),
 
-    #[error("Time conversion error")]
-    TimeConversion(
-        #[source]
-        #[from]
-        time_conversion::Error,
-    ),
+    #[error(transparent)]
+    TimeConversion(#[from] time_conversion::Error),
 }
 
 // Usage: ? operator automatically converts
@@ -158,6 +239,12 @@ THE system SHALL use `let Some(value) = option else { return Err(...) }` for ear
 THE system SHALL use `.and_then()` for chaining optional operations.
 
 WHERE an Option is None THE system SHALL return an error, never provide a default value.
+
+## Environment Variables
+
+THE system SHALL NEVER provide default values for environment variables.
+
+WHERE an environment variable is missing THE application SHALL fail with an error naming the missing variable.
 
 ## Ownership and Borrowing
 
@@ -266,6 +353,12 @@ THE system SHALL NOT silently drop messages when consumers lag behind.
 
 WHERE consumers lag behind THE system SHALL either log the dropped messages or notify the consumer.
 
+## Tracing
+
+THE system SHALL use `#[tracing::instrument]` for observability on public async I/O functions.
+
+For span naming, fields, skip parameters, and log format conventions see the `tracing` skill.
+
 ## Import Statements
 
 THE system SHALL NOT use wildcard imports (`*`) under any circumstances.
@@ -364,6 +457,7 @@ WHERE a module folder contains multiple implementation files THE system SHALL us
 THE system SHALL NOT create a submodule with the same name as its containing module to avoid `module_inception` Clippy warnings.
 
 Example of single file module (correct):
+
 ```
 calendar/
 ├── mod.rs              # Contains all implementation code
@@ -371,6 +465,7 @@ calendar/
 ```
 
 Example of module inception (incorrect - triggers Clippy warning):
+
 ```
 calendar/
 ├── mod.rs              # Just declares: mod calendar;
@@ -379,6 +474,7 @@ calendar/
 ```
 
 Example of multi-file module (correct):
+
 ```
 chart/
 ├── mod.rs              # Declares: pub mod renderer; pub mod state;
@@ -415,86 +511,19 @@ WHERE traits are from std THE system SHALL use short form (Debug, Clone, Copy, P
 
 THE fully qualified path requirement SHALL make it immediately clear which crate each derive trait comes from.
 
-## Linting Configuration
+## Linting
 
-THE project SHALL enforce strict linting in `Cargo.toml`.
-
-THE linting configuration SHALL deny:
-
-- `unwrap_used`
-- `expect_used`
-- `panic`
-- `indexing_slicing`
-- `similar_names`
-- `warnings`
-- `unsafe_code` (forbid level)
-
-THE linting configuration SHALL enable:
-
-- `pedantic` (Clippy)
-
-WHERE enums have variants that are acronyms or abbreviations in all caps THE linting configuration MAY allow `upper_case_acronyms`.
-
-THE developer SHALL NOT use `#[allow(...)]` attributes in code to bypass linting.
-
-WHERE linting errors occur THE developer SHALL refactor code to satisfy the linter.
-
-THE system SHALL integrate linting into CI pipeline.
+For Rust linting configuration, justfile recipes, and the `[lints]` table in `Cargo.toml`, see the `checks` skill.
 
 ## Just Recipes
 
-THE project SHALL contain a `justfile` with the following recipes.
+THE project SHALL contain a `justfile` with Rust development recipes.
 
-THE `rust-fmt` recipe SHALL run `cargo fmt --all -- --check` to verify formatting.
+THE justfile template is available at `skills/rust/justfile`.
 
-THE `rust-clippy` recipe SHALL run `cargo clippy --all-targets` with project-specific lints.
+This template contains non-linting recipes: build, test, install, outdated, upgrade.
 
-THE `rust-check-allow` recipe SHALL verify no `#[allow(...)]` attributes bypass linting.
-
-THE `rust-lint` recipe SHALL run format checking, allow checking, clippy, and database checks in sequence.
-
-WHERE the project uses sqlx THE `rust-lint` recipe SHALL also run `db-check` before clippy.
-
-THE `rust-test` recipe SHALL run `cargo nextest run` with optional test filter parameter.
-
-THE `rust-build` recipe SHALL run `cargo build` with project-specific targets.
-
-THE `rust-check` recipe SHALL run `rust-lint` and `rust-test` in sequence.
-
-THE `check` recipe SHALL run a comprehensive check script that includes `rust-check` and all other project checks.
-
-THE recipes SHALL fail fast on the first error.
-
-Example (justfile recipes):
-
-```just
-rust-fmt *FILES='':
-    cargo fmt --all -- --check {{FILES}}
-
-rust-clippy *ARGS='':
-    cargo clippy --all-targets {{ARGS}}
-
-rust-check-allow:
-    nu scripts/rust-check-allow.nu
-
-rust-lint:
-    just rust-check-allow
-    just rust-fmt
-    just rust-clippy
-
-rust-test *FILTER='':
-    cargo nextest run {{FILTER}}
-
-rust-build:
-    cargo build --all-targets
-
-rust-check:
-    just rust-lint
-    just rust-test
-
-check:
-    just rust-check
-```
+For linting recipes (`rust-lint`, `rust-fmt`, `rust-clippy`, etc.), see the `checks` skill.
 
 ## Serialization
 
