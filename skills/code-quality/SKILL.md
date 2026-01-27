@@ -1,6 +1,6 @@
 ---
 name: code-quality
-description: Review code against universal quality principles. Use when reviewing code quality, refactoring, or ensuring code follows functional programming patterns and maintainability standards.
+description: Review code quality. Use when refactoring.
 ---
 
 # Code Quality
@@ -200,6 +200,7 @@ WHERE multiple functions share dependencies THE developer MAY group them in the 
 ## Law of Demeter
 
 THE functions SHALL only access:
+
 - Direct function parameters
 - Objects created within the function
 - Direct properties of the current context
@@ -233,6 +234,7 @@ WHERE components are complected THE developer SHALL consider the entire intercon
 THE system SHALL minimize the number of concepts a reader must track simultaneously.
 
 WHERE complexity metrics exceed thresholds THE developer SHALL refactor to simplify:
+
 - Cyclomatic complexity SHOULD be less than 5
 - ABC score (Assignments, Branches, Conditions) SHOULD be less than 15
 - Function length SHOULD be less than 20 lines
@@ -302,18 +304,21 @@ THE system SHALL make similar operations look similar and different operations l
 THE developer SHALL separate refactoring commits from feature commits.
 
 WHERE new functionality is needed THE developer SHALL:
+
 1. First refactor existing code to be "open" to the change
 2. Commit the refactoring
 3. Then add the new functionality
 4. Commit the feature
 
 THE developer SHALL apply "Flocking Rules" when refactoring:
+
 1. Select similar code sections
 2. Identify the smallest difference between them
 3. Make the simplest change to remove that difference
 4. Repeat until a pattern emerges
 
 THE developer SHALL work horizontally when refactoring:
+
 - Complete one abstraction across all locations (horizontal)
 - Before diving into deep optimizations (vertical)
 
