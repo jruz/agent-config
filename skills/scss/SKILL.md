@@ -1,6 +1,6 @@
 ---
 name: SCSS
-description: Write SCSS with BEM naming, performance optimization, and modern best practices
+description: Write SCSS stylesheets. Use when working with CSS.
 ---
 
 # SCSS
@@ -64,6 +64,7 @@ THE system SHALL use both block and modifier classes when applying modifiers.
 ```
 
 Compiled to:
+
 - `.card`
 - `.card__header`
 - `.card__header--large`
@@ -152,18 +153,23 @@ THE system SHALL measure performance before and after optimization changes.
 
 ## Linting
 
-THE system SHALL use Biome for CSS/SCSS linting.
+THE system SHALL use Stylelint for CSS/SCSS linting.
 
-THE Biome configuration SHALL enable all CSS rules.
-
-THE developer SHALL run `just frontend-lint` to lint SCSS files.
+THE developer SHALL run `just css-lint` to lint CSS/SCSS files.
 
 THE linter SHALL check for syntax errors and formatting issues.
 
-THE linter SHALL enforce consistent code style across all SCSS files.
+THE linter SHALL enforce consistent code style across all CSS/SCSS files.
 
 WHERE linting errors occur THE developer SHALL fix them before committing code.
 
 THE system SHALL integrate linting into the CI pipeline.
 
 THE linter configuration SHALL be version controlled.
+
+## Linter Configuration
+
+See Skill(checks) for:
+
+- `stylelintrc.json` - Stylelint configuration with BEM pattern enforcement
+- `justfile` - Recipes for `css-lint` and `css-lint-fix`
