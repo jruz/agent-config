@@ -1,15 +1,15 @@
 ---
 name: justfile
-description: Use when creating, editing, or adding recipes to a justfile, or writing task runner commands.
+description: Write justfile recipes. Use when adding tasks to justfile.
 ---
 
 # Justfile Specification
 
-### Overview
+## Overview
 
 This specification defines how to write and organize justfiles (task runner configuration files) using `just` as the command runner. All project automation SHALL be defined in justfiles using nushell for script bodies.
 
-### Core Requirements
+## Core Requirements
 
 THE system SHALL use `just` as the task runner for all commands.
 
@@ -203,7 +203,7 @@ THE recipes SHALL NOT use `cd` without proper error handling.
 
 ## Nushell Specification
 
-### Overview
+## Overview
 
 This specification defines how nushell is used for scripting in the project, particularly in justfile recipes and standalone automation scripts.
 
@@ -241,6 +241,8 @@ THE `just check` command SHALL include nushell validation.
 
 THE developer SHALL reference `.claude/skills/nushell` for detailed syntax guidance.
 
+THE nushell scripts SHALL wrap multi-step pipelines in parentheses and put each pipe stage on its own line.
+
 THE nushell scripts SHALL prefer functional patterns (`each`, `where`, `reduce`) over imperative loops.
 
 ### Error Handling
@@ -273,15 +275,15 @@ THE errors SHALL NOT use `print` followed by `exit 1` (use `error make` instead)
 
 THE nushell scripts SHALL use text prefixes for message types:
 
-- `OK: ` for success messages
-- `WARN: ` for warnings
-- `ERROR: ` for error messages (when using error make)
+- `OK:` for success messages
+- `WARN:` for warnings
+- `ERROR:` for error messages (when using error make)
 
 WHERE colored output is needed THE nushell scripts SHALL use the `ansi` command.
 
-THE nushell scripts SHALL use green for success messages prefixed with `OK: `.
+THE nushell scripts SHALL use green for success messages prefixed with `OK:`.
 
-THE nushell scripts SHALL use yellow for warnings prefixed with `WARN: `.
+THE nushell scripts SHALL use yellow for warnings prefixed with `WARN:`.
 
 THE nushell scripts SHALL use default color (white) for informational messages.
 
