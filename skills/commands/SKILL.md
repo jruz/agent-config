@@ -1,6 +1,6 @@
 ---
 name: commands
-description: Create Claude Code slash commands. Use when creating a new command, adding a command, or asking about command structure.
+description: Create Claude Code slash commands. Use when adding a Claude Code slash command.
 ---
 
 # Slash Commands
