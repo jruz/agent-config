@@ -15,10 +15,28 @@ def rename_zellij_tab [] {
   bash -c $"echo '($payload)' | zellij pipe --plugin file:~/.config/zellij/plugins/tab-renamer.wasm"
 }
 
+def check_plan_reminder [] {
+  if ("PLAN.md" | path exists) {
+    let content = (open PLAN.md)
+    let has_unchecked = ($content | lines | any { |line| $line | str starts-with "- [ ]" })
+    if $has_unchecked {
+      return "📋 PLAN.md exists with unchecked steps. Work on the current plan before starting new tasks."
+    }
+    return null
+  }
+  return "📋 No PLAN.md found. For implementation tasks, create one first using Skill(plan-md)."
+}
+
 def main [] {
+  mut input = null
   if (($in | is-empty) == false) {
-    let input = $in | from json
+    $input = ($in | from json)
   }
 
   rename_zellij_tab
+
+  let reminder = (check_plan_reminder)
+  if $reminder != null {
+    print ({decision: "allow", systemMessage: $reminder} | to json)
+  }
 }
