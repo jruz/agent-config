@@ -1,6 +1,6 @@
 ---
 name: Tracing
-description: Use tracing::instrument for observability, span management, and structured logging
+description: Instrument Rust with tracing. Use when adding tracing.
 ---
 
 # Tracing
@@ -30,11 +30,13 @@ WHERE a function performs multiple distinct I/O operations THE system SHALL extr
 ### Skip Parameters
 
 THE `#[tracing::instrument]` attribute SHALL use `skip` or `skip_all` for:
+
 - Parameters that don't implement Display
 - Database pools, connections, and clients
 - Sensitive information (credentials, tokens, passwords, API keys)
 
 Example:
+
 ```rust
 #[tracing::instrument(skip(pool))]
 async fn fetch_data(pool: &SqlitePool, id: i64) -> Result<Data, Error> {
@@ -45,6 +47,7 @@ async fn fetch_data(pool: &SqlitePool, id: i64) -> Result<Data, Error> {
 ### Fields
 
 THE `#[tracing::instrument]` attribute SHALL use `fields` for:
+
 - Computed values that will be recorded during execution (e.g., `count`, `inserted`, `total`)
 - Correlation IDs for grouping related spans (e.g., `run_id`, `request_id`)
 
@@ -63,6 +66,7 @@ THE `fields` declarations SHALL use bare names for computed values (no `%` or `=
 Examples:
 
 Function parameters auto-capture:
+
 ```rust
 #[tracing::instrument(skip(db))]
 async fn fetch_bars(
@@ -76,6 +80,7 @@ async fn fetch_bars(
 ```
 
 Correlation ID from parameter and computed value:
+
 ```rust
 #[tracing::instrument(fields(run_id = %run_id, total_bars))]
 pub async fn run(run_id: &str, ticker_arg: &str) -> Result<(), Error> {
@@ -113,6 +118,7 @@ THE progress messages MUST include fields in the log event.
 THE progress messages without fields SHALL NOT be logged.
 
 Example:
+
 ```rust
 #[tracing::instrument(fields(run_id = %run_id, total_bars))]
 pub async fn run(run_id: &str) -> Result<(), Error> {
@@ -143,6 +149,7 @@ THE trace ID SHALL be passed as a function parameter and included in `fields` wi
 THE trace ID SHALL be stored in span extensions and automatically propagated to child spans by the custom tracing layer.
 
 Example:
+
 ```rust
 // In src/utils/tracing.rs
 pub fn generate_trace_id() -> String {
@@ -159,11 +166,13 @@ pub async fn run(trace_id: &str, ticker: &str) -> Result<(), Error> {
 ## Log Format
 
 THE log output SHALL follow this format for events:
+
 ```
 {timestamp}  {level} [{trace_id}] {module_path}::{function}: {message} [{fields}]
 ```
 
 THE log output SHALL follow this format for span close:
+
 ```
 {timestamp}  {level} [{trace_id}] {module_path}::{function}{arguments}[results]: close time.busy={duration}
 ```
@@ -185,6 +194,7 @@ THE results SHALL appear in square brackets `[]` after arguments.
 THE results SHALL be omitted entirely (no empty brackets) when no fields were recorded.
 
 THE span close messages SHALL include duration formatted as:
+
 - Microseconds with no decimals for durations < 1ms: `842µs`
 - Milliseconds with 2 decimals for durations 1ms-1s: `6.84ms`
 - Seconds with 2 decimals for durations ≥ 1s: `1.03s`
@@ -192,21 +202,25 @@ THE span close messages SHALL include duration formatted as:
 ### Examples
 
 Basic span with trace_id:
+
 ```
 2025-12-31T09:50:08.331644Z  INFO [abc123de] models::bar::find_by_date: close time.busy=6.84ms
 ```
 
 Basic span without trace_id:
+
 ```
 2025-12-31T09:29:26.737313Z  INFO utils::db::connect: close time.busy=6.86ms
 ```
 
 Span with arguments and recorded results:
+
 ```
 2025-12-31T10:15:22.420789Z  INFO server::controllers::import_controller::create{ticker=SPY}[parsed_bars=7800 inserted=7800]: close time.busy=297ms
 ```
 
 Event with fields (progress):
+
 ```
 2025-12-31T11:30:48.234567Z  INFO [abc12345] tasks::databento_historical::run: progress [chunk=1 total=5 bars=1560]
 ```
@@ -230,6 +244,7 @@ THE custom layer SHALL traverse parent spans to find trace_id when not present i
 THE custom layer SHALL extract module path from span metadata, not from the call hierarchy.
 
 THE duration formatting function SHALL:
+
 - Convert duration to microseconds
 - Return microseconds with no decimals if < 1000µs
 - Return milliseconds with 2 decimals if < 1,000,000µs
@@ -237,17 +252,58 @@ THE duration formatting function SHALL:
 
 ## Configuration
 
-THE tracing subscriber SHALL require a `LOG_FORMAT` environment variable to control output format.
+These configuration principles apply across languages (Rust, TypeScript, Go, etc.).
 
-THE tracing subscriber SHALL panic if `LOG_FORMAT` is not set.
+### Log Level
 
-THE tracing subscriber SHALL use text format with custom layer when `LOG_FORMAT=text`.
+THE log level SHALL be controlled via environment variable, not hardcoded.
 
-THE tracing subscriber SHALL use JSON format for structured logging when `LOG_FORMAT=json`.
+THE environment variable SHALL be the language's standard (e.g., `RUST_LOG` for Rust, `LOG_LEVEL` for Node.js).
 
-THE tracing subscriber SHALL filter application modules to trace level.
+THE log level SHALL be set in the deployment configuration (e.g., systemd unit, Docker compose, Kubernetes manifest), not in application code.
 
-THE tracing subscriber SHALL disable sqlx internal tracing.
+THE application SHALL NOT provide a default log level - it SHALL require the environment variable to be set.
+
+### Output Format
+
+THE log output SHALL be single-line per event.
+
+THE log output SHALL include the target/module path to identify the source.
+
+THE log output SHALL NOT include file paths or line numbers.
+
+THE log output SHALL include span/function close events with duration.
+
+THE log output SHALL auto-detect TTY for colors (colors on for terminal, off for systemd/log aggregators).
+
+### What to Show
+
+| Element | Show | Reason |
+|---------|------|--------|
+| Timestamp | Yes | When it happened |
+| Level | Yes | Severity (INFO, WARN, ERROR) |
+| Target/Module | Yes | Where it happened |
+| Message | Yes | What happened |
+| Fields | Yes | Structured context |
+| Span close + duration | Yes | Performance visibility |
+| File path | No | Noise, use target instead |
+| Line number | No | Noise, changes frequently |
+| Thread ID | No | Unless debugging concurrency |
+
+### Rust Example
+
+```rust
+tracing_subscriber::fmt()
+    .with_span_events(tracing_subscriber::fmt::format::FmtSpan::CLOSE)
+    .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+    .init();
+```
+
+Set log level in deployment (systemd, Docker, etc.):
+
+```
+RUST_LOG=info
+```
 
 ## Log Levels
 
