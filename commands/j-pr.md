@@ -3,6 +3,7 @@ Prepare and push PR automatically, then report what was created.
 ## Workflow
 
 **For New PRs:**
+
 1. Rebase onto main if needed
 2. Analyze all changes and draft PR title, What, Why
 3. Update specs if needed
@@ -14,6 +15,7 @@ Prepare and push PR automatically, then report what was created.
 9. Report final status
 
 **For Existing PRs:**
+
 1. Rebase onto main if needed
 2. Analyze what changed since last push
 3. Update specs if needed
@@ -29,16 +31,19 @@ Prepare and push PR automatically, then report what was created.
 ### 1. Check Current State
 
 Check if PR exists:
+
 ```bash
 gh pr view
 ```
 
 Check current branch:
+
 ```bash
 git rev-parse --abbrev-ref HEAD
 ```
 
 Check if branch exists on remote:
+
 ```bash
 git ls-remote --heads origin $(git rev-parse --abbrev-ref HEAD)
 ```
@@ -46,11 +51,13 @@ git ls-remote --heads origin $(git rev-parse --abbrev-ref HEAD)
 ### 2. Rebase Onto Main If Needed
 
 Fetch latest main:
+
 ```bash
 git fetch origin main
 ```
 
 Check if branch is behind main:
+
 ```bash
 git merge-base --is-ancestor origin/main HEAD
 ```
@@ -58,6 +65,7 @@ git merge-base --is-ancestor origin/main HEAD
 If the command exits with code 1, the branch is behind main and needs rebasing.
 
 Rebase onto main:
+
 ```bash
 git rebase origin/main
 ```
@@ -65,11 +73,12 @@ git rebase origin/main
 **If conflicts occur, resolve them automatically:**
 
 1. Check rebase status to identify conflicted files:
+
 ```bash
 git status
 ```
 
-2. For each conflicted file:
+1. For each conflicted file:
    - Read the file to see conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`)
    - Understand what main changed (between `<<<<<<< HEAD` and `=======`)
    - Understand what PR changes (between `=======` and `>>>>>>>`)
@@ -79,17 +88,19 @@ git status
      - Ensure PR's intent is preserved
      - Remove conflict markers
 
-3. Stage each resolved file:
+2. Stage each resolved file:
+
 ```bash
 git add <file>
 ```
 
-4. Continue the rebase:
+1. Continue the rebase:
+
 ```bash
 git rebase --continue
 ```
 
-5. Track all conflicts and resolutions for final report:
+1. Track all conflicts and resolutions for final report:
    - File path
    - What main changed
    - What PR changed
@@ -114,11 +125,13 @@ If rebase succeeds (with or without conflicts), continue to next step.
 **For New PRs (no remote branch or no PR):**
 
 Analyze the complete changeset:
+
 - Committed changes: `git diff origin/main...HEAD`
 - Uncommitted changes: `git diff HEAD`
 - Staged changes: `git diff --cached`
 
 Understand:
+
 - What functionality is being added/changed/fixed
 - Which files are affected
 - What the scope of changes is
@@ -126,11 +139,13 @@ Understand:
 **For Existing PRs:**
 
 Analyze what changed since last push:
+
 - New commits: `git log origin/$(git rev-parse --abbrev-ref HEAD)..HEAD --oneline`
 - Uncommitted changes: `git diff HEAD`
 - Staged changes: `git diff --cached`
 
 Also review entire branch to ensure description covers everything:
+
 - All branch changes: `git diff origin/main...HEAD`
 
 ### 4. Draft PR Title and Description
@@ -144,6 +159,7 @@ Draft the PR title and description following the `github-pr` skill conventions (
 - **Why**: Exactly ONE bullet explaining core motivation
 
 Reference `Skill(github-pr)` for:
+
 - Complete prefix list and selection criteria
 - Title format rules and examples
 - Description structure and formatting
@@ -172,22 +188,26 @@ Read relevant specs to verify they're current.
 If specs need updates, categorize the changes:
 
 **Additions (automatic, no approval needed):**
+
 - Adding new sections to existing specs
 - Adding new spec files
 - Expanding existing descriptions with more details
 - Adding new examples or clarifications
 
 For additions:
+
 - Update automatically
 - Track what was added for final report
 
 **Modifications or Removals (require approval):**
+
 - Changing existing spec content
 - Removing spec sections
 - Renaming specs
 - Contradicting existing specs
 
 For modifications/removals:
+
 - Show what will be changed (diff or description)
 - Ask user: "Approve these spec changes?"
 - Wait for approval
@@ -199,21 +219,25 @@ For modifications/removals:
 Identify unrelated files in uncommitted changes.
 
 **Unrelated files typically include:**
+
 - Lock files that changed from unrelated commands: `deno.lock`, `Cargo.lock`, `package-lock.json`, `bun.lock`
 - Auto-generated configs unrelated to the PR
 - Accidentally modified files
 
 **For each file, determine:**
+
 - Is it a direct consequence of the PR changes? → KEEP IT
   - Example: Added dependency → lock file updated → KEEP
 - Is it unrelated? → REMOVE IT
   - Example: Ran unrelated command → lock file updated → REMOVE
 
 **To remove unrelated files:**
+
 - If staged: `git restore --staged <file>`
 - If unstaged: leave it alone (don't commit it)
 
 **Track unrelated files:**
+
 - List them for final report
 - Note hypothesis about why they changed
 
@@ -222,11 +246,13 @@ Identify unrelated files in uncommitted changes.
 **For New PRs:**
 
 Stage all related changes:
+
 ```bash
 git add <files>
 ```
 
 Create one commit using the PR title as the message:
+
 ```bash
 git commit -m "[Prefix] Area/Thing: Imperative Action"
 ```
@@ -234,11 +260,13 @@ git commit -m "[Prefix] Area/Thing: Imperative Action"
 **For Existing PRs:**
 
 Stage all related changes:
+
 ```bash
 git add <files>
 ```
 
 Create a commit describing the new changes:
+
 ```bash
 git commit -m "Add <what changed>"
 ```
@@ -248,11 +276,13 @@ The commit message should be descriptive but doesn't need to follow the PR title
 ### 8. Push to Remote
 
 **For New PRs (branch doesn't exist on remote):**
+
 ```bash
 git push -u origin HEAD
 ```
 
 **For Existing PRs (branch exists on remote):**
+
 ```bash
 git push
 ```
@@ -264,6 +294,7 @@ Normal push, no force needed.
 **For New PRs:**
 
 Create PR:
+
 ```bash
 gh pr create --title "TITLE" --body "DESCRIPTION"
 ```
@@ -271,6 +302,7 @@ gh pr create --title "TITLE" --body "DESCRIPTION"
 Extract prefix from title (Feature, Fix, Refactor, Deps, Tools).
 
 Map to label (lowercase):
+
 - [Feature] → feature
 - [Fix] → fix
 - [Refactor] → refactor
@@ -278,6 +310,7 @@ Map to label (lowercase):
 - [Tools] → tooling
 
 Set label:
+
 ```bash
 gh pr edit --add-label "feature"
 ```
@@ -285,16 +318,19 @@ gh pr edit --add-label "feature"
 **For Existing PRs:**
 
 Update PR description to reflect all changes:
+
 ```bash
 gh pr edit --body "DESCRIPTION"
 ```
 
 Update title if needed:
+
 ```bash
 gh pr edit --title "NEW_TITLE"
 ```
 
 Update label if prefix changed:
+
 ```bash
 gh pr edit --add-label "feature"
 ```
@@ -302,6 +338,7 @@ gh pr edit --add-label "feature"
 ### 10. Verify CI
 
 Check CI status:
+
 ```bash
 gh pr checks
 ```
@@ -317,36 +354,45 @@ Report everything together:
 **Title:** `<title>`
 
 **What:**
+
 - `<bullet 1>`
 - `<bullet 2>`
 - `<bullet 3>`
 
 **Why:**
+
 - `<single bullet>`
 
 **Specs:** (if applicable)
+
 - `<spec links>`
 
 **Files Modified:** (from `git diff --name-only origin/main...HEAD`)
+
 - `<file 1>`
 - `<file 2>`
 
 **Commits:** (from `git log origin/main..HEAD --oneline`)
+
 - `<commit 1>`
 - `<commit 2>`
 
 **Stats:** `<additions> additions, <deletions> deletions` (from `git diff --shortstat origin/main...HEAD`)
 
 **CI Status:**
+
 - ✅ All checks passing / ❌ `<failed check names>`
 
 **Unrelated Files Left Unstaged:** (if any)
+
 - `<file>` - `<hypothesis about why it changed>`
 
 **Spec Updates:** (if any)
+
 - `<what specs were updated>`
 
 **Conflicts Resolved:** (if any)
+
 - `<file>` - Main: `<what main changed>`, PR: `<what PR changed>`, Resolution: `<how resolved>`
 
 ## Reference Information
