@@ -1,6 +1,11 @@
+cache/
 debug/
+downloads/
 file-history/
 history.jsonl
+node_modules/
+package-lock.json
+paste-cache/
 plans/
 plugins/
 projects/
@@ -10,5 +15,3 @@ stats-cache.json
 statsig/
 telemetry/
 todos/
-cache/
-paste-cache/
