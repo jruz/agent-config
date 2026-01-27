@@ -1,6 +1,6 @@
 ---
 name: axum
-description: Build web applications with Axum framework. Use when creating HTTP servers, API endpoints, middleware, or request handlers in Rust.
+description: Build Axum web apps. Use when creating HTTP servers, routers, handlers, or middleware in Rust.
 ---
 
 # Axum Web Framework
