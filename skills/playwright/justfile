@@ -1,21 +1,17 @@
 # ---------------- PLAYWRIGHT
-playwright-install:
-  bunx playwright install --with-deps chromium
-
 playwright-build:
   #!/usr/bin/env nu
-  source scripts/load-test-env.nu
+  source {{justfile_directory()}}/scripts/load-test-env.nu
   ^just build
 
-playwright *ARGS='': playwright-build
-  ^bunx playwright test {{ARGS}}
+playwright *ARGS='':
+  #!/usr/bin/env nu
+  ^just playwright-build
+  source {{justfile_directory()}}/scripts/load-test-env.nu
+  ^npx playwright test {{ARGS}}
 
-playwright-update-snapshots: playwright-build
-  ^bunx playwright test --update-snapshots
-
-# ---------------- MCP MANAGEMENT
-mcp-install-playwright:
-  claude mcp add playwright bunx @playwright/mcp@latest
-
-mcp-remove-playwright:
-  claude mcp remove playwright
+playwright-update-snapshots:
+  #!/usr/bin/env nu
+  ^just playwright-build
+  source {{justfile_directory()}}/scripts/load-test-env.nu
+  ^npx playwright test --update-snapshots

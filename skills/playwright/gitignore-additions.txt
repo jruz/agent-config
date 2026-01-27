@@ -1,0 +1,4 @@
+# Playwright - add these lines to .gitignore
+node_modules/
+package-lock.json
+test-results/

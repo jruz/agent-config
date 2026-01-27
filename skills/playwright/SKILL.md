@@ -1,24 +1,58 @@
 ---
 name: playwright
-description: Write and debug E2E tests with Playwright. Use when creating integration tests, debugging test failures, updating screenshot baselines, or working with test selectors.
+description: Write Playwright E2E tests. Use when creating integration tests or debugging test failures.
 ---
 
 # Playwright Testing
 
-## Justfile Template
+## Installation
 
-WHERE a project needs Playwright recipes THE developer SHALL copy [justfile](justfile) recipes to the project justfile.
+Playwright requires a hybrid setup:
 
-The template provides:
-- `playwright-install` - Install Chromium browser
-- `playwright-build` - Build and prepare test environment
-- `playwright *ARGS` - Run tests (depends on playwright-build)
-- `playwright-update-snapshots` - Update visual snapshots
-- `mcp-install-playwright` / `mcp-remove-playwright` - MCP management
+- **Nix** provides browsers via `playwright-driver.browsers`
+- **npm** provides `@playwright/test` package
 
-THE `playwright-build` recipe SHALL be customized per project to:
-1. Source the test environment (`scripts/load-test-env.nu`)
-2. Call the project's build recipe
+This is necessary because Node.js ESM module resolution does not respect `NODE_PATH`, making a pure-Nix approach impractical.
+
+## Nix Flake Integration
+
+WHERE a project uses Nix flakes THE developer SHALL merge dependencies from [flake.nix](flake.nix) into the project flake.
+
+THE flake SHALL set `PLAYWRIGHT_BROWSERS_PATH` to `${pkgs.playwright-driver.browsers}`.
+
+THE flake SHALL set `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=true`.
+
+## npm Package
+
+THE project SHALL have a [package.json](package.json) with `@playwright/test` as a devDependency.
+
+THE `@playwright/test` version SHALL match the Nix `playwright-driver.browsers` version.
+
+To check the Nix browser version:
+
+```bash
+nix eval nixpkgs#playwright-driver.browsers.version --raw
+```
+
+THE `.gitignore` SHALL include `node_modules/`.
+
+## Configuration
+
+THE project SHALL have a [playwright.config.ts](playwright.config.ts) at the root.
+
+THE config SHALL use `baseURL` matching the test server port.
+
+THE config SHALL use the `webServer` option to start the server automatically.
+
+## Test Environment
+
+THE system SHALL use a dedicated test environment (`.env.test`).
+
+THE test environment SHALL use a different port than development.
+
+THE system SHALL use a separate test database.
+
+THE [load-test-env.nu](load-test-env.nu) script loads the test environment.
 
 ## Common Commands
 
@@ -28,17 +62,7 @@ just playwright -g "pattern"       # Run specific tests
 just playwright-update-snapshots   # Update snapshots (ONLY after intentional UI changes)
 ```
 
-## MCP Tools
-
-For debugging tests interactively with MCP, see [mcp.md](mcp.md).
-
 ## Test Isolation
-
-THE system SHALL use a dedicated test environment (`.env.test`).
-
-THE test environment SHALL use a different port than development.
-
-THE system SHALL use a separate test database.
 
 THE tests SHALL NOT share state between test files.
 
@@ -58,11 +82,30 @@ WHERE tests verify response content or embedded data THE system SHALL place them
 
 WHERE tests verify rendering or interaction THE system SHALL place them in `client/`.
 
+## Fixtures
+
+THE project SHALL have a [fixtures.ts](fixtures.ts) file in `playwright/` directory.
+
+THE fixtures file SHALL export a custom `test` that extends `@playwright/test`.
+
+THE fixtures file SHALL include an auto-fixture that fails tests on console errors.
+
+THE test files SHALL import `test` from `./fixtures` or `../fixtures` instead of `@playwright/test`:
+
+```typescript
+import { expect } from "@playwright/test";
+import { test } from "../fixtures";
+```
+
+THE test files SHALL import `expect` from `@playwright/test`.
+
 ## File Organization
 
 THE test files SHALL reside in `playwright/` directory.
 
 THE test files SHALL use `.spec.ts` suffix.
+
+THE fixtures file SHALL reside at `playwright/fixtures.ts`.
 
 THE helper functions SHALL reside in `playwright/helpers/`.
 
@@ -87,6 +130,7 @@ THE client test file for a module SHALL be named after the module (e.g., `chart_
 WHERE a module is used across multiple views THE module tests SHALL reside in the view folder where they are primarily used.
 
 Example structure:
+
 ```
 playwright/
 ├── server/
@@ -115,6 +159,8 @@ THE tests SHALL verify HTTP status codes.
 
 THE tests SHALL verify response headers.
 
+THE tests SHALL verify redirects return correct status codes and Location headers.
+
 THE tests SHALL verify inline JSON data embedded in responses.
 
 WHERE testing HTMX partial responses THE tests SHALL verify absence of full page layout.
@@ -142,11 +188,13 @@ THE developer SHALL NOT update snapshots when tests fail without intentional UI 
 WHERE snapshot tests fail THE developer SHALL investigate the cause before updating snapshots.
 
 THE developer SHALL only update snapshots when:
+
 - A new UI feature was added
 - An existing UI component was intentionally modified
 - Layout or styling was intentionally changed
 
 THE developer SHALL NOT update snapshots when:
+
 - Tests fail due to bugs or regressions
 - No code changes were made to the UI
 - The failure is unexpected or unexplained
@@ -176,18 +224,6 @@ THE tests SHALL group related tests together.
 THE tests SHALL use descriptive names explaining expected behavior.
 
 WHERE shared setup is needed THE system SHALL run it once per suite.
-
-## Test Selectors
-
-THE tests SHALL use `data-test` attributes to select elements.
-
-THE tests SHALL NOT select elements by CSS classes or tag names.
-
-THE tests SHALL verify success responses contain `data-test="success"`.
-
-THE tests SHALL verify error responses contain `data-test="error"`.
-
-WHERE specific elements need verification THE tests SHALL use descriptive `data-test` values.
 
 ## Helpers
 
