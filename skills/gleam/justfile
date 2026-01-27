@@ -1,0 +1,54 @@
+set dotenv-load := true
+
+default:
+  just --list
+
+build:
+  gleam build
+
+check:
+  gleam format --check
+  gleam build
+  gleam test
+
+fix:
+  gleam format
+
+lint:
+  gleam format --check
+
+run:
+  gleam run
+
+test:
+  gleam test
+
+gleam-build:
+  gleam build
+
+gleam-clean:
+  rm -rf build
+
+gleam-deps:
+  gleam deps download
+
+gleam-deps-outdated:
+  gleam deps list --outdated
+
+gleam-deps-update:
+  gleam deps update
+
+gleam-format:
+  gleam format
+
+gleam-format-check:
+  gleam format --check
+
+gleam-run:
+  gleam run
+
+gleam-test:
+  gleam test
+
+gleam-watch:
+  watchexec --exts gleam --restart gleam run
