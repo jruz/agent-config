@@ -1,6 +1,6 @@
 ---
 name: skills
-description: Create Claude skills that provide context-specific guidance. Use when creating a new skill, adding a skill, modifying skills, or asking about skill structure.
+description: Create Claude skills. Use when adding a Claude skill.
 ---
 
 # Writing Skills
