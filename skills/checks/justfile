@@ -1,0 +1,141 @@
+# JavaScript/TypeScript/JSON/CSS - Biome
+js-lint:
+    biome check .
+
+js-lint-fix:
+    biome check --fix .
+
+js-fmt:
+    biome format .
+
+js-fmt-fix:
+    biome format --write .
+
+# Markdown - markdownlint-cli2
+md-lint:
+    markdownlint-cli2 '**/*.md'
+
+md-lint-fix:
+    markdownlint-cli2 --fix '**/*.md'
+
+# Rust - clippy/rustfmt
+rust-clippy *ARGS='':
+    cargo clippy --all-targets {{ARGS}}
+
+rust-clippy-fix *ARGS='':
+    cargo clippy --fix --all-targets --allow-dirty {{ARGS}}
+
+rust-fmt *FILES='':
+    cargo fmt --all -- --check {{FILES}}
+
+rust-fmt-fix:
+    cargo fmt --all
+
+rust-lint:
+    just rust-fmt
+    just rust-clippy
+
+rust-fix:
+    just rust-fmt-fix
+    just rust-clippy-fix
+
+# Nushell - nu-check/nu-lint
+nu-lint:
+    #!/usr/bin/env nu
+    fd --absolute-path --extension nu --exec nu --commands 'nu-check --debug {}'
+    nu-lint --config nu-lint.toml
+
+nu-lint-fix:
+    nu-lint --config nu-lint.toml --fix
+
+# Nix - statix/deadnix/nixfmt
+nix-lint:
+    statix check .
+    deadnix --fail .
+
+nix-lint-fix:
+    statix fix .
+    deadnix --edit .
+
+nix-fmt:
+    fd --extension nix --exec nixfmt --check
+
+nix-fmt-fix:
+    fd --extension nix --exec nixfmt
+
+# Shell - shellcheck/shfmt
+sh-lint:
+    fd --extension sh --exec shellcheck --shell=bash
+
+sh-fmt:
+    fd --extension sh --exec shfmt --diff
+
+sh-fmt-fix:
+    fd --extension sh --exec shfmt --write
+
+# YAML - yamllint
+yaml-lint:
+    fd --extension yaml --extension yml --hidden --exec yamllint --config-file .yamllint.yaml
+
+# TOML - taplo
+toml-fmt:
+    taplo format --check
+
+toml-fmt-fix:
+    taplo format
+
+# CSS - stylelint
+css-lint:
+    bun stylelint "src/**/*.css"
+
+css-lint-fix:
+    bun stylelint "src/**/*.css" --fix
+
+# Lua - selene/stylua
+lua-lint:
+    selene .
+
+lua-fmt:
+    stylua --check .
+
+lua-fmt-fix:
+    stylua .
+
+# SQL - sqlx
+sql-lint:
+    cargo sqlx prepare --check -- --all-targets
+
+# CI - woodpecker-cli
+ci-lint:
+    woodpecker-cli lint --strict .woodpecker/
+
+# Aggregate recipes (adapt based on project languages)
+lint:
+    just js-lint
+    just rust-lint
+    just nu-lint
+    just nix-lint
+    just sh-lint
+    just yaml-lint
+
+fmt:
+    just js-fmt
+    just rust-fmt
+    just nix-fmt
+    just sh-fmt
+    just toml-fmt
+
+fix:
+    just js-lint-fix
+    just js-fmt-fix
+    just rust-clippy-fix
+    just rust-fmt-fix
+    just nix-lint-fix
+    just nix-fmt-fix
+    just sh-fmt-fix
+    just toml-fmt-fix
+
+check:
+    just fix
+    just lint
+    just fmt
