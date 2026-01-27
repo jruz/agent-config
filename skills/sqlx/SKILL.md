@@ -1,6 +1,6 @@
 ---
 name: sqlx
-description: Write SQLx database queries and manage database operations. Use when writing database queries, working with SQLite/PostgreSQL/MySQL, handling migrations, or managing database connections.
+description: Write SQLx database queries. Use when writing SQLx.
 ---
 
 # SQLx Specification
@@ -242,6 +242,7 @@ THE queries SHALL use double-quoted identifiers (`"column_name"`) for type overr
 #### Type Mappings
 
 THE system SHALL use the following type mappings:
+
 - `i64` for `BIGSERIAL` and `BIGINT` (primary keys, timestamps)
 - `f64` for `DOUBLE PRECISION` (prices, volumes)
 - `TEXT` for `String` and string-based enums
