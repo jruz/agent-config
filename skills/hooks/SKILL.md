@@ -1,6 +1,6 @@
 ---
 name: hooks
-description: Create Claude hooks that run shell commands on events. Use when creating a hook, adding a hook, modifying hooks, or asking about hook configuration.
+description: Create Claude hooks. Use when adding Claude hooks.
 ---
 
 # Writing Hooks
