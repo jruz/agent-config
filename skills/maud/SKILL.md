@@ -1,6 +1,6 @@
 ---
 name: Maud
-description: Write Maud templates with semantic HTML, accessibility, and Rust integration
+description: Write Maud HTML templates. Use when writing HTML templates in Rust.
 ---
 
 # Maud
@@ -44,6 +44,7 @@ WHERE static text is rendered THE view SHALL use string literals in braces.
 WHERE dynamic content is rendered THE view SHALL use parentheses to interpolate Rust expressions.
 
 Example:
+
 ```rust
 html! {
     h1 { "Static Title" }
@@ -61,6 +62,7 @@ WHERE attributes have dynamic values THE view SHALL use parentheses without quot
 WHERE class attributes combine static and dynamic values THE view SHALL use parentheses with Rust string operations.
 
 Example:
+
 ```rust
 html! {
     div class="card" {
@@ -76,6 +78,7 @@ html! {
 WHERE self-closing HTML elements are used THE view SHALL terminate them with a semicolon.
 
 Example:
+
 ```rust
 html! {
     input type="text" name="username";
@@ -93,6 +96,7 @@ WHERE iteration is needed THE view SHALL use `@for`.
 WHERE local variables are needed THE view SHALL use `@let`.
 
 Example:
+
 ```rust
 html! {
     @if user.is_admin {
@@ -119,6 +123,7 @@ THE helper function SHALL accept parameters for dynamic content.
 THE helper function SHALL use the same `html! { }` macro.
 
 Example:
+
 ```rust
 fn card(title: &str, content: &str) -> Markup {
     html! {
@@ -148,6 +153,7 @@ THE view SHALL NOT use `PreEscaped` for any purpose other than embedding safe, n
 THE view SHALL never use `PreEscaped` with user-generated content.
 
 Example:
+
 ```rust
 html! {
     script {
@@ -165,6 +171,7 @@ WHERE status messages are displayed THE view SHALL use `role="status"` or `role=
 WHERE live regions are needed THE view SHALL use `aria-live` and `aria-atomic`.
 
 Example:
+
 ```rust
 html! {
     div role="status" aria-live="polite" {
@@ -186,6 +193,7 @@ WHERE test automation needs to identify elements THE view SHALL use `data-test` 
 WHERE custom data is needed THE view SHALL use standard HTML5 `data-*` attributes.
 
 Example:
+
 ```rust
 html! {
     button id="submit-btn" data-test="submit-button" data-action="save" {
