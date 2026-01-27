@@ -23,15 +23,18 @@ THE command SHALL identify gaps or discrepancies.
 THE report SHALL include:
 
 ### Progress Summary
+
 - Steps completed: X/Y
 - Key changes made (from git diff)
 - Alignment between plan and actual work
 
 ### Gaps or Issues
+
 - Steps marked done but not reflected in code
 - Code changes not captured in plan
 - Blockers or concerns
 
 ### Recommended Next Steps
+
 - What to do next based on current state
 - Any plan updates needed
