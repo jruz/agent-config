@@ -78,6 +78,9 @@
       "Bash(mkdir:*)",
       "Bash(node --version:*)",
       "Bash(npm --version:*)",
+      "Bash(npm install:*)",
+      "Bash(npx biome:*)",
+      "Bash(npx markdownlint-cli2:*)",
       "Bash(procs:*)",
       "Bash(ps:*)",
       "Bash(pwd:*)",
@@ -102,17 +105,20 @@
       "Bash(wc:*)",
       "Bash(which:*)",
       "Bash(whoami:*)",
+      "Bash(woodpecker-cli:*)",
       "Bash(xxd:*)",
       "Bash(yazi:*)",
       "Bash(zellij --version:*)",
       "Bash(zellij list-sessions:*)",
       "Skill(axum)",
+      "Skill(checks)",
       "Skill(chrome)",
       "Skill(commands)",
       "Skill(ears)",
       "Skill(git-commits)",
       "Skill(git-hooks)",
-      "Skill(github-pr)",
+      "Skill(github-search)",
+      "Skill(gleam)",
       "Skill(hooks)",
       "Skill(justfile)",
       "Skill(maud)",
@@ -120,6 +126,7 @@
       "Skill(plan-md)",
       "Skill(plan-status)",
       "Skill(playwright)",
+      "Skill(pr)",
       "Skill(rust)",
       "Skill(scss)",
       "Skill(skills)",
@@ -127,6 +134,7 @@
       "Skill(sqlx)",
       "Skill(tracing)",
       "Skill(typescript)",
+      "Skill(woodpecker)",
       "WebFetch(domain:api.github.com)",
       "WebFetch(domain:biomejs.dev)",
       "WebFetch(domain:code.claude.com)",
@@ -147,9 +155,14 @@
       "WebSearch"
     ],
     "deny": [
-      "Bash(git -C:*)"
+      "Bash(SKIP_HOOKS*:*)",
+      "Bash(git -C:*)",
+      "Bash(npm run:*)",
+      "Bash(npx playwright install:*)",
+      "Bash(npx run:*)",
+      "Bash(security:*)"
     ],
-    "defaultMode": "default"
+    "defaultMode": "acceptEdits"
   },
   "hooks": {
     "Notification": [
@@ -184,5 +197,10 @@
       }
     ]
   },
-  "alwaysThinkingEnabled": true
+  "enabledPlugins": {},
+  "alwaysThinkingEnabled": true,
+  "statusLine": {
+    "type": "command",
+    "command": "~/.cargo/bin/claude-statusline"
+  }
 }
