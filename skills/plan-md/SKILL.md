@@ -1,6 +1,6 @@
 ---
 name: plan-md
-description: Work with PLAN.md to track progress through atomic, committable steps.
+description: Use when creating a plan with PLAN.md.
 ---
 
 # Plan
@@ -18,6 +18,12 @@ THE `PLAN.md` file SHALL NOT be committed to version control.
 ## Format
 
 ```markdown
+---
+active_loop: true
+iteration: 1
+max_iterations: 20
+---
+
 # Plan: [Brief title]
 
 - What we're doing
@@ -27,22 +33,59 @@ THE `PLAN.md` file SHALL NOT be committed to version control.
 
 - [Spec name](path/to/spec.md)
 
-## Files
+---
+
+## Phase 1: [Component/Feature Name]
+
+[One-line description of what this phase accomplishes.]
+
+### Specs
+
+- [component-spec.md](specs/components/component-spec.md)
+
+### Files
 
 - `path/to/file.rs`
 - `path/to/other.rs`
 
-## Steps
+### Todolist
 
 - [ ] Step 1
 - [ ] Step 2
 - [ ] Step 3
 
-## Acceptance Criteria
+### Acceptance Criteria
 
 - [ ] `just check` passes
-- [ ] [Other specific criteria for this task]
+- [ ] [Phase-specific criteria]
+
+---
+
+## Phase 2: [Next Component]
+
+...
+
+---
+
+## Loop Log
+
+- **Loop 1**: [What was tried] → [Outcome]
 ```
+
+## Frontmatter Fields
+
+| Field            | Purpose                                                          |
+| ---------------- | ---------------------------------------------------------------- |
+| `active_loop`    | `true` = auto-loop until done, `false` = user confirms each step |
+| `iteration`      | Current iteration count (incremented by stop hook)               |
+| `max_iterations` | Safety limit - loop stops even if acceptance criteria not met    |
+
+THE frontmatter SHALL always be present in PLAN.md.
+
+THE `active_loop` field determines the workflow mode:
+
+- `true`: Stop hook blocks exit and loops until acceptance criteria met or max_iterations reached
+- `false`: User confirms after each step, no automatic looping
 
 ## Core Principle
 
@@ -54,61 +97,94 @@ THE `PLAN.md` file SHALL contain a level-1 heading with a brief title.
 
 THE `PLAN.md` file SHALL contain a bullet list describing what we're doing and why.
 
-THE `PLAN.md` file SHALL include a "Specs" section listing relevant specifications with markdown links.
+THE `PLAN.md` file SHALL include a "Specs" section listing non-component specifications with markdown links.
 
-THE `PLAN.md` file SHALL include a "Files" section listing affected files.
+THE `PLAN.md` file SHALL contain phases, each as a level-2 heading separated by horizontal rules.
 
-THE `PLAN.md` file SHALL contain a "Steps" section with implementation steps as a checklist.
+THE `PLAN.md` file SHALL include a "Loop Log" section tracking what was tried each iteration.
 
-THE `PLAN.md` file SHALL include an "Acceptance Criteria" section defining what "done" means.
+## Phases
+
+THE plan SHALL organize work into phases, one phase per component or feature.
+
+EACH phase SHALL contain:
+- A level-2 heading with the phase number and name
+- A one-line description of what the phase accomplishes
+- A "Specs" subsection listing component-specific specifications
+- A "Files" subsection listing affected files
+- A "Todolist" subsection with implementation steps as checkboxes
+- An "Acceptance Criteria" subsection defining phase completion
+
+THE phases SHALL be separated by horizontal rules (`---`).
+
+THE phase todolist items SHALL be concise (one line each).
+
+THE phase acceptance criteria SHALL always include `just check` passes and `just test` passes.
 
 ## Acceptance Criteria
 
-THE "Acceptance Criteria" section SHALL define concrete, verifiable conditions for completion.
+THE phase acceptance criteria SHALL define concrete, verifiable conditions for phase completion.
 
-THE acceptance criteria SHALL always include that `just check` passes.
+THE acceptance criteria SHALL always include that `just check` passes and `just test` passes.
 
-THE acceptance criteria SHALL be testable and specific to the task.
+THE acceptance criteria SHALL be testable and specific to the phase.
 
 THE acceptance criteria SHALL NOT be vague (avoid "working properly", "looks good").
 
-WHERE a task has specific verification needs THE acceptance criteria SHALL list them explicitly.
+WHERE a phase has specific verification needs THE acceptance criteria SHALL list them explicitly.
 
-## Steps Format
+## Loop Log
 
-THE steps SHALL use markdown checkboxes (`- [ ]` or `- [x]`).
+THE "Loop Log" section SHALL track what was attempted each iteration.
 
-THE steps SHALL represent atomic, committable units of work.
+THE loop log entries SHALL follow the format: `- **Loop N**: [What was tried] → [Outcome]`
 
-THE steps SHALL be designed such that `just check` passes after each step is completed and committed.
+THE loop log entries SHALL be concise, one line per iteration.
 
-THE completed steps SHALL be marked with `[x]`.
+THE loop log SHALL be updated at the end of each iteration before stopping.
 
-THE incomplete steps SHALL be marked with `[ ]`.
+## Todolist Format
 
-THE current step SHALL be the first unchecked item.
+THE todolist items SHALL use markdown checkboxes (`- [ ]` or `- [x]`).
 
-WHERE investigation reveals new information THE steps MAY be updated to reflect findings.
+THE todolist items SHALL represent atomic, committable units of work.
+
+THE todolist items SHALL be designed such that `just check` passes after each item is completed and committed.
+
+THE completed items SHALL be marked with `[x]`.
+
+THE incomplete items SHALL be marked with `[ ]`.
+
+THE current work SHALL be the first unchecked item in the current phase.
+
+WHERE investigation reveals new information THE todolist MAY be updated to reflect findings.
 
 ## Working with PLAN.md
 
 **During implementation:**
-1. Complete first unchecked step
-2. Verify `just check` passes
-3. Mark step `[x]`
-4. Commit
-5. Repeat
+
+1. Work on the current phase (first phase with unchecked items)
+2. Complete first unchecked todolist item
+3. Verify `just check` passes
+4. Mark item `[x]`
+5. Commit
+6. Repeat until phase acceptance criteria met
+7. Move to next phase
 
 **Keep it updated:**
-- Mark steps `[x]` immediately when done
-- Add/modify steps as you learn
+
+- Mark items `[x]` immediately when done
+- Add/modify todolist items as you learn
 - Update description bullets if approach changes
+- Add Loop Log entry before each loop ends: `- **Loop N**: [What tried] → [Outcome]`
 - Keep it concise - no verbose text
 - Update plan before stopping work
 
 **Resuming after restart:**
-- First unchecked step = current work
-- Checked steps = what's done
+
+- First phase with unchecked items = current phase
+- First unchecked item in current phase = current work
+- Checked items = what's done
 - Description = why we're doing this
 
 ## Resumability
