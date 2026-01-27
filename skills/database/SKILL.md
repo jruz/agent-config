@@ -1,6 +1,6 @@
 ---
 name: database
-description: Manage database connections, migrations, and lifecycle. Use when working with database setup, migrations, connection pools, or database naming conventions.
+description: Manage database lifecycle. Use when working with database setup or migrations.
 ---
 
 # Database Management
@@ -82,6 +82,7 @@ THE `#[instrument]` attribute SHALL skip database pools and connections using th
 WHERE database operations have countable results THE system SHALL record relevant metrics as span fields.
 
 THE common database span fields SHALL include:
+
 - `count` - number of items in collection parameters (e.g., `users.len()`)
 - `inserted` - number of rows inserted
 - `updated` - number of rows updated
