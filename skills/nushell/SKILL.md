@@ -1,6 +1,6 @@
 ---
 name: nushell
-description: Write nushell scripts and commands. Use when writing nu scripts, converting bash to nushell, or working with justfile recipes that use nushell.
+description: Write nushell scripts. Use when writing nu scripts or converting bash to nu.
 ---
 
 # Nushell
@@ -20,10 +20,15 @@ description: Write nushell scripts and commands. Use when writing nu scripts, co
 
 THE nushell scripts SHALL prefix external commands with `^` to distinguish from nushell built-ins.
 
+THE nushell scripts SHALL use long flags (`--flag`) instead of short flags (`-f`) for readability.
+
 ```nushell
 ^git worktree list
 ^just frontend-install
 ^cargo build
+
+^fd --absolute-path --extension nu
+^podman ps --all --filter "label=foo"
 ```
 
 ## String Interpolation
@@ -49,6 +54,8 @@ let oauth = $env.CLAUDE_CODE_OAUTH_TOKEN
 ## Multiline Commands
 
 THE nushell scripts SHALL use parentheses `( )` to group multiline commands.
+
+THE nushell scripts SHALL put each pipe stage on its own line for multi-step pipelines.
 
 ```nushell
 (^git worktree list --porcelain
@@ -84,14 +91,11 @@ THE justfile recipes with nushell shebang SHALL wrap multiline external commands
 
 ## Functional Programming Patterns
 
-### Using `each` Instead of For Loops
+### Choosing Between `each` and `for`
 
-THE nushell scripts SHALL prefer `each` over `for` loops for functional style.
+THE nushell scripts SHALL use `each` when transforming data and returning results.
 
-```nushell
-let items = ["item1", "item2", "item3"]
-$items | each { |item| process_item $item }
-```
+THE nushell scripts SHALL use `for` when performing side effects with no return value.
 
 ### Function Definitions
 
@@ -276,19 +280,9 @@ match $value {
 
 ### When to Use Loops vs Iteration
 
-THE nushell scripts SHALL prefer `each`, `where`, `reduce` over loops when working with collections.
+THE nushell scripts SHALL use `each`, `where`, `reduce` when transforming data.
 
-THE nushell scripts MAY use `for` loops when imperative control flow is needed.
-
-```nushell
-for item in [1, 2, 3] {
-    print $item
-}
-
-for i in 0..10 {
-    print $i
-}
-```
+THE nushell scripts SHALL use `for` loops for side effects with no return value.
 
 ### While Loops
 
@@ -358,9 +352,10 @@ THE `^` prefix SHALL be used to invoke external commands directly without `exter
 ## Colored Output
 
 THE nushell scripts SHALL use text prefixes for all message types:
-- `OK: ` for success messages (green)
-- `WARN: ` for warnings (yellow)
-- `ERROR: ` for errors (red, via error make)
+
+- `OK:` for success messages (green)
+- `WARN:` for warnings (yellow)
+- `ERROR:` for errors (red, via error make)
 - No prefix for informational messages (white)
 
 THE nushell scripts SHALL use the `ansi` command for colored output.
@@ -388,36 +383,139 @@ print '{"decision": "allow"}'
 {decision: "allow"} | to json
 ```
 
+## Forbidden Patterns
+
+THE nushell scripts SHALL NOT use `| default` to silently handle missing data.
+
+THE nushell scripts SHALL NOT use `| ignore` to silence errors.
+
+THE nushell scripts SHALL NOT use `try/catch` to swallow errors.
+
+Errors SHALL propagate and be handled explicitly. When uncertain how to handle an error, ask the user.
+
 ## Pitfalls to Avoid
 
 THE nushell scripts SHALL NOT use bash syntax:
+
 - ❌ `$(command)` → use `(command)`
 - ❌ `$VAR` → use `$env.VAR` for environment variables
 - ❌ Backslash `\` for line continuation → use parentheses `( )`
 - ❌ Unquoted external commands → use `^command`
 
+## Logging
+
+THE nushell scripts SHALL use OTEL-aligned structured JSON logging.
+
+THE nushell scripts SHALL log at the beginning of every impure function.
+
+THE `Body` SHALL be the EXACT function name.
+
+THE `Attributes` field names SHALL match parameter names EXACTLY.
+
+Pure functions SHALL NOT log.
+
+THE severity constant SHALL be used as a pseudo-enum to avoid magic strings.
+
+Severity levels (per OTEL spec):
+- **TRACE** (1): Fine-grained debugging, typically disabled in default configurations
+- **DEBUG** (5): Debugging event
+- **INFO** (9): Informational event, indicates that an event happened
+- **WARN** (13): Not an error but likely more important than informational
+- **ERROR** (17): Something went wrong
+- **FATAL** (21): Fatal error such as application or system crash
+
+```nushell
+const severity = {
+    TRACE: {text: "TRACE", number: 1}
+    DEBUG: {text: "DEBUG", number: 5}
+    INFO: {text: "INFO", number: 9}
+    WARN: {text: "WARN", number: 13}
+    ERROR: {text: "ERROR", number: 17}
+    FATAL: {text: "FATAL", number: 21}
+}
+
+def log [level: record, body: string, attributes?: record] {
+    let entry = {
+        Timestamp: (date now | format date "%Y-%m-%dT%H:%M:%S%.3fZ")
+        SeverityText: $level.text
+        SeverityNumber: $level.number
+        Body: $body
+        Attributes: ($attributes | default {})
+    }
+
+    print ($entry | to json --raw)
+}
+
+log $severity.INFO "fetch_data" {url: "http://example.com"}
+```
+
+Output:
+
+```json
+{"Timestamp":"2026-01-13T12:33:23.918Z","SeverityText":"INFO","SeverityNumber":9,"Body":"fetch_data","Attributes":{"url":"http://example.com"}}
+```
+
+## Linting
+
+Every repository with nushell scripts SHALL have a `nushell-lint` recipe in the justfile.
+
+THE `nushell-lint` recipe SHALL use both `nu-check --debug` (syntax) and `nu-lint` (style/best practices).
+
+THE `nushell-lint` recipe SHALL be included in the `lint` and `check` recipes.
+
+```just
+nushell-lint:
+    #!/usr/bin/env nu
+    ^fd --absolute-path --extension nu --exec nu --commands 'nu-check --debug {}'
+    nu-lint --config nu-lint.toml
+```
+
+The `--absolute-path` flag is required because `nu-check` runs inside a `nu --commands` context and needs the full path to find the file.
+
+### nu-lint
+
+[nu-lint](https://codeberg.org/wvhulle/nu-lint) performs static analysis beyond syntax checking:
+
+- Dead code detection
+- Type safety issues
+- Performance anti-patterns
+- Naming conventions
+- Idiomatic nushell patterns
+
+See Skill(checks) for `nu-lint.toml` configuration.
+
+See Skill(checks) for Nix flake configuration.
+
 ## What We Learned
 
 ### External Command Execution
+
 Nushell treats bare words as nushell commands/variables by default. To run external commands explicitly, prefix with `^`. This prevents confusion between nushell built-ins and system commands. The `extern` keyword can define signatures for external commands to enable type checking and completions.
 
 ### String Interpolation is Different
+
 Bash uses `$()` for command substitution and `${}` for variable expansion within strings. Nushell unifies this with `$"(...)"` syntax where anything in parentheses is evaluated.
 
 ### Multiline Commands Need Grouping
+
 Unlike bash where backslash continues lines, nushell treats each line as a complete statement unless grouped with parentheses. This is especially important in justfile recipes where the text is passed to the shell.
 
 ### Environment Variables are Explicit
+
 Nushell separates environment variables (`$env.VAR`) from regular variables (`$var`). This makes it clearer what scope you're working with and prevents accidental shadowing.
 
 ### Functional Style is Preferred
+
 Nushell encourages using `each`, `where`, `reduce`, `any`, and `all` over imperative loops when working with collections. This leads to more declarative, composable code. Use `for`, `while`, and `loop` only when imperative control flow is truly needed.
 
 ### Pattern Matching Simplifies Branching
+
 The `match` expression provides a cleaner alternative to nested if/else chains when branching on values. Guard conditions enable sophisticated pattern matching logic.
 
 ### Advanced Function Features
+
 Functions support optional parameters (`?`), default values, named flags (`--flag`), shorthand flags (`-f`), and rest parameters (`...`). These enable building sophisticated command-line interfaces within nushell scripts.
 
 ### Module Naming Matters
+
 When using `use module.nu *`, the filename becomes the module name. If a module exports an external with the same name as the module, nushell will reject it. Use different names like `just-completions.nu` instead of `just.nu`.
