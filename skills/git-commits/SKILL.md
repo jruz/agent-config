@@ -1,6 +1,6 @@
 ---
 name: git-commits
-description: Structure commits for reviewable PRs. Use when committing code or organizing work into commits.
+description: Structure commits for reviewable PRs. Use when committing code.
 ---
 
 # Git Commits
@@ -20,6 +20,7 @@ THE commit SHALL NOT mix unrelated changes.
 ### Benefits of Small Commits
 
 THE small commits enable:
+
 - **Faster reviews**: Easier to find time for reviewing small changes than blocking time for large reviews
 - **Thorough examination**: Reviewers provide better feedback on focused changes
 - **Lower defect risk**: Fewer modifications make impact assessment easier
@@ -53,6 +54,7 @@ THE reviewer SHOULD be able to understand the approach by reading commits in seq
 THE refactoring commits SHALL be separate from behavior change commits.
 
 WHEN adding new functionality THE developer SHALL:
+
 1. First commit refactoring to prepare for the change
 2. Then commit the new functionality
 
@@ -88,12 +90,13 @@ THE commit message MAY be brief since the PR description provides broader contex
 
 THE commit title SHALL use the format `[Prefix] Area/Thing: Imperative Action`.
 
-THE commit title SHALL use one of these prefixes:
-- `[Feature]` - New functionality users can see or use
-- `[Fix]` - Bug fixes in application code (src/)
-- `[Refactor]` - Code restructuring, cleanup, renaming
-- `[Deps]` - Dependency updates
-- `[Tools]` - CI, config, tooling, dev setup, tests
+THE commit title SHALL use one of these prefixes (lowercase, 4 chars):
+
+- `[feat]` - New functionality users can see or use
+- `[bugs]` - Bug fixes in application code (src/)
+- `[refa]` - Code restructuring, cleanup, renaming
+- `[deps]` - Dependency updates
+- `[tool]` - CI, config, tooling, dev setup, tests
 
 THE Area/Thing SHALL identify the component, module, or domain being changed.
 
@@ -112,13 +115,15 @@ THE bullets SHALL NOT end with periods.
 ### Examples
 
 **Commit with title only:**
+
 ```
-[Refactor] Order Validation: Extract quantity checks into helper
+[refa] Order Validation: Extract quantity checks into helper
 ```
 
 **Commit with title and body:**
+
 ```
-[Refactor] Databento Service: Refactor authentication flow
+[refa] Databento Service: Refactor authentication flow
 
 - Extract token refresh into separate function
 - Add retry logic for expired tokens
