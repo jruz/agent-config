@@ -1,6 +1,6 @@
 ---
 name: ears
-description: Write requirements using EARS (Easy Approach to Requirements Syntax). Use when writing specifications, requirements, or system behavior documentation.
+description: Write EARS requirements. Use when writing specs with EARS syntax.
 ---
 
 # EARS (Easy Approach to Requirements Syntax)
@@ -18,6 +18,7 @@ For fundamental system capabilities that always apply.
 **Format:** The `<system name>` shall `<system response>`
 
 **Example:**
+
 ```
 The system shall validate all user input before processing.
 ```
@@ -29,6 +30,7 @@ For requirements triggered by specific events or actions.
 **Format:** When `<optional preconditions>` `<trigger>`, the `<system>` shall `<system response>`
 
 **Example:**
+
 ```
 When the user submits the form, the system shall validate all fields.
 ```
@@ -40,6 +42,7 @@ For requirements that apply while the system is in a specific state.
 **Format:** While `<in a state>`, the `<system>` shall `<system response>`
 
 **Example:**
+
 ```
 While the system is processing a request, the system shall display a loading indicator.
 ```
@@ -51,6 +54,7 @@ For error conditions, edge cases, or invalid inputs that require specific handli
 **Format:** If `<optional preconditions>` `<trigger>`, then the `<system>` shall `<system response>`
 
 **Example:**
+
 ```
 If the network connection fails, then the system shall retry up to three times.
 ```
@@ -62,6 +66,7 @@ For requirements that only apply when optional features are present.
 **Format:** Where `<feature>`, the `<system>` shall `<system response>`
 
 **Example:**
+
 ```
 Where authentication is enabled, the system shall require valid credentials.
 ```
@@ -71,6 +76,7 @@ Where authentication is enabled, the system shall require valid credentials.
 Complex requirements can combine multiple sentence types:
 
 **Example:**
+
 ```
 Where caching is enabled, while data is being fetched, when the cache expires, the system shall refresh the cached data.
 ```
@@ -151,9 +157,11 @@ Every requirement should be:
 ### State Transitions
 
 WHERE state transitions exist, consider all combinations:
+
 - 2 states × 2 events = 4 requirements minimum
 
 Example for a connection:
+
 ```
 WHEN connection is requested, THE system SHALL establish connection.
 WHILE connected, WHEN disconnect is requested, THE system SHALL close connection.
@@ -164,6 +172,7 @@ WHERE reconnection is enabled, IF connection is lost, THEN THE system SHALL atte
 ### Error Handling
 
 Use IF...THEN for error conditions:
+
 ```
 IF input validation fails, THEN THE system SHALL return error message.
 IF database is unavailable, THEN THE system SHALL queue the operation.
@@ -173,6 +182,7 @@ IF timeout occurs, THEN THE system SHALL cancel the request.
 ### Optional Features
 
 Use WHERE for conditional functionality:
+
 ```
 WHERE logging is enabled, THE system SHALL record all transactions.
 WHERE caching is configured, THE system SHALL store results.
