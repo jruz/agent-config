@@ -1,0 +1,26 @@
+{
+  "config": {
+    "default": true,
+    "MD013": false,
+    "MD024": false,
+    "MD033": false,
+    "MD034": false,
+    "MD040": false,
+    "MD041": false,
+    "MD060": false
+  },
+  "ignores": [
+    "cache/**",
+    "debug/**",
+    "file-history/**",
+    "node_modules/**",
+    "plans/**",
+    "plugins/**",
+    "projects/**",
+    "session-env/**",
+    "shell-snapshots/**",
+    "statsig/**",
+    "telemetry/**",
+    "todos/**"
+  ]
+}

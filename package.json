@@ -1,0 +1,10 @@
+{
+  "name": "claude-config",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@biomejs/biome": "2.3.11",
+    "markdownlint-cli2": "0.20.0"
+  }
+}
