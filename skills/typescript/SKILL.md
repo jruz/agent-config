@@ -1,6 +1,6 @@
 ---
 name: TypeScript
-description: Write TypeScript with strict types, functional patterns, immutability, and Zod validation
+description: Write TypeScript code. Use when working with TypeScript.
 ---
 
 # TypeScript
@@ -21,7 +21,7 @@ THE system SHALL NOT use interfaces for data structures.
 
 THE system SHALL NOT use `any` type.
 
-THE system SHALL enforce strict immutability with `readonly` modifiers on all properties.
+THE system SHALL enforce strict immutability with `Readonly<T>`.
 
 WHERE type assertions are necessary THE system SHALL validate data using Zod schemas.
 
@@ -47,17 +47,18 @@ WHERE iteration is needed THE system SHALL use `forEach`, `map`, `reduce`, `filt
 
 THE system SHALL use descriptive type names.
 
-THE system SHALL use `readonly` for all properties to enforce immutability.
+THE system SHALL use `Readonly<T>` to enforce immutability.
 
 THE system SHALL export all public types.
 
 Example:
+
 ```typescript
-type User = {
-  readonly id: string;
-  readonly name: string;
-  readonly email: string;
-};
+type User = Readonly<{
+  id: string;
+  name: string;
+  email: string;
+}>;
 ```
 
 ## Domain Modeling
@@ -67,14 +68,15 @@ WHERE primitives have domain meaning THE system SHALL create type aliases for cl
 THE system SHALL use Zod schemas to validate and derive domain types.
 
 Example:
+
 ```typescript
 type UserId = string;
 type Email = string;
 
-type User = {
-  readonly id: UserId;
-  readonly email: Email;
-};
+type User = Readonly<{
+  id: UserId;
+  email: Email;
+}>;
 ```
 
 ## Conditional Logic
@@ -86,17 +88,10 @@ WHERE behavior varies by type THE system SHALL use discriminated unions with exh
 THE system SHALL ensure all branches return consistent types (Liskov Substitution Principle).
 
 Example:
+
 ```typescript
-type Success = {
-  readonly type: "success";
-  readonly data: string;
-};
-
-type Error = {
-  readonly type: "error";
-  readonly message: string;
-};
-
+type Success = Readonly<{ type: "success"; data: string }>;
+type Error = Readonly<{ type: "error"; message: string }>;
 type Result = Success | Error;
 
 const handleResult = (result: Result): string => {
@@ -118,6 +113,7 @@ WHERE selection logic is stable THE system SHALL use simple switch statements.
 WHERE selection logic changes frequently THE system SHALL use a registry pattern (Map of factory functions).
 
 Example registry pattern:
+
 ```typescript
 type ChartFactory = (config: ChartConfig) => Chart;
 
@@ -145,6 +141,7 @@ THE system SHALL handle missing elements gracefully.
 THE system SHALL use type assertions only after null checks.
 
 Example:
+
 ```typescript
 const button = document.querySelector<HTMLButtonElement>("#submit");
 if (!button) {
@@ -157,13 +154,16 @@ button.addEventListener("click", handleClick);
 
 THE system SHALL NOT log to the console.
 
-THE system SHALL throw errors with rich developer-friendly messages for error tracking tools.
-
 THE system SHALL NOT use `||` or `??` operators to silently provide default values that mask null/undefined errors.
 
-WHERE a value may be null or undefined THE system SHALL explicitly check and throw descriptive errors.
+WHERE a value may be null or undefined THE system SHALL explicitly check and handle the error case.
+
+### Throwing Errors
+
+WHERE errors are unrecoverable THE system SHALL throw errors with rich developer-friendly messages.
 
 Example:
+
 ```typescript
 const getUserName = (user: User | null): string => {
   if (!user) {
@@ -171,6 +171,59 @@ const getUserName = (user: User | null): string => {
   }
   return user.name;
 };
+```
+
+### Result Types with neverthrow
+
+WHERE errors are recoverable THE system SHALL use the `neverthrow` library for type-safe error handling.
+
+THE system SHALL use `Result<T, E>` to represent operations that can fail.
+
+THE system SHALL use `ok(value)` to return successful results.
+
+THE system SHALL use `err(error)` to return error results.
+
+THE system SHALL define domain-specific error types as discriminated unions.
+
+Example:
+
+```typescript
+import { err, ok, type Result } from "neverthrow";
+
+type AppError =
+  | Readonly<{ type: "not_found"; resource: string }>
+  | Readonly<{ type: "validation"; message: string }>
+  | Readonly<{ type: "network"; status: number }>;
+
+const fetchUser = async (id: string): Promise<Result<User, AppError>> => {
+  const response = await fetch(`/users/${id}`);
+  if (response.status === 404) {
+    return err({ type: "not_found", resource: `user:${id}` });
+  }
+  if (!response.ok) {
+    return err({ type: "network", status: response.status });
+  }
+  return ok(await response.json());
+};
+```
+
+### Error Message Formatting
+
+THE format SHALL be `category: value` (e.g., `no image: prometheus:v3.2.1`).
+
+THE system SHALL omit redundant context and truncate long values.
+
+### Error Type Naming
+
+THE system SHALL use singular nouns in error types (e.g., `no_image` not `no_images`).
+
+WHERE the type describes what's missing THE system SHALL use `value` as the key name.
+
+```typescript
+type AppError =
+  | Readonly<{ type: "no_image"; value: string }>
+  | Readonly<{ type: "no_label"; value: string }>
+  | Readonly<{ type: "no_revision"; value: string }>;
 ```
 
 ## Data Validation with Zod
@@ -186,6 +239,7 @@ WHERE types are derived from Zod schemas THE system SHALL call `.readonly()` on 
 THE `.readonly()` method SHALL be called after `.object()` and before type inference.
 
 Example:
+
 ```typescript
 import { z } from "zod";
 
@@ -215,6 +269,7 @@ WHERE a function depends on external behavior THE system SHALL use test doubles 
 THE test doubles SHALL match the same function signature as the real implementation.
 
 Example:
+
 ```typescript
 import { describe, it, expect } from "vitest";
 
@@ -249,6 +304,7 @@ THE system SHALL NOT mutate function parameters.
 THE system SHALL NOT mutate variables after initialization.
 
 Example:
+
 ```typescript
 const addItem = (items: readonly Item[], newItem: Item): readonly Item[] => {
   return [...items, newItem];
@@ -268,6 +324,7 @@ WHERE third-party libraries add properties to the window object THE system MAY d
 WHERE augmenting built-in global types THE system SHALL use `interface` to extend existing global interfaces.
 
 Example:
+
 ```typescript
 declare global {
   interface Window {
