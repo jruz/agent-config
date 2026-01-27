@@ -1,6 +1,6 @@
 ---
 name: problem-modeling
-description: Analyze and structure problems before implementation. Use when starting a new feature to understand the domain, identify types, states, and failure modes before writing code.
+description: Analyze problems before implementation. Use to model problems before coding.
 ---
 
 # Problem Modeling
@@ -22,6 +22,7 @@ WHERE a feature is trivial (single function, no state) THE developer MAY skip fo
 THE developer SHALL list all domain concepts (nouns) mentioned in the requirement.
 
 THE developer SHALL classify each noun as one of:
+
 - **Entity** - has identity that persists over time (e.g., Order, User, Position)
 - **Value** - defined by its attributes, no identity (e.g., Price, Quantity, DateRange)
 - **Enum** - fixed set of options (e.g., OrderSide: Buy/Sell, Timeframe: Daily/Hourly)
@@ -44,6 +45,7 @@ WHERE two concepts share the same underlying type THE developer SHALL create dis
 THE developer SHALL list all actions (verbs) the system must perform.
 
 THE developer SHALL classify each verb as one of:
+
 - **Command** - request to change state (e.g., PlaceOrder, CancelOrder)
 - **Query** - request for information without state change (e.g., GetPosition, ListOrders)
 - **Calculation** - pure transformation of data (e.g., CalculateVWAP, AggregateCandles)
@@ -55,6 +57,7 @@ THE developer SHALL keep commands and queries separate (a function should do one
 WHERE an entity changes over time THE developer SHALL identify its lifecycle states.
 
 THE developer SHALL draw the state transitions:
+
 - What states can the entity be in?
 - What causes transitions between states?
 - What states are terminal (no further transitions)?
@@ -68,6 +71,7 @@ THE developer SHALL NOT use boolean flags or string fields to represent state.
 THE developer SHALL list all ways each operation can fail.
 
 THE developer SHALL classify each failure as one of:
+
 - **Validation error** - bad input that should be rejected at the boundary
 - **Business rule violation** - valid input but not allowed by domain rules
 - **External failure** - I/O, network, database errors
@@ -97,6 +101,7 @@ Input → Validate → Transform → Execute → Output
 ```
 
 THE developer SHALL identify:
+
 - What is the input (command or query)?
 - What validation must occur?
 - What transformations are needed?
@@ -120,6 +125,7 @@ THE developer SHALL verify naming with stakeholders if unclear.
 ## Output Checklist
 
 BEFORE starting implementation THE developer SHALL have documented:
+
 - [ ] List of entities with their identity
 - [ ] List of values with their attributes
 - [ ] List of enums with their variants
@@ -138,6 +144,7 @@ WHERE the feature is complex THE developer SHALL write the model in the feature 
 THE developer SHALL NOT start coding before understanding the domain.
 
 THE developer SHALL NOT use raw primitives for domain concepts:
+
 - `id: Uuid` → use `id: UserId`
 - `ticker: String` → use `ticker: Ticker`
 - `quantity: f64` → use `quantity: Quantity`
