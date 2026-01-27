@@ -1,9 +1,16 @@
+- always use Opus model for agents
 - never write comments instead make sure code is easy to follow
-- never bypass a linter, look for ways to solve the problem either refactoring or following the recommendations of the linter
+- never bypass the linter or playwright, look for ways to solve the problem either refactoring or following the recommendations
 - use ripgrep (rg) instead of grep for searching
 - use fd instead of find for finding files
 - when editing settings.json, keep all allow and deny lists sorted alphabetically
 - never run multiple Bash commands in parallel, execute them one at a time so each can be reviewed
 - don't use git -C, use relative paths instead
-- when creating a skill, use Skill(skills)
-- when creating commits use the Skill(git-commits)
+- always use long version of command flags (e.g., --session instead of -s)
+- never use AskUserQuestion tool, ask in plain text
+- never give opinions or recommendations unless explicitly asked
+- when adding dependencies, use the package manager add command (e.g., cargo add, npm install) to get the latest version instead of manually editing manifest files
+- never use EnterPlanMode tool, just do the work directly
+- when asking the user to make decisions, present information one point at a time
+- always follow the Skill(plan-md) format when writing PLAN.md
+- when user writes p: issue, means add that topic to PLAN.md using Skill(plan-md) format
