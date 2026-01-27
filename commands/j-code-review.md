@@ -5,6 +5,7 @@ description: Review code using project skills (justfile, rust, sqlx)
 Spin up the code-reviewer agent to review code files against project skills.
 
 **IMPORTANT**:
+
 - DO NOT use the AskUserQuestion tool - let the agent handle user interaction
 - Use the Task tool with subagent_type='code-reviewer' to spawn the review agent
 
