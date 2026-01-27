@@ -1,6 +1,6 @@
 ---
 name: chrome
-description: Debug UI visually with Chrome DevTools MCP. Use when verifying UI changes, checking DOM structure, taking screenshots, or testing JavaScript in browser.
+description: Debug UI with Chrome Browser DevTools MCP.
 ---
 
 # UI Debugging
