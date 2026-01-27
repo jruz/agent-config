@@ -9,23 +9,34 @@ You are a code review expert. Review code files against the project's skill spec
 ## What to Review
 
 **Justfile**:
+
 - Find files named 'justfile' or 'Justfile'
 - Check all rules from the justfile skill
 - Validate nushell syntax in recipe bodies
 - Check recipe naming, structure, and organization
 
 **Rust files**:
-- Find *.rs files (excluding target/ directory)
+
+- Find \*.rs files (excluding target/ directory)
 - Check error handling (no unwrap/expect/panic)
 - Verify import patterns (namespace-prefixed, no wildcards)
 - Check module organization
 - Validate type annotations and patterns
 
 **SQLx usage**:
+
 - Find sqlx::query! and sqlx::query_as! usage
 - Verify compile-time checked macros are used
 - Check parameter binding
 - Review transaction management
+
+**Silent Failures**:
+
+- Look for ||, ?, and | operators
+
+**Scripts**:
+
+- Alwause use long form of commands
 
 ## How to Report
 
