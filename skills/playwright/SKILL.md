@@ -40,10 +40,6 @@ THE `.gitignore` SHALL include `node_modules/`.
 
 THE project SHALL have a [playwright.config.ts](playwright.config.ts) at the root.
 
-THE config SHALL use `baseURL` matching the test server port.
-
-THE config SHALL use the `webServer` option to start the server automatically.
-
 ## Test Environment
 
 THE system SHALL use a dedicated test environment (`.env.test`).
@@ -109,7 +105,7 @@ THE fixtures file SHALL reside at `playwright/fixtures.ts`.
 
 THE helper functions SHALL reside in `playwright/helpers/`.
 
-THE screenshot baselines SHALL reside in `playwright/screenshots/`.
+THE screenshot baselines SHALL reside in `playwright/screenshots/` as defined by `snapshotPathTemplate` in the config.
 
 ## Subdirectory Organization
 
@@ -204,18 +200,6 @@ THE developer SHALL NOT update snapshots when:
 THE tests SHALL verify error states display appropriate messages.
 
 THE tests SHALL verify error responses use correct HTTP status codes.
-
-## Test Execution
-
-THE system SHALL run tests against Chromium browser.
-
-THE system SHALL run tests sequentially.
-
-THE system SHALL retry failed tests in CI only.
-
-THE system SHALL capture screenshots only on failure.
-
-THE system SHALL capture traces only on failure.
 
 ## Test Structure
 
