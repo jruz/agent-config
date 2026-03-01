@@ -28,6 +28,8 @@ max_iterations: 20
 
 - What we're doing
 - Why or approach details
+- Mark todos complete as work is done
+- Review: after each phase | at the end
 
 ## Specs
 
@@ -86,6 +88,18 @@ THE `active_loop` field determines the workflow mode:
 
 - `true`: Stop hook blocks exit and loops until acceptance criteria met or max_iterations reached
 - `false`: User confirms after each step, no automatic looping
+
+## Review Checkpoints
+
+THE plan description SHALL include a bullet stating that todos are marked complete immediately after each item is done (not batched at the end of a phase).
+
+THE plan description SHALL include a bullet specifying the review strategy: review after each phase, or review at the end of the plan.
+
+WHEN creating a new plan, ASK the user whether they want review after each phase or at the end of the plan.
+
+WHEN the review strategy is per-phase, STOP after completing each phase and wait for user review before moving to the next phase.
+
+WHEN the review strategy is end-of-plan, proceed through all phases and wait for user review at the end.
 
 ## Core Principle
 
