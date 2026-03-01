@@ -1,0 +1,11 @@
+processes:
+  postgres:
+    command: just env-kill-ports pg-start
+    health:
+      command: just pg-ready
+      interval_secs: 2
+      timeout_secs: 10
+
+  task:
+    command: just db-run-args
+    depends_on: [postgres]

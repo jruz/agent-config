@@ -1,0 +1,15 @@
+processes:
+  postgres:
+    command: just env-kill-ports pg-start
+    health:
+      command: just pg-ready
+      interval_secs: 2
+      timeout_secs: 10
+
+  frontend:
+    command: just frontend-build frontend-watch
+    depends_on: [postgres]
+
+  server:
+    command: just sqlx-reset rust-watch
+    depends_on: [postgres]

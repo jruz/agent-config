@@ -1,0 +1,6 @@
+# ---------------- SIMPLE COMPOSE
+compose-up:
+  simple-compose up --config simple-compose.run.yaml
+
+compose-run:
+  simple-compose run --config simple-compose.run.yaml

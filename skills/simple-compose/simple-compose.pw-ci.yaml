@@ -1,0 +1,38 @@
+shell: bash
+processes:
+  postgres:
+    command: >
+      docker run --rm
+      --name postgres
+      --network trader-ci
+      --env-file <(sops decrypt --output-type dotenv .env.test.yaml)
+      -e PGPORT=$POSTGRES_PORT
+      postgres:18.1
+    health:
+      command: docker exec postgres pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+      interval_secs: 2
+      timeout_secs: 15
+
+  server:
+    command: >
+      docker run --rm
+      --name server
+      --network trader-ci
+      --env-file <(sops decrypt --output-type dotenv .env.test.yaml)
+      -e POSTGRES_HOST=postgres
+      trader-server
+    depends_on: [postgres]
+    health:
+      command: docker exec server curl --silent --fail http://localhost:$APP_PORT/
+      interval_secs: 2
+      timeout_secs: 20
+
+  playwright:
+    command: >
+      docker run --rm
+      --name playwright
+      --network trader-ci
+      --env-file <(sops decrypt --output-type dotenv .env.test.yaml)
+      -e APP_DOMAIN=server
+      trader-playwright
+    depends_on: [server]
