@@ -457,17 +457,24 @@ Output:
 
 ## Linting
 
-Every repository with nushell scripts SHALL have a `nushell-lint` recipe in the justfile.
+Every repository with nushell scripts SHALL have a `nu-check` recipe in the justfile.
 
-THE `nushell-lint` recipe SHALL use both `nu-check --debug` (syntax) and `nu-lint` (style/best practices).
+THE `nu-check` recipe SHALL use both `nu-check --debug` (syntax) and `nu-lint` (style/best practices).
 
-THE `nushell-lint` recipe SHALL be included in the `lint` and `check` recipes.
+THE `nu-check` recipe SHALL be included in the `check` recipe.
+
+### Justfile Recipes
 
 ```just
-nushell-lint:
+nu-check:
     #!/usr/bin/env nu
-    ^fd --absolute-path --extension nu --exec nu --commands 'nu-check --debug {}'
+    fd --absolute-path --extension nu --exec nu --commands 'nu-check --debug {}'
     nu-lint --config nu-lint.toml
+
+nu-fix:
+    nu-lint \
+        --config nu-lint.toml \
+        --fix
 ```
 
 The `--absolute-path` flag is required because `nu-check` runs inside a `nu --commands` context and needs the full path to find the file.
@@ -482,9 +489,86 @@ The `--absolute-path` flag is required because `nu-check` runs inside a `nu --co
 - Naming conventions
 - Idiomatic nushell patterns
 
-See Skill(checks) for `nu-lint.toml` configuration.
+### nu-lint.toml
 
-See Skill(checks) for Nix flake configuration.
+The `nu-lint.toml` template is in this skill folder.
+
+### Devenv Setup
+
+THE `devenv.nix` SHALL include `nushell` and `nu-lint` in packages.
+
+THE `nu-lint` package SHALL be defined in a separate `nu-lint.nix` file and imported.
+
+nu-lint has no macOS binaries, so:
+- Linux: pre-built binary from releases
+- macOS: build from source (first build slow, then cached)
+
+#### nu-lint.nix
+
+```nix
+{ pkgs }:
+
+let version = "0.0.142";
+in if pkgs.stdenv.isLinux then
+  let
+    arch = if pkgs.stdenv.hostPlatform.isAarch64 then "aarch64" else "x86_64";
+    sha256 = if pkgs.stdenv.hostPlatform.isAarch64 then
+      "6d6239e28ac67067b15c92ede1a103da20cd7bae9cd4da716c9109a35a8d9ad4"
+    else
+      "e4ba5bccbfb511494033b2d7dceba09a2ee72807d3426112426521de46a4233b";
+  in pkgs.stdenv.mkDerivation {
+    pname = "nu-lint";
+    inherit version;
+    src = pkgs.fetchurl {
+      url =
+        "https://codeberg.org/wvhulle/nu-lint/releases/download/v${version}/nu-lint-${arch}-unknown-linux-musl.tar.gz";
+      inherit sha256;
+    };
+    nativeBuildInputs = [ pkgs.gnutar ];
+    phases = [ "unpackPhase" "installPhase" ];
+    unpackPhase = ''
+      tar -xzf $src
+    '';
+    installPhase = ''
+      mkdir -p $out/bin
+      cp nu-lint $out/bin/
+      chmod +x $out/bin/nu-lint
+    '';
+  }
+else
+  pkgs.rustPlatform.buildRustPackage {
+    pname = "nu-lint";
+    inherit version;
+    src = pkgs.fetchgit {
+      url = "https://codeberg.org/wvhulle/nu-lint.git";
+      rev = "v${version}";
+      sha256 = "sha256-Hdm1JtChg5dSnPKO8q2EVVGUL4978ZK97trvi9J1rIc=";
+    };
+    cargoHash = "sha256-yqF+jDaQ7DwLRUZvvwsTRDmeB70Qsw0ywO4RzcGrXRo=";
+  }
+```
+
+#### devenv.nix usage
+
+```nix
+{ pkgs, ... }:
+
+let nu-lint = import ./nu-lint.nix { inherit pkgs; };
+in {
+  packages = [
+    nu-lint
+    pkgs.nushell
+  ];
+}
+```
+
+#### devenv.yaml input
+
+```yaml
+inputs:
+  nixpkgs:
+    url: github:nixos/nixpkgs/nixos-25.11
+```
 
 ## What We Learned
 
