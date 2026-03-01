@@ -1,0 +1,18 @@
+FROM nixos/nix:2.33.1 AS builder
+ENV NIX_CONFIG="experimental-features = nix-command flakes"
+WORKDIR /app
+COPY . .
+RUN git init && git add --all
+RUN nix develop --command just dist
+
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl && rm -rf /var/lib/apt/lists/*
+RUN adduser --disabled-password --uid 1000 appuser
+WORKDIR /app
+COPY --from=builder /app/target/release/web ./web
+COPY --from=builder /app/static ./static
+USER appuser
+EXPOSE 3000
+HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=5 \
+  CMD curl --fail --silent http://localhost:3000/health
+CMD ["./web"]

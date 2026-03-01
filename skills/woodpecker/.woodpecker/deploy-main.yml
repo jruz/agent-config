@@ -1,0 +1,43 @@
+depends_on:
+  - check
+  - playwright
+  - build-main
+
+when:
+  - event: push
+    branch: main
+  - event: manual
+    branch: main
+
+steps:
+  - name: PUSH
+    image: docker:cli
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - docker push 127.0.0.1:5000/${CI_REPO_NAME}:${CI_COMMIT_SHA}
+      - docker push 127.0.0.1:5000/${CI_REPO_NAME}:main
+
+  - name: DEPLOY
+    image: 127.0.0.1:5000/woodpecker-job:v0.0.15
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      APP_DOMAIN: ${CI_REPO_NAME}.jruz.io
+      REVISION: ${CI_COMMIT_SHA}
+      STACK_NAME: ${CI_REPO_NAME}
+      SOPS_AGE_KEY:
+        from_secret: SOPS_AGE_KEY
+      TAG: main
+    commands:
+      - . /entrypoint.sh
+      - >-
+        nix develop --command bash -c '
+        docker pull 127.0.0.1:5000/${CI_REPO_NAME}:main &&
+        sops exec-env .env.prod.yaml
+        "docker stack deploy
+        --compose-file docker-compose.yaml
+        --detach=false
+        --prune
+        --resolve-image always
+        ${CI_REPO_NAME}"'

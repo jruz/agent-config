@@ -1,0 +1,17 @@
+when:
+  - event: push
+    branch: main
+  - event: manual
+  - event: pull_request
+
+steps:
+  - name: PLAYWRIGHT
+    image: 127.0.0.1:5000/woodpecker-job:v0.0.15
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      SOPS_AGE_KEY:
+        from_secret: SOPS_AGE_KEY
+    commands:
+      - . /entrypoint.sh
+      - nix develop --command just playwright

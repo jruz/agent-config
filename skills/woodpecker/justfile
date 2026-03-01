@@ -1,0 +1,62 @@
+# ---------------- RELEASE BUILDS
+
+build-linux:
+    rustup target add x86_64-unknown-linux-gnu
+    cargo build --release --target x86_64-unknown-linux-gnu
+    cp target/x86_64-unknown-linux-gnu/release/BINARY_NAME BINARY_NAME-linux-x86_64
+
+build-macos:
+    rustup target add x86_64-apple-darwin
+    rustup target add aarch64-apple-darwin
+    cargo zigbuild --release --target x86_64-apple-darwin
+    cargo zigbuild --release --target aarch64-apple-darwin
+    cp target/x86_64-apple-darwin/release/BINARY_NAME BINARY_NAME-macos-x86_64
+    cp target/aarch64-apple-darwin/release/BINARY_NAME BINARY_NAME-macos-arm64
+
+build-windows:
+    rustup target add x86_64-pc-windows-msvc
+    cargo xwin build --release --target x86_64-pc-windows-msvc
+    cp target/x86_64-pc-windows-msvc/release/BINARY_NAME.exe BINARY_NAME-windows-x86_64.exe
+
+# ---------------- CI WRAPPERS
+
+ci-build-linux:
+    #!/usr/bin/env nu
+    (docker run
+        --rm
+        --volume $"(pwd):/work"
+        --workdir /work
+        127.0.0.1:5000/woodpecker-job:v0.0.15
+        ^sh -c ". /entrypoint.sh && nix develop --command just build-linux")
+
+ci-build-macos:
+    #!/usr/bin/env nu
+    (docker run
+        --rm
+        --volume $"(pwd):/work"
+        --workdir /work
+        ghcr.io/rust-cross/cargo-zigbuild
+        ^sh -c "cargo install just && just build-macos")
+
+ci-build-windows:
+    #!/usr/bin/env nu
+    (docker run
+        --rm
+        --volume $"(pwd):/work"
+        --workdir /work
+        ghcr.io/rust-cross/cargo-xwin
+        ^sh -c "cargo install just && just build-windows")
+
+ci-check:
+    #!/usr/bin/env nu
+    (docker run
+        --rm
+        --volume $"(pwd):/work"
+        --workdir /work
+        127.0.0.1:5000/woodpecker-job:v0.0.15
+        ^sh -c ". /entrypoint.sh && nix develop --command just check")
+
+# ---------------- RELEASE
+
+release-upload tag:
+    bun scripts/release-upload.ts {{ tag }}

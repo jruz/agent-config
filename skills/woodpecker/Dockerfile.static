@@ -1,0 +1,14 @@
+FROM nixos/nix:2.33.1 AS builder
+ENV NIX_CONFIG="experimental-features = nix-command flakes"
+WORKDIR /app
+COPY . .
+RUN git init && git add --all
+RUN nix develop --command just dist
+
+FROM docker.io/joseluisq/static-web-server:2-alpine
+COPY config.toml /etc/config.toml
+COPY --from=builder /app/dist/ /public/
+EXPOSE 8080
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health.html
+CMD ["static-web-server", "--config-file", "/etc/config.toml"]

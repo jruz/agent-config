@@ -1,0 +1,73 @@
+depends_on:
+  - check
+  - playwright
+  - build-pr
+
+when:
+  - event: pull_request
+  - event: pull_request_closed
+
+steps:
+  - name: PUSH
+    image: docker:cli
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - docker push 127.0.0.1:5000/${CI_REPO_NAME}:pr-${CI_COMMIT_PULL_REQUEST}
+    when:
+      event: pull_request
+
+  - name: DEPLOY
+    image: 127.0.0.1:5000/woodpecker-job:v0.0.15
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      APP_DOMAIN: ${CI_REPO_NAME}-pr-${CI_COMMIT_PULL_REQUEST}.jruz.io
+      REVISION: ${CI_COMMIT_SHA}
+      STACK_NAME: ${CI_REPO_NAME}-pr-${CI_COMMIT_PULL_REQUEST}
+      SOPS_AGE_KEY:
+        from_secret: SOPS_AGE_KEY
+      TAG: pr-${CI_COMMIT_PULL_REQUEST}
+    commands:
+      - . /entrypoint.sh
+      - >-
+        nix develop --command bash -c '
+        docker pull 127.0.0.1:5000/${CI_REPO_NAME}:pr-${CI_COMMIT_PULL_REQUEST} &&
+        sops exec-env .env.pr.yaml
+        "docker stack deploy
+        --compose-file docker-compose.yaml
+        --detach=false
+        --prune
+        --resolve-image always
+        ${CI_REPO_NAME}-pr-${CI_COMMIT_PULL_REQUEST}"'
+    when:
+      event: pull_request
+
+  - name: SEED
+    image: docker:cli
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - >-
+        docker exec
+        $(docker ps
+        --filter name=${CI_REPO_NAME}-pr-${CI_COMMIT_PULL_REQUEST}_app
+        --format '{{.ID}}')
+        ./tasks admin-user
+      - >-
+        docker exec
+        $(docker ps
+        --filter name=${CI_REPO_NAME}-pr-${CI_COMMIT_PULL_REQUEST}_app
+        --format '{{.ID}}')
+        ./tasks seed
+    when:
+      event: pull_request
+
+  - name: CLEANUP
+    image: docker:cli
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - docker stack rm ${CI_REPO_NAME}-pr-${CI_COMMIT_PULL_REQUEST}
+    when:
+      event: pull_request_closed

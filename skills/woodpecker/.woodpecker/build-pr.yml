@@ -1,0 +1,21 @@
+when:
+  - event: pull_request
+
+steps:
+  - name: BUILD FRONTEND
+    image: 127.0.0.1:5000/woodpecker-job:v0.0.15
+    commands:
+      - . /entrypoint.sh
+      - nix develop --command just frontend-install
+      - nix develop --command just frontend-build
+
+  - name: BUILD BACKEND
+    image: docker:cli
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    commands:
+      - >-
+        docker build
+        --tag 127.0.0.1:5000/${CI_REPO_NAME}:pr-${CI_COMMIT_PULL_REQUEST}
+        --label org.opencontainers.image.revision=${CI_COMMIT_SHA}
+        .
