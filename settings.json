@@ -1,4 +1,5 @@
 {
+  "attribution": {},
   "permissions": {
     "allow": [
       "Bash(arp:*)",
@@ -122,6 +123,7 @@
       "Skill(hooks)",
       "Skill(justfile)",
       "Skill(maud)",
+      "Skill(notify)",
       "Skill(nushell)",
       "Skill(plan-md)",
       "Skill(plan-status)",
@@ -130,6 +132,7 @@
       "Skill(rust)",
       "Skill(scss)",
       "Skill(skills)",
+      "Skill(env)",
       "Skill(specs)",
       "Skill(sqlx)",
       "Skill(tracing)",
@@ -152,15 +155,15 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:readthedocs.io)",
       "WebFetch(domain:search.nixos.org)",
-      "WebSearch"
+      "WebSearch",
+      "mcp__chrome-devtools__*"
     ],
     "deny": [
-      "Bash(SKIP_HOOKS*:*)",
-      "Bash(git -C:*)",
-      "Bash(npm run:*)",
-      "Bash(npx playwright install:*)",
-      "Bash(npx run:*)",
-      "Bash(security:*)"
+      "Bash(sops --decrypt:*)",
+      "Read(**/.config/sops/age/keys.txt)",
+      "Read(**/.env)",
+      "Read(**/.ssh/*)",
+      "Bash(docker compose*)"
     ],
     "defaultMode": "acceptEdits"
   },
@@ -170,7 +173,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/notify.sh"
+            "command": "bun run ~/.claude/hooks/notify_system.ts"
           }
         ]
       }
@@ -180,8 +183,69 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/on_stop.nu",
+            "command": "bun run ~/.claude/hooks/notify_conductor.ts"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun run ~/.claude/hooks/notify_zellij.ts"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun run ~/.claude/hooks/stop_check.ts",
             "timeout": 300
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun run ~/.claude/hooks/stop_plan.ts"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun run ~/.claude/hooks/stop_slop.ts"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Read|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun run ~/.claude/hooks/block-secrets.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun run ~/.claude/hooks/commit-msg-check.ts"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun run ~/.claude/hooks/on_pretool_bash.ts"
           }
         ]
       }
@@ -191,16 +255,27 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/on_prompt_submit.nu"
+            "command": "bun run ~/.claude/hooks/on_prompt_submit.ts"
           }
         ]
       }
     ]
   },
-  "enabledPlugins": {},
-  "alwaysThinkingEnabled": true,
   "statusLine": {
     "type": "command",
     "command": "~/.cargo/bin/claude-statusline"
-  }
+  },
+  "enabledPlugins": {},
+  "spinnerTipsEnabled": false,
+  "spinnerVerbs": {
+    "mode": "replace",
+    "verbs": [
+      "Thinking"
+    ]
+  },
+  "alwaysThinkingEnabled": true,
+  "autoUpdatesChannel": "latest",
+  "prefersReducedMotion": true,
+  "skipDangerousModePermissionPrompt": true,
+  "promptSuggestionEnabled": false
 }

@@ -1,11 +1,15 @@
+.devenv*
+.direnv
 cache/
 debug/
 downloads/
 file-history/
 history.jsonl
+ide/
+hooks/hooks.log
 node_modules/
-package-lock.json
 paste-cache/
+PLAN.md
 plans/
 plugins/
 projects/
@@ -13,5 +17,6 @@ session-env/
 shell-snapshots/
 stats-cache.json
 statsig/
+tasks/
 telemetry/
 todos/
