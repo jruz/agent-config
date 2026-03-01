@@ -11,26 +11,11 @@ This specification defines Rust-specific patterns and requirements for writing r
 
 ## Project Initialization
 
-THE system SHALL create a `flake.nix` file in the project root for Nix-based development environments.
+THE system SHALL create a `flake.nix` from the template at `skills/rust/flake.nix`.
 
-THE flake SHALL use `rust-overlay` to pin the exact Rust version.
+THE system SHALL create a `.envrc` file from `skills/rust/envrc` for direnv integration.
 
-THE flake SHALL include a welcome message displaying tool versions on shell entry.
-
-THE flake SHALL include common Rust development tools: `cargo-nextest`, `cargo-watch`, `just`, `nushell`, `ripgrep`, `sqlx-cli`, `taplo`.
-
-THE Rust version in the flake SHALL match the version in `rust-toolchain.toml`.
-
-THE flake template is available at `skills/rust/flake.nix`.
-
-WHERE the project requires additional targets THE flake SHALL specify them in the rust override:
-
-```nix
-rust = pkgs.rust-bin.stable.${rustVersion}.default.override {
-  extensions = [ "rust-analyzer" "rust-src" ];
-  targets = [ "wasm32-wasip1" ];
-};
-```
+THE `.gitignore` SHALL include direnv entries from `skills/rust/gitignore-additions.txt`.
 
 ## Code Paradigm: Functional Only
 
@@ -118,7 +103,7 @@ WHERE the project targets unconventional platforms THE toolchain SHALL declare e
 
 ```toml
 [toolchain]
-channel = "1.92.0"
+channel = "1.93.0"
 targets = ["wasm32-wasip1"]
 ```
 
@@ -511,9 +496,21 @@ WHERE traits are from std THE system SHALL use short form (Debug, Clone, Copy, P
 
 THE fully qualified path requirement SHALL make it immediately clear which crate each derive trait comes from.
 
-## Linting
+## Linting Configuration
 
-For Rust linting configuration, justfile recipes, and the `[lints]` table in `Cargo.toml`, see the `checks` skill.
+THE project SHALL enforce strict linting using the `[lints]` table in `Cargo.toml`.
+
+THE linting configuration template is available at `skills/rust/Cargo.toml`.
+
+WHERE a project requires additional allows THE developer SHALL add them with a comment explaining the reason.
+
+THE developer SHALL NOT use `#[allow(...)]` attributes in code to bypass linting.
+
+WHERE linting errors occur THE developer SHALL refactor code to satisfy the linter.
+
+THE system SHALL integrate linting into CI pipeline.
+
+WHERE the project uses sqlx THE `rust-check` recipe SHALL also run `db-check` before clippy.
 
 ## Just Recipes
 
@@ -521,9 +518,7 @@ THE project SHALL contain a `justfile` with Rust development recipes.
 
 THE justfile template is available at `skills/rust/justfile`.
 
-This template contains non-linting recipes: build, test, install, outdated, upgrade.
-
-For linting recipes (`rust-lint`, `rust-fmt`, `rust-clippy`, etc.), see the `checks` skill.
+This template contains all Rust recipes: build, check, clippy, fmt-check, fmt-fix, fix, test, install, outdated, upgrade.
 
 ## Serialization
 
