@@ -1,0 +1,4 @@
+creation_rules:
+  - path_regex: \.env\.\w+\.yaml$
+    encrypted_regex: "(_KEY|_SECRET|_TOKEN|_EMAIL|_PASSWORD)$"
+    age: age1ln47rqgmh4vd05jn809jlmavq2shc7txwg7uwezcgn5lvctyma9q82e7z0

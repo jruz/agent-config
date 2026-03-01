@@ -1,0 +1,49 @@
+# ---------------- DOTENV
+dotenv-setup:
+  just sops-decrypt-dev
+  just dotenv-setup-ports
+  just dotenv-show
+
+dotenv-kill-ports:
+  bun run scripts/dotenv-kill-ports.ts
+
+dotenv-setup-ports:
+  bun run scripts/dotenv-setup-ports.ts
+
+dotenv-show:
+  bun run scripts/dotenv-show.ts
+
+# ---------------- SOPS
+sops-encrypt ENV:
+  sops --encrypt --in-place .env.{{ENV}}.yaml
+
+sops-edit ENV:
+  sops .env.{{ENV}}.yaml
+
+sops-decrypt-dev:
+  sops --decrypt --output-type dotenv --output .env .env.dev.yaml
+
+sops-fix ENV:
+  sops --ignore-mac --rotate --in-place .env.{{ENV}}.yaml
+
+sops-unset ENV KEY:
+  sops unset .env.{{ENV}}.yaml '["{{KEY}}"]'
+
+sops-set ENV KEY VALUE:
+  sops set .env.{{ENV}}.yaml '["{{KEY}}"]' '"{{VALUE}}"'
+  sops --ignore-mac --rotate --in-place .env.{{ENV}}.yaml
+
+sops-set-secret ENV KEY:
+  bun run scripts/sops-set-secret.ts {{ENV}} {{KEY}}
+
+sops-set-secret-most KEY:
+  bun run scripts/sops-set-secret.ts dev pr prod {{KEY}}
+
+sops-run-dev CMD:
+  sops exec-env .env.dev.yaml '{{CMD}}'
+
+sops-run-test CMD:
+  sops exec-env .env.test.yaml '{{CMD}}'
+
+sops-sync-check:
+  bun run scripts/sops-sync-check.ts
