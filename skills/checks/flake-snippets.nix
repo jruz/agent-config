@@ -7,10 +7,6 @@
       url = "github:oxalica/rust-overlay";
     };
 
-    nu-lint = {
-      url = "git+https://codeberg.org/wvhulle/nu-lint";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   packages = {
@@ -20,7 +16,6 @@
     just = "pkgs.just";
     markdownlint-cli2 = "pkgs.markdownlint-cli2";
     nixfmt = "pkgs.nixfmt-classic";
-    nushell = "pkgs.nushell";
     ripgrep = "pkgs.ripgrep";
     selene = "pkgs.selene";
     shellcheck = "pkgs.shellcheck";
@@ -40,8 +35,6 @@
       extensions = [ "rust-analyzer" "rust-src" ];
     };
   '';
-
-  nu-lint-package = "nu-lint.packages.\${system}.default";
 
   minimal-flake = ''
     {
@@ -77,13 +70,9 @@
         nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
         flake-utils.url = "github:numtide/flake-utils";
         rust-overlay.url = "github:oxalica/rust-overlay";
-        nu-lint = {
-          url = "git+https://codeberg.org/wvhulle/nu-lint";
-          inputs.nixpkgs.follows = "nixpkgs";
-        };
       };
 
-      outputs = { nixpkgs, flake-utils, rust-overlay, nu-lint, ... }:
+      outputs = { nixpkgs, flake-utils, rust-overlay, ... }:
         flake-utils.lib.eachDefaultSystem (system:
           let
             overlays = [ (import rust-overlay) ];
@@ -95,7 +84,6 @@
           {
             devShells.default = pkgs.mkShell {
               buildInputs = [
-                nu-lint.packages.''${system}.default
                 rust-version
               ] ++ (with pkgs; [
                 biome
@@ -104,7 +92,6 @@
                 just
                 markdownlint-cli2
                 nixfmt-classic
-                nushell
                 ripgrep
                 selene
                 shellcheck

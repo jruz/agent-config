@@ -1,141 +1,119 @@
+# Gleam - gleam format/build
+# Note: gleam check doesn't support --warnings-as-errors, must use gleam build
+gleam-check:
+    gleam build --warnings-as-errors
+    gleam format --check
+
+gleam-fix:
+    gleam format
+
 # JavaScript/TypeScript/JSON/CSS - Biome
-js-lint:
+js-check:
     biome check .
-
-js-lint-fix:
-    biome check --fix .
-
-js-fmt:
     biome format .
 
-js-fmt-fix:
+js-fix:
+    biome check --fix .
     biome format --write .
 
 # Markdown - markdownlint-cli2
-md-lint:
+md-check:
     markdownlint-cli2 '**/*.md'
 
-md-lint-fix:
+md-fix:
     markdownlint-cli2 --fix '**/*.md'
 
-# Rust - clippy/rustfmt
-rust-clippy *ARGS='':
-    cargo clippy --all-targets {{ARGS}}
+# Rust - see rust skill for recipes
 
-rust-clippy-fix *ARGS='':
-    cargo clippy --fix --all-targets --allow-dirty {{ARGS}}
-
-rust-fmt *FILES='':
-    cargo fmt --all -- --check {{FILES}}
-
-rust-fmt-fix:
-    cargo fmt --all
-
-rust-lint:
-    just rust-fmt
-    just rust-clippy
-
-rust-fix:
-    just rust-fmt-fix
-    just rust-clippy-fix
-
-# Nushell - nu-check/nu-lint
-nu-lint:
-    #!/usr/bin/env nu
-    fd --absolute-path --extension nu --exec nu --commands 'nu-check --debug {}'
-    nu-lint --config nu-lint.toml
-
-nu-lint-fix:
-    nu-lint --config nu-lint.toml --fix
+# Nushell - see nushell skill for recipes
 
 # Nix - statix/deadnix/nixfmt
-nix-lint:
+nix-check:
+    fd \
+        --extension nix \
+        --exec nixfmt --check
     statix check .
     deadnix --fail .
 
-nix-lint-fix:
+nix-fix:
+    fd \
+        --extension nix \
+        --exec nixfmt
     statix fix .
     deadnix --edit .
 
-nix-fmt:
-    fd --extension nix --exec nixfmt --check
-
-nix-fmt-fix:
-    fd --extension nix --exec nixfmt
-
 # Shell - shellcheck/shfmt
-sh-lint:
-    fd --extension sh --exec shellcheck --shell=bash
+sh-check:
+    fd \
+        --extension sh \
+        --exec shellcheck --shell=bash
+    fd \
+        --extension sh \
+        --exec shfmt --diff
 
-sh-fmt:
-    fd --extension sh --exec shfmt --diff
-
-sh-fmt-fix:
-    fd --extension sh --exec shfmt --write
+sh-fix:
+    fd \
+        --extension sh \
+        --exec shfmt --write
 
 # YAML - yamllint
-yaml-lint:
-    fd --extension yaml --extension yml --hidden --exec yamllint --config-file .yamllint.yaml
+yaml-check:
+    fd \
+        --extension yaml \
+        --extension yml \
+        --hidden \
+        --exec yamllint \
+        --strict \
+        --config-file .yamllint.yaml
 
 # TOML - taplo
-toml-fmt:
-    taplo format --check
+toml-check:
+    fd \
+        --extension toml \
+        --exec taplo format --check
 
-toml-fmt-fix:
-    taplo format
+toml-fix:
+    fd \
+        --extension toml \
+        --exec taplo format
 
 # CSS - stylelint
-css-lint:
+css-check:
     bun stylelint "src/**/*.css"
 
-css-lint-fix:
+css-fix:
     bun stylelint "src/**/*.css" --fix
 
 # Lua - selene/stylua
-lua-lint:
+lua-check:
     selene .
-
-lua-fmt:
     stylua --check .
 
-lua-fmt-fix:
+lua-fix:
     stylua .
 
 # SQL - sqlx
-sql-lint:
+sql-check:
     cargo sqlx prepare --check -- --all-targets
 
 # CI - woodpecker-cli
-ci-lint:
-    woodpecker-cli lint --strict .woodpecker/
+woodpecker-check:
+    woodpecker-cli lint \
+        --strict \
+        .woodpecker/
 
 # Aggregate recipes (adapt based on project languages)
-lint:
-    just js-lint
-    just rust-lint
-    just nu-lint
-    just nix-lint
-    just sh-lint
-    just yaml-lint
-
-fmt:
-    just js-fmt
-    just rust-fmt
-    just nix-fmt
-    just sh-fmt
-    just toml-fmt
+check:
+    just js-check
+    just rust-check
+    just nix-check
+    just sh-check
+    just yaml-check
+    just toml-check
 
 fix:
-    just js-lint-fix
-    just js-fmt-fix
-    just rust-clippy-fix
-    just rust-fmt-fix
-    just nix-lint-fix
-    just nix-fmt-fix
-    just sh-fmt-fix
-    just toml-fmt-fix
-
-check:
-    just fix
-    just lint
-    just fmt
+    just js-fix
+    just rust-fix
+    just nix-fix
+    just sh-fix
+    just toml-fix

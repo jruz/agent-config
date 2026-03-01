@@ -11,19 +11,15 @@ Add comprehensive linting and formatting infrastructure to any project.
 
 | Recipe | Purpose |
 |--------|---------|
-| `lang-lint` | Run linter (check only, fails on issues) |
-| `lang-lint-fix` | Run linter with auto-fix |
-| `lang-fmt` | Run formatter (check only, fails on issues) |
-| `lang-fmt-fix` | Run formatter and write changes |
+| `lang-check` | Run linter + formatter check (fails on issues) |
+| `lang-fix` | Run linter + formatter auto-fix |
 
 Aggregate recipes:
 
 | Recipe | Purpose |
 |--------|---------|
-| `lint` | Run all linters |
-| `fmt` | Run all formatters (check only) |
-| `fix` | Run all fixes (lint-fix + fmt-fix) |
-| `check` | Run fix + lint + fmt |
+| `check` | Run all `lang-check` recipes |
+| `fix` | Run all `lang-fix` recipes |
 
 ## Templates
 
@@ -34,9 +30,9 @@ All templates are in this skill folder:
 | `justfile` | All recipe templates |
 | `biome.json` | Base JS/TS/JSON/CSS config (strict) |
 | `biome-cli.json` | CLI tools config (extends base, relaxes rules) |
-| `Cargo.toml` | Rust linting configuration (`[lints]` table) |
+| `Cargo.toml` | Rust linting configuration (`[lints]` table) — see `rust` skill |
 | `markdownlint-cli2.jsonc` | Markdown linting |
-| `nu-lint.toml` | Nushell linting |
+| `nu-lint.toml` | Nushell linting — see Skill(nushell) |
 | `stylelintrc.json` | CSS linting (extended) |
 | `yamllint.yaml` | YAML linting |
 | `flake-snippets.nix` | Nix flake input and package references |
@@ -45,10 +41,11 @@ All templates are in this skill folder:
 
 | Language | Tool | Flake Package | Config |
 |----------|------|---------------|--------|
+| Gleam | gleam format/build | `pkgs.gleam` | None |
 | JS/TS/JSON/CSS | Biome | `pkgs.biome` | `biome.json` |
 | Markdown | markdownlint-cli2 | `pkgs.markdownlint-cli2` | `.markdownlint-cli2.jsonc` |
 | Rust | clippy/rustfmt | rust-overlay | None |
-| Nushell | nu-check/nu-lint | `nu-lint.packages.${system}.default` | `nu-lint.toml` |
+| Nushell | nu-check/nu-lint | See Skill(nushell) | `nu-lint.toml` — see Skill(nushell) |
 | Nix | statix/deadnix/nixfmt | `pkgs.statix`, `pkgs.deadnix`, `pkgs.nixfmt-classic` | None |
 | Shell | shellcheck/shfmt | `pkgs.shellcheck`, `pkgs.shfmt` | None |
 | YAML | yamllint | `pkgs.yamllint` | `.yamllint.yaml` |
@@ -58,14 +55,9 @@ All templates are in this skill folder:
 | SQL | sqlx | `pkgs.sqlx-cli` | None |
 | CI | woodpecker-cli | `pkgs.woodpecker-cli` | None |
 
-### Nushell Flake Input
+### Nushell
 
-```nix
-nu-lint = {
-  url = "git+https://codeberg.org/wvhulle/nu-lint";
-  inputs.nixpkgs.follows = "nixpkgs";
-};
-```
+For nu-lint package definition, `nu-lint.toml` configuration, `nu-lint.nix` devenv module, and justfile recipes, see Skill(nushell).
 
 ## Biome Setup
 
@@ -111,37 +103,23 @@ project/
 }
 ```
 
-## Rust Linting Configuration
+## Rust
 
-THE project SHALL enforce strict linting using the `[lints]` table in `Cargo.toml`.
-
-THE linting configuration template is available at `skills/checks/Cargo.toml`.
-
-WHERE a project requires additional allows THE developer SHALL add them with a comment explaining the reason.
-
-THE developer SHALL NOT use `#[allow(...)]` attributes in code to bypass linting.
-
-WHERE linting errors occur THE developer SHALL refactor code to satisfy the linter.
-
-THE system SHALL integrate linting into CI pipeline.
-
-WHERE the project uses sqlx THE `rust-lint` recipe SHALL also run `db-check` before clippy.
+For Rust linting configuration (`[lints]` table, `Cargo.toml` template, justfile recipes), see the `rust` skill.
 
 ## Rules
 
-THE justfile SHALL use the recipe naming convention: `lang-lint`, `lang-lint-fix`, `lang-fmt`, `lang-fmt-fix`.
+THE justfile SHALL use the recipe naming convention: `lang-check`, `lang-fix`.
 
-THE `lint` recipe SHALL call all individual `lang-lint` recipes.
+THE `lang-check` recipe SHALL run both linter and formatter checks.
 
-THE `fmt` recipe SHALL call all individual `lang-fmt` recipes.
+THE `lang-fix` recipe SHALL run both linter and formatter auto-fixes.
 
-THE `fix` recipe SHALL call all `lang-lint-fix` and `lang-fmt-fix` recipes.
+THE `check` recipe SHALL call all individual `lang-check` recipes.
 
-THE `check` recipe SHALL call `fix`, `lint`, and `fmt`.
+THE `fix` recipe SHALL call all individual `lang-fix` recipes.
 
-WHEN a linter has no fix capability THE `lang-lint-fix` recipe SHALL be identical to `lang-lint`.
-
-WHEN adding tools THE flake.nix SHALL be updated with required packages.
+WHEN adding tools THE devenv.nix SHALL be updated with required packages.
 
 WHEN adding tools THE justfile SHALL be updated with corresponding recipes.
 
