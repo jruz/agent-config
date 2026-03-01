@@ -1,16 +1,49 @@
-- always use Opus model for agents
-- never write comments instead make sure code is easy to follow
-- never bypass the linter or playwright, look for ways to solve the problem either refactoring or following the recommendations
-- use ripgrep (rg) instead of grep for searching
-- use fd instead of find for finding files
-- when editing settings.json, keep all allow and deny lists sorted alphabetically
-- never run multiple Bash commands in parallel, execute them one at a time so each can be reviewed
-- don't use git -C, use relative paths instead
-- always use long version of command flags (e.g., --session instead of -s)
-- never use AskUserQuestion tool, ask in plain text
-- never give opinions or recommendations unless explicitly asked
-- when adding dependencies, use the package manager add command (e.g., cargo add, npm install) to get the latest version instead of manually editing manifest files
-- never use EnterPlanMode tool, just do the work directly
-- when asking the user to make decisions, present information one point at a time
-- always follow the Skill(plan-md) format when writing PLAN.md
-- when user writes p: issue, means add that topic to PLAN.md using Skill(plan-md) format
+# Global Agent Configuration
+
+This repository (`~/dev/.claude/`) contains shared configuration for AI coding agents (Claude Code, OpenCode, Codex, etc.). Each agent has its own config directory but shares the same base instructions and skills through symlinking.
+
+## Structure
+
+- `AGENTS_BASE.md` - Shared instructions loaded by all agents (Claude Code, OpenCode, Codex)
+- `AGENTS_CLAUDE.md` - Claude Code-specific instructions (appended to CLAUDE.md)
+- `settings.json` - Claude Code settings (permissions, model preferences)
+- `agents/` - Custom agent definitions
+- `commands/` - Custom slash commands
+- `hooks/` - Event hooks for automation
+- `skills/` - Custom skills
+
+## Symlinking
+
+The justfile provides two recipes that symlink this repo's contents into the agent-specific config directories.
+
+### `just link-claude`
+
+Links into `~/.claude/` for Claude Code:
+- Symlinks `commands/`, `hooks/`, `skills/`, and `settings.json`
+- Generates `~/.claude/CLAUDE.md` by concatenating `AGENTS_BASE.md` + `AGENTS_CLAUDE.md`
+
+### `just link-agents`
+
+Links into `~/.agents/` for other agents (OpenCode, Codex):
+- Symlinks `agents/`, `commands/`, `hooks/`, and `skills/`
+- Copies `AGENTS_BASE.md` as `~/.agents/AGENTS.md`
+
+## Other Recipes
+
+- `just nu-check` - Lint all `.nu` files with `nu-check` and `nu-lint`
+- `just nu-fix` - Auto-fix nu-lint issues
+- `just check` - Run fix then lint
+- `just lint` - Alias for `nu-check`
+
+## TypeScript Coding Style
+
+- Use `type` instead of `interface`
+- Never use `??` or `||` to silently provide default values; check explicitly and handle the missing case
+- Never return `undefined` silently; log the error using the shared logger (`hooks/logger.ts`) before returning
+- Import the logger with `import { log } from "./logger"` and call `await log("ERROR", "hook_name", { reason: "..." })`
+- Use `console.error` instead of `process.stderr.write`
+
+## Notes
+
+- When editing settings.json, keep all allow and deny lists sorted alphabetically
+- Hook logs are written to `$TMPDIR/claude/hooks.log`
