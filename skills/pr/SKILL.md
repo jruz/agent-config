@@ -129,9 +129,9 @@ THE Preview section SHALL appear after the Why section.
 
 THE Preview section SHALL contain a single URL where the PR can be previewed.
 
-THE URL format SHALL be `https://{repo_name}-{pr_number}.jruz.io`.
+THE URL format SHALL be `https://{repo_name}-pr-{pr_number}.jruz.io`.
 
-In the case WHERE the repo name is `jruz.io` THE URL format SHALL be `https://www-{pr_number}.jruz.io`.
+In the case WHERE the repo name is `jruz.io` THE URL format SHALL be `https://www-pr-{pr_number}.jruz.io`.
 
 THE PR number SHALL be obtained from the PR creation response or determined after PR creation.
 
@@ -142,7 +142,7 @@ WHEN creating the PR THE assistant SHALL update the description with the correct
 ```
 ## Preview
 
-- https://trader-45.jruz.io
+- https://trader-pr-45.jruz.io
 ```
 
 ### Collaborative Description Writing
@@ -244,7 +244,7 @@ gh pr create --title "[bugs] Auth: Handle expired tokens" --body "$(cat <<'EOF'
 
 ## Preview
 
-https://myapp-123.jruz.io
+https://myapp-pr-123.jruz.io
 EOF
 )"
 ```
@@ -278,7 +278,7 @@ curl -s -X POST "https://codeberg.org/api/v1/repos/owner/repo/pulls" \
   "title": "[bugs] Auth: Handle expired tokens",
   "head": "bugs-auth",
   "base": "main",
-  "body": "## What\n\n- Add token refresh logic\n- Handle expiration gracefully\n\n## Why\n\n- Users were getting logged out unexpectedly\n- Tokens expire after 24 hours\n\n## Preview\n\nhttps://myapp-123.jruz.io"
+  "body": "## What\n\n- Add token refresh logic\n- Handle expiration gracefully\n\n## Why\n\n- Users were getting logged out unexpectedly\n- Tokens expire after 24 hours\n\n## Preview\n\nhttps://myapp-pr-123.jruz.io"
 }
 EOF
 )"
@@ -307,7 +307,7 @@ curl -s -X PATCH "https://codeberg.org/api/v1/repos/owner/repo/pulls/{pr_number}
 
 1. **What** - Bulleted imperatives describing changes
 2. **Why** - Bulleted reasons explaining motivation
-3. **Preview** - Deployed URL (Woodpecker repos only): `https://{repo}-{pr_number}.jruz.io`
+3. **Preview** - Deployed URL (Woodpecker repos only): `https://{repo}-pr-{pr_number}.jruz.io`
 
 ### Key Principles
 
