@@ -392,27 +392,7 @@ Avoid version ranges (`>= x.y.z and < x.y.z`) and approximate versions (`~> x.y`
 
 ## Linter Configuration
 
-Treat warnings as errors by using `--warnings-as-errors` flag with `gleam build`:
-
-```bash
-gleam build --warnings-as-errors
-```
-
-Justfile recipes (target is set in gleam.toml):
-
-```just
-gleam-build:
-  cd scripts && gleam build --warnings-as-errors
-
-gleam-test:
-  cd scripts && gleam test
-
-gleam-watch:
-  watchexec --workdir scripts --exts gleam --restart gleam build --warnings-as-errors
-
-gleam-lint:
-  cd scripts && gleam format --check
-```
+See the checks skill for Gleam linting recipes and configuration.
 
 ## Justfile Recipes
 
