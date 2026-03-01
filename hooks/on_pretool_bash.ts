@@ -52,6 +52,11 @@ export const rules: Rule[] = [
     message:
       "Only run update-snapshots after investigating the test results and confirming the diff is not a bug. Ask the user to run this command manually.",
   },
+  {
+    pattern: /^git filter-branch.*--all/,
+    message:
+      "Never use --all with git filter-branch — it overwrites backup branches. Target specific branches instead.",
+  },
 ];
 
 async function main() {

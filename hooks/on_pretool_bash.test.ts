@@ -155,6 +155,32 @@ describe("update-snapshots", () => {
   });
 });
 
+describe("git filter-branch --all", () => {
+  test("blocks git filter-branch with --all", () => {
+    expect(
+      blocked(
+        "git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch PLAN.md' --prune-empty -- --all",
+      ),
+    ).toBe(
+      "Never use --all with git filter-branch — it overwrites backup branches. Target specific branches instead.",
+    );
+  });
+
+  test("allows commit message mentioning filter-branch --all", () => {
+    expect(
+      blocked('git commit -m "[feat] Hooks: Block git filter-branch --all"'),
+    ).toBeUndefined();
+  });
+
+  test("allows git filter-branch on specific branch", () => {
+    expect(
+      blocked(
+        "git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch PLAN.md' --prune-empty -- main",
+      ),
+    ).toBeUndefined();
+  });
+});
+
 describe("allowed commands", () => {
   test("allows ls", () => {
     expect(blocked("ls -la")).toBeUndefined();
