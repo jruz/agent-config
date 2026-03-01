@@ -1,11 +1,27 @@
 ---
-name: git-commits
-description: Structure commits for reviewable PRs. Use when committing code.
+name: commit
+description: Commit guidelines for claude-opus-4-6reviewable PRs. Use when committing code.
 ---
 
 # Git Commits
 
 This skill defines conventions for individual commits during development. Well-structured commits make PRs easier to review by telling a logical story.
+
+## Git Commands
+
+THE agent SHALL NOT use `git -C` flag.
+
+THE agent SHALL run bare `git` commands from the working directory.
+
+### Examples
+
+```bash
+git status
+git diff
+git log --oneline -5
+git add src/main.rs
+git commit -m "[feat] Auth: Add login endpoint"
+```
 
 ## Atomic Commits
 
@@ -140,9 +156,38 @@ THE developer SHALL use `git rebase -i` to reorganize commits before PR.
 
 THE developer MAY use `git add -p` to split changes across commits.
 
+THE developer MAY use `git-lines` to stage specific lines by line number.
+
 THE developer MAY use `git commit --fixup` with `git rebase --autosquash` to target fixes.
 
+THE developer MAY use `git reword <commit> "<new message>"` to reword any commit non-interactively.
+
 THE final commit history SHALL be clean regardless of how it was developed.
+
+### git-lines
+
+THE `git-lines` tool stages specific lines from a file's diff.
+
+THE line numbers are 1-indexed positions within the diff body, NOT file line numbers.
+
+THE numbering starts at line 1 after each hunk header (`@@`) and counts every line (context, additions, deletions).
+
+THE developer can only stage changed lines (additions `+` and deletions `-`), not context lines.
+
+TO see the numbered diff THE developer SHALL run `git-lines` with only a filename:
+
+```bash
+git-lines src/main.rs                   # show numbered diff
+```
+
+TO stage specific lines THE developer SHALL pass line numbers after the filename:
+
+```bash
+git-lines src/main.rs 10 15 20          # stage diff lines 10, 15, 20
+git-lines --dry-run src/main.rs 10 15   # preview patch without staging
+```
+
+THE developer SHALL use `git-lines` when `git add -p` hunk boundaries do not align with desired commit boundaries.
 
 ## Quick Reference
 
@@ -164,3 +209,23 @@ THE final commit history SHALL be clean regardless of how it was developed.
 Use `git rebase -i` to reorganize messy commits into a clean story.
 
 Common actions: `pick`, `reword`, `squash`, `fixup`, `drop`
+
+### Reword Alias
+
+THE `git reword` alias enables non-interactive commit message editing:
+
+```bash
+git reword <commit-hash> "new message"
+```
+
+THE alias is defined in `~/.gitconfig`:
+
+```ini
+[alias]
+    reword = "!f() { old=$(git log --format=%s -n 1 $1); git commit --allow-empty --only -m \"amend! $old\" -m \"$2\"; GIT_SEQUENCE_EDITOR=: git rebase --interactive --autosquash $1~1; }; f"
+```
+
+THE alias works by:
+
+1. Creating an "amend!" commit with the new message
+2. Running `git rebase --autosquash` non-interactively via `GIT_SEQUENCE_EDITOR=:`
