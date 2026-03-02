@@ -1,8 +1,8 @@
 import { appendFile, mkdir } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { homedir } from "node:os";
 import { join } from "node:path";
 
-const LOG_DIR = join(tmpdir(), "claude");
+const LOG_DIR = join(homedir(), "dev", ".claude", ".logs");
 const LOG_PATH = join(LOG_DIR, "hooks.log");
 
 type Severity = "TRACE" | "DEBUG" | "INFO" | "WARN" | "ERROR" | "FATAL";

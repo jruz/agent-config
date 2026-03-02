@@ -6,6 +6,7 @@ downloads/
 file-history/
 history.jsonl
 ide/
+.logs/
 hooks/hooks.log
 node_modules/
 paste-cache/
