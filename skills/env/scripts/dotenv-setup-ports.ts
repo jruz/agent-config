@@ -26,7 +26,7 @@ function findSiblingEnvFiles(): string[] {
       .map((d) => resolve(parent, d.name, ".env"))
       .filter((f) => existsSync(f));
   } catch (e) {
-    log.error(`Failed to read directory ${parent}: ${e}`);
+    log.error(`Failed to read directory ${parent}: ${String(e)}`);
     return [];
   }
 }
@@ -56,7 +56,7 @@ function printUsedPorts(files: string[]) {
     const name = basename(dirname(f));
     const ports = content
       .split("\n")
-      .filter((l) => /_PORT=/.test(l))
+      .filter((l) => l.includes("_PORT="))
       .join(", ");
     log.warn(`  ${name}: ${ports}`);
   });
@@ -84,7 +84,7 @@ function writeEnvFile(ports: PortAssignment[]) {
   try {
     writeFileSync(".env", env);
   } catch (e) {
-    log.error(`Failed to write .env: ${e}`);
+    log.error(`Failed to write .env: ${String(e)}`);
   }
 }
 

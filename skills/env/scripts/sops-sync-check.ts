@@ -10,7 +10,7 @@ function findEnvFiles(): string[] {
       .filter((f) => /^\.env\..+\.yaml$/.test(f))
       .sort();
   } catch (e) {
-    log.error(`Failed to read directory: ${e}`);
+    log.error(`Failed to read directory: ${String(e)}`);
     return [];
   }
 }
@@ -21,11 +21,18 @@ function parseTopLevelKeys(file: string): string[] | null {
     return content
       .split("\n")
       .filter((line) => /^\S+:/.test(line))
-      .map((line) => line.split(":")[0])
-      .filter((key) => key !== "sops")
+      .map((line) => {
+        const key = line.split(":")[0];
+        if (key === undefined) {
+          log.error(`Unexpected line format: ${line}`);
+          return "";
+        }
+        return key;
+      })
+      .filter((key) => key !== "sops" && key !== "")
       .sort();
   } catch (e) {
-    log.error(`Failed to read ${file}: ${e}`);
+    log.error(`Failed to read ${file}: ${String(e)}`);
     return null;
   }
 }
@@ -45,6 +52,11 @@ function main() {
   });
 
   const reference = parsed[0];
+  if (!reference) {
+    log.error("No valid env files parsed");
+    process.exit(1);
+  }
+
   const allMatch = parsed
     .slice(1)
     .every(
@@ -57,7 +69,9 @@ function main() {
     return;
   }
 
-  const allKeys = [...new Set(parsed.flatMap((entry) => entry.keys))].sort();
+  const allKeys = Array.from(
+    new Set(parsed.flatMap((entry) => entry.keys)),
+  ).sort();
 
   log.error("FAIL: Keys do not match across files");
   console.log();

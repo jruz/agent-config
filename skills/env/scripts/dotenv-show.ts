@@ -1,7 +1,18 @@
 import { readFileSync } from "node:fs";
 import { log } from "./log.ts";
 
+type EnvEntry = [string, string];
+
 const SECRET_PATTERN = /(_SECRET|_PASSWORD|_TOKEN|_KEY|_EMAIL)$/;
+
+function parseLine(line: string): EnvEntry {
+  const idx = line.indexOf("=");
+  return [line.slice(0, idx), line.slice(idx + 1)];
+}
+
+function maskSecret([key, value]: EnvEntry): EnvEntry {
+  return [key, SECRET_PATTERN.test(key) ? "***" : value];
+}
 
 function main() {
   let content: string;
@@ -12,14 +23,11 @@ function main() {
     return;
   }
 
-  const entries: [string, string][] = content
+  const entries: EnvEntry[] = content
     .split("\n")
     .filter((l) => l.includes("="))
-    .map((l) => {
-      const parts = l.split("=");
-      return [parts[0], parts[1]];
-    })
-    .map(([key, value]) => [key, SECRET_PATTERN.test(key) ? "***" : value]);
+    .map(parseLine)
+    .map(maskSecret);
 
   if (entries.length === 0) {
     log.warn("No entries found in .env");

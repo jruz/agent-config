@@ -1,15 +1,15 @@
 import { defineConfig } from "@playwright/test";
 import { log } from "./scripts/log.ts";
 
-if (!process.env.APP_DOMAIN) {
+if (!process.env["APP_DOMAIN"]) {
   log.error("APP_DOMAIN environment variable is not set");
   process.exit(1);
 }
-if (!process.env.PORT) {
+if (!process.env["PORT"]) {
   log.error("PORT environment variable is not set");
   process.exit(1);
 }
-const baseURL = `http://${process.env.APP_DOMAIN}:${process.env.PORT}`;
+const baseURL = `http://${process.env["APP_DOMAIN"]}:${process.env["PORT"]}`;
 
 export default defineConfig({
   testDir: "./playwright",

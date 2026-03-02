@@ -20,7 +20,7 @@ function killPids(pids: string[]) {
     try {
       execSync(`kill ${pid}`);
     } catch (e) {
-      log.error(`Failed to kill pid ${pid}: ${e}`);
+      log.error(`Failed to kill pid ${pid}: ${String(e)}`);
     }
   });
 }

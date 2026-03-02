@@ -19,7 +19,7 @@ const sopsSet = (file: string, key: string, secret: string): void => {
     execFileSync("sops", ["set", file, `["${key}"]`, `"${secret}"`]);
     execFileSync("sops", ["--ignore-mac", "--rotate", "--in-place", file]);
   } catch (err) {
-    log.error(`Failed on ${file}: ${err}`);
+    log.error(`Failed on ${file}: ${String(err)}`);
     process.exit(1);
   }
 };
@@ -43,4 +43,4 @@ const main = async () => {
     });
 };
 
-main();
+void main();
