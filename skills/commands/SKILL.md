@@ -9,9 +9,9 @@ User-invocable prompts stored as Markdown files. [Full documentation](https://co
 
 ## Location
 
-| Scope | Path | Visibility |
-|-------|------|------------|
-| Project | `.claude/commands/<name>.md` | Team (project) |
+| Scope    | Path                           | Visibility          |
+| -------- | ------------------------------ | ------------------- |
+| Project  | `.claude/commands/<name>.md`   | Team (project)      |
 | Personal | `~/.claude/commands/<name>.md` | All projects (user) |
 
 ## Format
@@ -28,26 +28,26 @@ Command prompt using EARS syntax.
 
 ## Frontmatter Fields
 
-| Field | Purpose |
-|-------|---------|
-| `description` | Brief description (required) |
-| `allowed-tools` | Tools the command can use |
+| Field           | Purpose                                  |
+| --------------- | ---------------------------------------- |
+| `description`   | Brief description (required)             |
+| `allowed-tools` | Tools the command can use                |
 | `argument-hint` | Expected arguments shown in autocomplete |
-| `model` | Specific model to use |
+| `model`         | Specific model to use                    |
 
 ## Arguments
 
-| Syntax | Purpose |
-|--------|---------|
+| Syntax       | Purpose                        |
+| ------------ | ------------------------------ |
 | `$ARGUMENTS` | All arguments as single string |
-| `$1`, `$2` | Positional arguments |
+| `$1`, `$2`   | Positional arguments           |
 
 ## Dynamic Content
 
-| Prefix | Purpose | Example |
-|--------|---------|---------|
-| `!` | Execute bash | `!git status` |
-| `@` | Include file | `@src/main.rs` |
+| Prefix | Purpose      | Example        |
+| ------ | ------------ | -------------- |
+| `!`    | Execute bash | `!git status`  |
+| `@`    | Include file | `@src/main.rs` |
 
 ## Rules
 

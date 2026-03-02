@@ -17,15 +17,15 @@ gh search code "pattern" --language rust
 
 ## Flags
 
-| Flag           | Purpose                                |
-| -------------- | -------------------------------------- |
-| `--repo`       | Limit to specific repo (owner/repo)    |
-| `--owner`      | Limit to repos owned by user/org       |
-| `--language`   | Filter by programming language         |
-| `--filename`   | Match specific filename                |
-| `--extension`  | Filter by file extension               |
-| `--path`       | Search within specific path            |
-| `--limit`      | Max results (default 30, max 1000)     |
+| Flag          | Purpose                             |
+| ------------- | ----------------------------------- |
+| `--repo`      | Limit to specific repo (owner/repo) |
+| `--owner`     | Limit to repos owned by user/org    |
+| `--language`  | Filter by programming language      |
+| `--filename`  | Match specific filename             |
+| `--extension` | Filter by file extension            |
+| `--path`      | Search within specific path         |
+| `--limit`     | Max results (default 30, max 1000)  |
 
 ## Search Patterns
 
@@ -69,11 +69,11 @@ gh search code "pattern" --owner rust-lang --language rust
 
 ## Output Formats
 
-| Flag           | Output                                 |
-| -------------- | -------------------------------------- |
-| (default)      | Human-readable table                   |
-| `--json`       | JSON with specified fields             |
-| `--jq`         | Apply jq filter to JSON                |
+| Flag      | Output                     |
+| --------- | -------------------------- |
+| (default) | Human-readable table       |
+| `--json`  | JSON with specified fields |
+| `--jq`    | Apply jq filter to JSON    |
 
 ```bash
 gh search code "fn main" --json repository,path,textMatches

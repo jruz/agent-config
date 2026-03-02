@@ -36,15 +36,15 @@ src/app/
 
 ## Separation of Concerns
 
-| Layer | Responsibility | Imports |
-|-------|----------------|---------|
-| `actors/` | OTP actors for state and background work | Models, services, config |
-| `models/` | Domain types only | Nothing app-specific |
-| `pages/` | Pure view functions returning `Element(Nil)` | Models, components, lustre |
-| `components/` | Lustre components with TEA pattern | Models, lustre |
-| `routes/` | HTTP handlers, orchestrate data + views | Pages, actors, layout |
-| `services/` | External API clients | Config, models |
-| `ws/` | WebSocket handlers | Actors, components |
+| Layer         | Responsibility                               | Imports                    |
+| ------------- | -------------------------------------------- | -------------------------- |
+| `actors/`     | OTP actors for state and background work     | Models, services, config   |
+| `models/`     | Domain types only                            | Nothing app-specific       |
+| `pages/`      | Pure view functions returning `Element(Nil)` | Models, components, lustre |
+| `components/` | Lustre components with TEA pattern           | Models, lustre             |
+| `routes/`     | HTTP handlers, orchestrate data + views      | Pages, actors, layout      |
+| `services/`   | External API clients                         | Config, models             |
+| `ws/`         | WebSocket handlers                           | Actors, components         |
 
 ## OTP Actor Patterns
 
@@ -360,18 +360,18 @@ pub fn wrap(content: Element(Nil), page_title: String) -> String {
 
 ## Common Patterns
 
-| Pattern | Use |
-|---------|-----|
-| `use x <- result.try(...)` | Chain fallible operations |
-| `use <- bool.guard(cond, default)` | Early return on condition |
-| `option.unwrap(opt, default)` | Extract with default |
-| `list.map(items, fn)` | Transform lists |
-| `case x { ... }` | Pattern matching |
-| `process.send_after(subj, ms, msg)` | Schedule delayed message |
-| `actor.continue(state)` | Continue actor loop |
-| `actor.stop()` | Stop actor |
-| `effect.from(fn(dispatch) { ... })` | Create side effect |
-| `effect.none()` | No side effect |
+| Pattern                             | Use                       |
+| ----------------------------------- | ------------------------- |
+| `use x <- result.try(...)`          | Chain fallible operations |
+| `use <- bool.guard(cond, default)`  | Early return on condition |
+| `option.unwrap(opt, default)`       | Extract with default      |
+| `list.map(items, fn)`               | Transform lists           |
+| `case x { ... }`                    | Pattern matching          |
+| `process.send_after(subj, ms, msg)` | Schedule delayed message  |
+| `actor.continue(state)`             | Continue actor loop       |
+| `actor.stop()`                      | Stop actor                |
+| `effect.from(fn(dispatch) { ... })` | Create side effect        |
+| `effect.none()`                     | No side effect            |
 
 ## Dependencies
 

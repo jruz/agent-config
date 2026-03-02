@@ -11,22 +11,22 @@ description: Create Claude hooks. Use when adding Claude hooks.
 
 ## Events
 
-| Event | Trigger | Can block? | Matcher |
-|---|---|---|---|
-| `SessionStart` | Session begins/resumes | No | `startup`, `resume`, `clear`, `compact` |
-| `UserPromptSubmit` | Prompt submitted | Yes | None |
-| `PreToolUse` | Before tool executes | Yes | Tool name regex |
-| `PermissionRequest` | Permission dialog shown | Yes | Tool name regex |
-| `PostToolUse` | After tool succeeds | No | Tool name regex |
-| `PostToolUseFailure` | After tool fails | No | Tool name regex |
-| `Notification` | Notification sent | No | `permission_prompt`, `idle_prompt`, `auth_success` |
-| `SubagentStart` | Subagent spawned | No | Agent type |
-| `SubagentStop` | Subagent finishes | Yes | Agent type |
-| `Stop` | Claude finishes responding | Yes | None |
-| `TaskCompleted` | Task marked completed | Yes (exit 2 only) | None |
-| `TeammateIdle` | Teammate going idle | Yes (exit 2 only) | None |
-| `PreCompact` | Before context compaction | No | `manual`, `auto` |
-| `SessionEnd` | Session terminates | No | `clear`, `logout`, `other` |
+| Event                | Trigger                    | Can block?        | Matcher                                            |
+| -------------------- | -------------------------- | ----------------- | -------------------------------------------------- |
+| `SessionStart`       | Session begins/resumes     | No                | `startup`, `resume`, `clear`, `compact`            |
+| `UserPromptSubmit`   | Prompt submitted           | Yes               | None                                               |
+| `PreToolUse`         | Before tool executes       | Yes               | Tool name regex                                    |
+| `PermissionRequest`  | Permission dialog shown    | Yes               | Tool name regex                                    |
+| `PostToolUse`        | After tool succeeds        | No                | Tool name regex                                    |
+| `PostToolUseFailure` | After tool fails           | No                | Tool name regex                                    |
+| `Notification`       | Notification sent          | No                | `permission_prompt`, `idle_prompt`, `auth_success` |
+| `SubagentStart`      | Subagent spawned           | No                | Agent type                                         |
+| `SubagentStop`       | Subagent finishes          | Yes               | Agent type                                         |
+| `Stop`               | Claude finishes responding | Yes               | None                                               |
+| `TaskCompleted`      | Task marked completed      | Yes (exit 2 only) | None                                               |
+| `TeammateIdle`       | Teammate going idle        | Yes (exit 2 only) | None                                               |
+| `PreCompact`         | Before context compaction  | No                | `manual`, `auto`                                   |
+| `SessionEnd`         | Session terminates         | No                | `clear`, `logout`, `other`                         |
 
 ## Configuration
 
@@ -88,7 +88,7 @@ description: Create Claude hooks. Use when adding Claude hooks.
 ## Blocking Output (JSON to stdout)
 
 ```json
-{"decision": "block", "reason": "Explain why"}
+{ "decision": "block", "reason": "Explain why" }
 ```
 
 ## PreToolUse Output (JSON to stdout)
@@ -99,7 +99,7 @@ description: Create Claude hooks. Use when adding Claude hooks.
     "hookEventName": "PreToolUse",
     "permissionDecision": "allow|deny|ask",
     "permissionDecisionReason": "reason",
-    "updatedInput": {"command": "modified command"},
+    "updatedInput": { "command": "modified command" },
     "additionalContext": "extra context for Claude"
   }
 }

@@ -9,29 +9,29 @@ Woodpecker is a simple, container-native CI/CD engine. Use `woodpecker-cli` to i
 
 ## Common Commands
 
-| Task                    | Command                                                      |
-| ----------------------- | ------------------------------------------------------------ |
-| List repos              | `woodpecker-cli repo ls`                                     |
-| List pipelines          | `woodpecker-cli pipeline ls <repo>`                          |
-| List failed pipelines   | `woodpecker-cli pipeline ls <repo> --status failure`         |
-| Show pipeline info      | `woodpecker-cli pipeline show <repo> <number>`               |
-| Show pipeline logs      | `woodpecker-cli pipeline log show <repo> <number>`           |
-| Show pipeline steps     | `woodpecker-cli pipeline ps <repo> <number>`                 |
-| Start a pipeline        | `woodpecker-cli pipeline start <repo>`                       |
-| Stop a pipeline         | `woodpecker-cli pipeline stop <repo> <number>`               |
-| Lint config             | `woodpecker-cli lint .woodpecker.yaml`                       |
-| Get last pipeline       | `woodpecker-cli pipeline last <repo>`                        |
+| Task                  | Command                                              |
+| --------------------- | ---------------------------------------------------- |
+| List repos            | `woodpecker-cli repo ls`                             |
+| List pipelines        | `woodpecker-cli pipeline ls <repo>`                  |
+| List failed pipelines | `woodpecker-cli pipeline ls <repo> --status failure` |
+| Show pipeline info    | `woodpecker-cli pipeline show <repo> <number>`       |
+| Show pipeline logs    | `woodpecker-cli pipeline log show <repo> <number>`   |
+| Show pipeline steps   | `woodpecker-cli pipeline ps <repo> <number>`         |
+| Start a pipeline      | `woodpecker-cli pipeline start <repo>`               |
+| Stop a pipeline       | `woodpecker-cli pipeline stop <repo> <number>`       |
+| Lint config           | `woodpecker-cli lint .woodpecker.yaml`               |
+| Get last pipeline     | `woodpecker-cli pipeline last <repo>`                |
 
 ## Pipeline List Filters
 
-| Filter      | Example                                          |
-| ----------- | ------------------------------------------------ |
-| `--status`  | `pending`, `running`, `success`, `failure`       |
-| `--branch`  | `--branch main`                                  |
-| `--event`   | `push`, `pull_request`, `tag`, `deployment`      |
-| `--limit`   | `--limit 5`                                      |
-| `--before`  | `--before 2024-01-01T00:00:00Z`                  |
-| `--after`   | `--after 2024-01-01T00:00:00Z`                   |
+| Filter     | Example                                     |
+| ---------- | ------------------------------------------- |
+| `--status` | `pending`, `running`, `success`, `failure`  |
+| `--branch` | `--branch main`                             |
+| `--event`  | `push`, `pull_request`, `tag`, `deployment` |
+| `--limit`  | `--limit 5`                                 |
+| `--before` | `--before 2024-01-01T00:00:00Z`             |
+| `--after`  | `--after 2024-01-01T00:00:00Z`              |
 
 ## Workflow: Investigate CI Failure
 
@@ -78,35 +78,35 @@ Templates are in this skill folder:
 
 ### Web projects (Docker Swarm)
 
-| File | Purpose |
-|------|---------|
-| `.woodpecker/check.yml` | Push to main, manual, or PR: run checks via nix develop |
-| `.woodpecker/playwright.yml` | Push to main, manual, or PR: run Playwright E2E tests |
-| `.woodpecker/build-main.yml` | Push to main: build frontend + backend docker image |
-| `.woodpecker/build-pr.yml` | Pull request: build frontend + backend docker image |
-| `.woodpecker/deploy-main.yml` | Push to main: push image, deploy to production (depends on check, playwright, build-main) |
-| `.woodpecker/deploy-pr.yml` | Pull request: push image, deploy preview, seed data, cleanup on close (depends on check, playwright, build-pr) |
-| `docker-compose.yaml` | Docker Swarm service definition with Traefik, Postgres |
-| `woodpecker-settings.yaml` | Default repo settings template |
+| File                          | Purpose                                                                                                        |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `.woodpecker/check.yml`       | Push to main, manual, or PR: run checks via nix develop                                                        |
+| `.woodpecker/playwright.yml`  | Push to main, manual, or PR: run Playwright E2E tests                                                          |
+| `.woodpecker/build-main.yml`  | Push to main: build frontend + backend docker image                                                            |
+| `.woodpecker/build-pr.yml`    | Pull request: build frontend + backend docker image                                                            |
+| `.woodpecker/deploy-main.yml` | Push to main: push image, deploy to production (depends on check, playwright, build-main)                      |
+| `.woodpecker/deploy-pr.yml`   | Pull request: push image, deploy preview, seed data, cleanup on close (depends on check, playwright, build-pr) |
+| `docker-compose.yaml`         | Docker Swarm service definition with Traefik, Postgres                                                         |
+| `woodpecker-settings.yaml`    | Default repo settings template                                                                                 |
 
 ### Binary projects (Codeberg releases)
 
-| File | Purpose |
-|------|---------|
-| `.woodpecker/check.yml` | Push to main, manual, or PR: run checks via nix develop |
-| `.woodpecker/tag.yml` | Push to main: read version from Cargo.toml, create git tag if missing |
-| `.woodpecker/release.yml` | On tag: multi-platform build (linux, macOS, windows), release upload |
-| `scripts/release-upload.ts` | TypeScript script to upload release binaries to Codeberg |
-| `justfile` | Build recipes for release builds and upload |
-| `woodpecker-settings.yaml` | Default repo settings template |
+| File                        | Purpose                                                               |
+| --------------------------- | --------------------------------------------------------------------- |
+| `.woodpecker/check.yml`     | Push to main, manual, or PR: run checks via nix develop               |
+| `.woodpecker/tag.yml`       | Push to main: read version from Cargo.toml, create git tag if missing |
+| `.woodpecker/release.yml`   | On tag: multi-platform build (linux, macOS, windows), release upload  |
+| `scripts/release-upload.ts` | TypeScript script to upload release binaries to Codeberg              |
+| `justfile`                  | Build recipes for release builds and upload                           |
+| `woodpecker-settings.yaml`  | Default repo settings template                                        |
 
 ### Dockerfile templates
 
-| File | Purpose |
-|------|---------|
-| `Dockerfile.rust` | Multi-stage: nix build + debian-slim runtime for Rust web apps |
-| `Dockerfile.gleam` | Multi-stage: nix build + erlang-alpine runtime for Gleam apps |
-| `Dockerfile.static` | Multi-stage: nix build + static-web-server for static sites |
+| File                | Purpose                                                        |
+| ------------------- | -------------------------------------------------------------- |
+| `Dockerfile.rust`   | Multi-stage: nix build + debian-slim runtime for Rust web apps |
+| `Dockerfile.gleam`  | Multi-stage: nix build + erlang-alpine runtime for Gleam apps  |
+| `Dockerfile.static` | Multi-stage: nix build + static-web-server for static sites    |
 
 Copy the appropriate Dockerfile template as `Dockerfile` in the project root.
 
@@ -126,14 +126,14 @@ THE linter recipe SHALL be set up according to the checks skill.
 
 Declarative repo settings via `woodpecker-settings.yaml`.
 
-| Command | Purpose |
-|---------|---------|
-| `init` | Generate config from current settings |
-| `plan` | Preview changes |
-| `apply` | Sync to Woodpecker |
-| `secrets set <NAME>` | Add encrypted secret |
-| `secrets edit` | Edit secrets in $EDITOR |
-| `--list-settings` | Show schema |
+| Command              | Purpose                               |
+| -------------------- | ------------------------------------- |
+| `init`               | Generate config from current settings |
+| `plan`               | Preview changes                       |
+| `apply`              | Sync to Woodpecker                    |
+| `secrets set <NAME>` | Add encrypted secret                  |
+| `secrets edit`       | Edit secrets in $EDITOR               |
+| `--list-settings`    | Show schema                           |
 
 ### Setup
 

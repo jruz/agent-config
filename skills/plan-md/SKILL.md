@@ -122,6 +122,7 @@ THE `PLAN.md` file SHALL include a "Loop Log" section tracking what was tried ea
 THE plan SHALL organize work into phases, one phase per component or feature.
 
 EACH phase SHALL contain:
+
 - A level-2 heading with the phase number and name
 - A one-line description of what the phase accomplishes
 - A "Specs" subsection listing component-specific specifications

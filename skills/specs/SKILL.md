@@ -11,12 +11,12 @@ Specifications provide the source of truth for system behavior and requirements.
 
 ## Spec Types
 
-| Type | Location | Purpose |
-|------|----------|---------|
-| System | `specs/system/` | Project-wide patterns inherited by all features |
-| Feature | `specs/features/` | Specific feature behavior, references system specs |
-| General | `specs/general/` | Cross-cutting concerns (code quality, problem modeling) |
-| Tools | `specs/tools/` | Development tooling and workflows |
+| Type    | Location          | Purpose                                                 |
+| ------- | ----------------- | ------------------------------------------------------- |
+| System  | `specs/system/`   | Project-wide patterns inherited by all features         |
+| Feature | `specs/features/` | Specific feature behavior, references system specs      |
+| General | `specs/general/`  | Cross-cutting concerns (code quality, problem modeling) |
+| Tools   | `specs/tools/`    | Development tooling and workflows                       |
 
 ## Creating a System Spec
 
@@ -39,12 +39,15 @@ Specifications provide the source of truth for system behavior and requirements.
 # Title
 
 ## Overview
+
 1-3 sentences describing what this spec covers.
 
 ## Related Specifications
+
 - [Spec Name](../path/to/spec.md) - brief description
 
 ## Section Name
+
 THE system SHALL do something.
 
 WHEN event occurs THE system SHALL respond.
@@ -52,6 +55,7 @@ WHEN event occurs THE system SHALL respond.
 WHERE condition exists THE system SHALL behave.
 
 ## Examples
+
 Code samples (optional, at end only)
 ```
 

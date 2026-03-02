@@ -7,14 +7,14 @@ description: Write nushell scripts. Use when writing nu scripts or converting ba
 
 ## Key Syntax Differences from Bash
 
-| Bash | Nushell | Purpose |
-|------|---------|---------|
-| `command` | `^command` | Run external command explicitly |
-| `$(command)` | `(command)` | Command substitution |
-| `$VAR` | `$env.VAR` | Environment variables |
-| `"${VAR}"` | `$"($env.VAR)"` | String interpolation |
-| `$(pwd)` | `(pwd)` | Get current directory |
-| `\` line continuation | `( )` grouping | Multiline commands |
+| Bash                  | Nushell         | Purpose                         |
+| --------------------- | --------------- | ------------------------------- |
+| `command`             | `^command`      | Run external command explicitly |
+| `$(command)`          | `(command)`     | Command substitution            |
+| `$VAR`                | `$env.VAR`      | Environment variables           |
+| `"${VAR}"`            | `$"($env.VAR)"` | String interpolation            |
+| `$(pwd)`              | `(pwd)`         | Get current directory           |
+| `\` line continuation | `( )` grouping  | Multiline commands              |
 
 ## External Commands
 
@@ -417,6 +417,7 @@ Pure functions SHALL NOT log.
 THE severity constant SHALL be used as a pseudo-enum to avoid magic strings.
 
 Severity levels (per OTEL spec):
+
 - **TRACE** (1): Fine-grained debugging, typically disabled in default configurations
 - **DEBUG** (5): Debugging event
 - **INFO** (9): Informational event, indicates that an event happened
@@ -452,7 +453,13 @@ log $severity.INFO "fetch_data" {url: "http://example.com"}
 Output:
 
 ```json
-{"Timestamp":"2026-01-13T12:33:23.918Z","SeverityText":"INFO","SeverityNumber":9,"Body":"fetch_data","Attributes":{"url":"http://example.com"}}
+{
+  "Timestamp": "2026-01-13T12:33:23.918Z",
+  "SeverityText": "INFO",
+  "SeverityNumber": 9,
+  "Body": "fetch_data",
+  "Attributes": { "url": "http://example.com" }
+}
 ```
 
 ## Linting
@@ -500,6 +507,7 @@ THE `devenv.nix` SHALL include `nushell` and `nu-lint` in packages.
 THE `nu-lint` package SHALL be defined in a separate `nu-lint.nix` file and imported.
 
 nu-lint has no macOS binaries, so:
+
 - Linux: pre-built binary from releases
 - macOS: build from source (first build slow, then cached)
 

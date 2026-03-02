@@ -278,17 +278,17 @@ THE log output SHALL auto-detect TTY for colors (colors on for terminal, off for
 
 ### What to Show
 
-| Element | Show | Reason |
-|---------|------|--------|
-| Timestamp | Yes | When it happened |
-| Level | Yes | Severity (INFO, WARN, ERROR) |
-| Target/Module | Yes | Where it happened |
-| Message | Yes | What happened |
-| Fields | Yes | Structured context |
-| Span close + duration | Yes | Performance visibility |
-| File path | No | Noise, use target instead |
-| Line number | No | Noise, changes frequently |
-| Thread ID | No | Unless debugging concurrency |
+| Element               | Show | Reason                       |
+| --------------------- | ---- | ---------------------------- |
+| Timestamp             | Yes  | When it happened             |
+| Level                 | Yes  | Severity (INFO, WARN, ERROR) |
+| Target/Module         | Yes  | Where it happened            |
+| Message               | Yes  | What happened                |
+| Fields                | Yes  | Structured context           |
+| Span close + duration | Yes  | Performance visibility       |
+| File path             | No   | Noise, use target instead    |
+| Line number           | No   | Noise, changes frequently    |
+| Thread ID             | No   | Unless debugging concurrency |
 
 ### Rust Example
 

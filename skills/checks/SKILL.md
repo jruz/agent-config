@@ -9,51 +9,51 @@ Add comprehensive linting and formatting infrastructure to any project.
 
 ## Recipe Naming Convention
 
-| Recipe | Purpose |
-|--------|---------|
+| Recipe       | Purpose                                        |
+| ------------ | ---------------------------------------------- |
 | `lang-check` | Run linter + formatter check (fails on issues) |
-| `lang-fix` | Run linter + formatter auto-fix |
+| `lang-fix`   | Run linter + formatter auto-fix                |
 
 Aggregate recipes:
 
-| Recipe | Purpose |
-|--------|---------|
+| Recipe  | Purpose                      |
+| ------- | ---------------------------- |
 | `check` | Run all `lang-check` recipes |
-| `fix` | Run all `lang-fix` recipes |
+| `fix`   | Run all `lang-fix` recipes   |
 
 ## Templates
 
 All templates are in this skill folder:
 
-| File | Purpose |
-|------|---------|
-| `justfile` | All recipe templates |
-| `biome.json` | Base JS/TS/JSON/CSS config (strict) |
-| `biome-cli.json` | CLI tools config (extends base, relaxes rules) |
-| `Cargo.toml` | Rust linting configuration (`[lints]` table) — see `rust` skill |
-| `markdownlint-cli2.jsonc` | Markdown linting |
-| `nu-lint.toml` | Nushell linting — see Skill(nushell) |
-| `stylelintrc.json` | CSS linting (extended) |
-| `yamllint.yaml` | YAML linting |
-| `flake-snippets.nix` | Nix flake input and package references |
+| File                      | Purpose                                                         |
+| ------------------------- | --------------------------------------------------------------- |
+| `justfile`                | All recipe templates                                            |
+| `biome.json`              | Base JS/TS/JSON/CSS config (strict)                             |
+| `biome-cli.json`          | CLI tools config (extends base, relaxes rules)                  |
+| `Cargo.toml`              | Rust linting configuration (`[lints]` table) — see `rust` skill |
+| `markdownlint-cli2.jsonc` | Markdown linting                                                |
+| `nu-lint.toml`            | Nushell linting — see Skill(nushell)                            |
+| `stylelintrc.json`        | CSS linting (extended)                                          |
+| `yamllint.yaml`           | YAML linting                                                    |
+| `flake-snippets.nix`      | Nix flake input and package references                          |
 
 ## Tool Reference
 
-| Language | Tool | Flake Package | Config |
-|----------|------|---------------|--------|
-| Gleam | gleam format/build | `pkgs.gleam` | None |
-| JS/TS/JSON/CSS | Biome | `pkgs.biome` | `biome.json` |
-| Markdown | markdownlint-cli2 | `pkgs.markdownlint-cli2` | `.markdownlint-cli2.jsonc` |
-| Rust | clippy/rustfmt | rust-overlay | None |
-| Nushell | nu-check/nu-lint | See Skill(nushell) | `nu-lint.toml` — see Skill(nushell) |
-| Nix | statix/deadnix/nixfmt | `pkgs.statix`, `pkgs.deadnix`, `pkgs.nixfmt-classic` | None |
-| Shell | shellcheck/shfmt | `pkgs.shellcheck`, `pkgs.shfmt` | None |
-| YAML | yamllint | `pkgs.yamllint` | `.yamllint.yaml` |
-| TOML | taplo | `pkgs.taplo` | None |
-| CSS | stylelint | Via npm | `.stylelintrc.json` |
-| Lua | selene/stylua | `pkgs.selene`, `pkgs.stylua` | None |
-| SQL | sqlx | `pkgs.sqlx-cli` | None |
-| CI | woodpecker-cli | `pkgs.woodpecker-cli` | None |
+| Language       | Tool                  | Flake Package                                        | Config                              |
+| -------------- | --------------------- | ---------------------------------------------------- | ----------------------------------- |
+| Gleam          | gleam format/build    | `pkgs.gleam`                                         | None                                |
+| JS/TS/JSON/CSS | Biome                 | `pkgs.biome`                                         | `biome.json`                        |
+| Markdown       | markdownlint-cli2     | `pkgs.markdownlint-cli2`                             | `.markdownlint-cli2.jsonc`          |
+| Rust           | clippy/rustfmt        | rust-overlay                                         | None                                |
+| Nushell        | nu-check/nu-lint      | See Skill(nushell)                                   | `nu-lint.toml` — see Skill(nushell) |
+| Nix            | statix/deadnix/nixfmt | `pkgs.statix`, `pkgs.deadnix`, `pkgs.nixfmt-classic` | None                                |
+| Shell          | shellcheck/shfmt      | `pkgs.shellcheck`, `pkgs.shfmt`                      | None                                |
+| YAML           | yamllint              | `pkgs.yamllint`                                      | `.yamllint.yaml`                    |
+| TOML           | taplo                 | `pkgs.taplo`                                         | None                                |
+| CSS            | stylelint             | Via npm                                              | `.stylelintrc.json`                 |
+| Lua            | selene/stylua         | `pkgs.selene`, `pkgs.stylua`                         | None                                |
+| SQL            | sqlx                  | `pkgs.sqlx-cli`                                      | None                                |
+| CI             | woodpecker-cli        | `pkgs.woodpecker-cli`                                | None                                |
 
 ### Nushell
 

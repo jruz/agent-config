@@ -9,22 +9,22 @@ Validate Mermaid diagram files using `mmdc` (Mermaid CLI).
 
 ## File Convention
 
-| Extension | Purpose |
-|-----------|---------|
-| `.mmd` | Standalone Mermaid diagram files |
+| Extension | Purpose                          |
+| --------- | -------------------------------- |
+| `.mmd`    | Standalone Mermaid diagram files |
 
 ## Templates
 
-| File | Purpose |
-|------|---------|
-| `justfile` | Recipe for `mermaid-check` |
+| File         | Purpose                      |
+| ------------ | ---------------------------- |
+| `justfile`   | Recipe for `mermaid-check`   |
 | `devenv.nix` | Devenv packages and env vars |
 
 ## Dependencies
 
-| Tool | Nix Package | Purpose |
-|------|-------------|---------|
-| `mmdc` | `pkgs.mermaid-cli` | Mermaid CLI renderer/validator |
+| Tool     | Nix Package                       | Purpose                        |
+| -------- | --------------------------------- | ------------------------------ |
+| `mmdc`   | `pkgs.mermaid-cli`                | Mermaid CLI renderer/validator |
 | Chromium | `pkgs.playwright-driver.browsers` | Headless browser for rendering |
 
 ## Rules

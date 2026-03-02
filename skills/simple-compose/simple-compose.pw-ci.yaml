@@ -1,38 +1,45 @@
-shell: bash
 processes:
   postgres:
-    command: >
-      docker run --rm
-      --name postgres
-      --network trader-ci
-      --env-file <(sops decrypt --output-type dotenv .env.test.yaml)
-      -e PGPORT=$POSTGRES_PORT
-      postgres:18.1
+    driver: docker
+    docker:
+      image: "postgres:18.1"
+    env:
+      PGPORT: "61001"
     health:
-      command: docker exec postgres pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
+      command: "pg_isready --username=$POSTGRES_USER"
       interval_secs: 2
       timeout_secs: 15
 
+  reset:
+    type: oneshot
+    driver: docker
+    docker:
+      image: app-reset
+    command: "database reset -y"
+    env:
+      DATABASE_URL: "postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:$POSTGRES_PORT/$POSTGRES_DB"
+    depends_on:
+      - postgres
+
   server:
-    command: >
-      docker run --rm
-      --name server
-      --network trader-ci
-      --env-file <(sops decrypt --output-type dotenv .env.test.yaml)
-      -e POSTGRES_HOST=postgres
-      trader-server
-    depends_on: [postgres]
+    driver: docker
+    docker:
+      image: app-server
+    depends_on:
+      - reset
     health:
-      command: docker exec server curl --silent --fail http://localhost:$APP_PORT/
+      command: "curl --fail --silent http://localhost:$APP_PORT/health"
       interval_secs: 2
       timeout_secs: 20
 
   playwright:
-    command: >
-      docker run --rm
-      --name playwright
-      --network trader-ci
-      --env-file <(sops decrypt --output-type dotenv .env.test.yaml)
-      -e APP_DOMAIN=server
-      trader-playwright
-    depends_on: [server]
+    driver: docker
+    docker:
+      image: app-playwright
+      volumes:
+        - "./playwright/screenshots:/app/playwright/screenshots"
+        - "./test-results:/app/test-results"
+    env:
+      APP_DOMAIN: server
+    depends_on:
+      - server
