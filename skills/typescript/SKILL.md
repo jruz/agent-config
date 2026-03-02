@@ -1,6 +1,6 @@
 ---
 name: TypeScript
-description: Write TypeScript code. Use when working with TypeScript.
+description: Write TypeScript code. Use when working with TypeScript, adding eslint, configuring linting rules, or creating custom eslint rules.
 ---
 
 # TypeScript
@@ -11,7 +11,11 @@ Use this skill when writing TypeScript code.
 
 THE system SHALL use the strictest TypeScript configuration.
 
-THE `tsconfig.json` SHALL extend `@tsconfig/strictest/tsconfig.json`.
+Copy `tsconfig.json` from this skill folder to the project root.
+
+WHERE the project uses DOM APIs, add `"DOM"` to `lib`: `"lib": ["ESNext", "DOM"]`.
+
+WHERE the project uses JSX, add `"jsx": "react-jsx"` to `compilerOptions`.
 
 THE system SHALL enable all strict type checking options.
 
@@ -243,11 +247,13 @@ Example:
 ```typescript
 import { z } from "zod";
 
-const UserSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  email: z.string().email(),
-}).readonly();
+const UserSchema = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    email: z.string().email(),
+  })
+  .readonly();
 
 type User = z.infer<typeof UserSchema>;
 
@@ -275,11 +281,7 @@ import { describe, it, expect } from "vitest";
 
 describe("calculateTotal", () => {
   it("should sum all item prices", () => {
-    const items = [
-      { price: 10 },
-      { price: 20 },
-      { price: 30 },
-    ];
+    const items = [{ price: 10 }, { price: 20 }, { price: 30 }];
     expect(calculateTotal(items)).toBe(60);
   });
 });
@@ -310,10 +312,12 @@ const addItem = (items: readonly Item[], newItem: Item): readonly Item[] => {
   return [...items, newItem];
 };
 
-const updateItem = (items: readonly Item[], id: string, updates: Partial<Item>): readonly Item[] => {
-  return items.map(item =>
-    item.id === id ? { ...item, ...updates } : item
-  );
+const updateItem = (
+  items: readonly Item[],
+  id: string,
+  updates: Partial<Item>,
+): readonly Item[] => {
+  return items.map((item) => (item.id === id ? { ...item, ...updates } : item));
 };
 ```
 
@@ -335,11 +339,11 @@ declare global {
 
 ## Linting
 
-THE system SHALL use Biome for TypeScript linting.
-
-THE developer SHALL run `just frontend-lint` to lint TypeScript files.
-
-WHERE linting errors occur THE developer SHALL fix them before committing code.
+| Project Type | Tool                                          |
+| ------------ | --------------------------------------------- |
+| Bun/Node CLI | ESLint (see `eslint.md` in this skill folder) |
+| Next.js      | ESLint (see `eslint.md` in this skill folder) |
+| Web frontend | Biome (Skill(checks))                         |
 
 THE developer SHALL NOT bypass the linter by adding ignore comments.
 
@@ -347,8 +351,20 @@ THE system SHALL integrate linting into the CI pipeline.
 
 ## Dependencies
 
-WHERE external libraries are used THE system SHALL install them via npm.
+### Runtime
 
-THE system SHALL pin dependency versions in `package.json`.
+THE project SHALL pin the Bun or Node version (e.g., `.node-version`, `package.json` `engines`).
+
+### Base Dependencies
+
+Install with latest versions when setting up a new project:
+
+```bash
+bun install --dev @tsconfig/strictest @types/bun typescript eslint @eslint/js typescript-eslint jiti prettier
+```
+
+THE system SHALL pin exact dependency versions in `package.json` (no `^` or `~` prefix).
 
 THE developer SHALL check pinned versions for API compatibility.
+
+WHERE external libraries are added THE system SHALL install them via `bun add` or `npm install`.

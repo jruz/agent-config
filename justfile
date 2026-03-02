@@ -1,23 +1,22 @@
 fix:
-    just js-fix
+    just ts-fix
 
 check:
-    just fix
-    just js-check
+    just ts-check
 
 link:
     just link-agents
     just link-claude
 
-# JavaScript
-js-check:
-    npx prettier --check hooks/
-    npx eslint hooks/
+# TypeScript
+ts-check:
+    npx prettier --check .
     npx tsc --noEmit
+    bun run eslint .
 
-js-fix:
-    npx prettier --write hooks/
-    npx eslint hooks/ --fix
+ts-fix:
+    npx prettier --write .
+    bun run eslint . --fix
 
 # Agents
 link-agents:

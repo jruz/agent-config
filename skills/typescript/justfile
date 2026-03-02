@@ -1,0 +1,17 @@
+ts-check:
+    npx prettier --check .
+    npx tsc --noEmit
+    bun run eslint .
+
+ts-fix:
+    npx prettier --write .
+    bun run eslint . --fix
+
+ts-test:
+    bun test
+
+fix:
+    just ts-fix
+
+check:
+    just ts-check
