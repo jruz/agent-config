@@ -19,12 +19,14 @@ The justfile provides two recipes that symlink this repo's contents into the age
 ### `just link-claude`
 
 Links into `~/.claude/` for Claude Code:
+
 - Symlinks `commands/`, `hooks/`, `skills/`, and `settings.json`
 - Generates `~/.claude/CLAUDE.md` by concatenating `AGENTS_BASE.md` + `AGENTS_CLAUDE.md`
 
 ### `just link-agents`
 
 Links into `~/.agents/` for other agents (OpenCode, Codex):
+
 - Symlinks `agents/`, `commands/`, `hooks/`, and `skills/`
 - Copies `AGENTS_BASE.md` as `~/.agents/AGENTS.md`
 

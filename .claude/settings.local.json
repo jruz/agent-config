@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:codeberg.org)",
+      "Bash(/Users/jruz/dev/.claude/hooks/stop_check.nu:*)",
+      "Bash(/Users/jruz/dev/.claude/hooks/stop_plan.nu:*)",
+      "Bash(/Users/jruz/dev/.claude/hooks/stop_slop.nu)"
+    ]
+  }
+}

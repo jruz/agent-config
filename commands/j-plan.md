@@ -14,12 +14,14 @@ Follow this process and use the plan skill's guidance to construct PLAN.md.
 Decide whether this plan needs `active_loop: true` or `active_loop: false`:
 
 **Use `active_loop: true` (auto-loop) when:**
+
 - Task is well-defined with clear acceptance criteria
 - Steps are mechanical/straightforward
 - No design decisions needed during execution
 - Examples: bug fixes, refactoring, adding tests, implementing from spec
 
 **Use `active_loop: false` (user confirmation) when:**
+
 - Task requires design decisions at each step
 - User feedback needed on intermediate results
 - Exploratory or research-heavy work

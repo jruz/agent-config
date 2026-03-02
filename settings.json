@@ -270,9 +270,7 @@
   "spinnerTipsEnabled": false,
   "spinnerVerbs": {
     "mode": "replace",
-    "verbs": [
-      "Thinking"
-    ]
+    "verbs": ["Thinking"]
   },
   "alwaysThinkingEnabled": true,
   "autoUpdatesChannel": "latest",

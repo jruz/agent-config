@@ -7,7 +7,7 @@
     "MD034": false,
     "MD040": false,
     "MD041": false,
-    "MD060": false
+    "MD060": false,
   },
   "ignores": [
     "cache/**",
@@ -21,6 +21,6 @@
     "shell-snapshots/**",
     "statsig/**",
     "telemetry/**",
-    "todos/**"
-  ]
+    "todos/**",
+  ],
 }
