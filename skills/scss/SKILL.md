@@ -1,5 +1,5 @@
 ---
-name: SCSS
+name: scss
 description: Write SCSS stylesheets. Use when working with CSS.
 ---
 

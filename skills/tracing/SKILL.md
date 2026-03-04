@@ -1,5 +1,5 @@
 ---
-name: Tracing
+name: tracing
 description: Instrument Rust with tracing. Use when adding tracing.
 ---
 

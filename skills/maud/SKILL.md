@@ -1,5 +1,5 @@
 ---
-name: Maud
+name: maud
 description: Write Maud HTML templates. Use when writing HTML templates in Rust.
 ---
 

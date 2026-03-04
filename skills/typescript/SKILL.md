@@ -1,5 +1,5 @@
 ---
-name: TypeScript
+name: typescript
 description: Write TypeScript code. Use when working with TypeScript, adding eslint, configuring linting rules, or creating custom eslint rules.
 ---
 
