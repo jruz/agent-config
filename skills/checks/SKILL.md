@@ -127,9 +127,9 @@ WHEN a tool requires configuration THE config file SHALL be created from templat
 
 ## Git Hooks
 
-THE project SHALL use a pre-commit hook to run checks before commits.
+THE project SHALL use a pre-push hook to run checks before pushing.
 
-THE hook SHALL be stored in `.githooks/pre-commit`.
+THE hook SHALL be stored in `.githooks/pre-push`.
 
 THE hook SHALL use nushell for cross-platform compatibility.
 
@@ -144,6 +144,7 @@ THE hook SHALL support `SKIP_HOOKS` environment variable to bypass checks.
 
 if "SKIP_HOOKS" not-in $env {
     just check
+    just test
 }
 ```
 
@@ -154,6 +155,7 @@ if "SKIP_HOOKS" not-in $env {
 
 if "SKIP_HOOKS" not-in $env {
     just check
+    just test
     just playwright
 }
 ```
@@ -161,10 +163,10 @@ if "SKIP_HOOKS" not-in $env {
 ### Setup
 
 1. Create `.githooks/` directory
-2. Create `.githooks/pre-commit` with appropriate template
-3. Make executable: `chmod +x .githooks/pre-commit`
+2. Create `.githooks/pre-push` with appropriate template
+3. Make executable: `chmod +x .githooks/pre-push`
 4. Configure git: `git config core.hooksPath .githooks`
 
 ### Bypass
 
-Skip hooks for a single commit: `SKIP_HOOKS=1 git commit`
+Skip hooks for a single push: `SKIP_HOOKS=1 git push`
