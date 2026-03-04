@@ -1,0 +1,58 @@
+shell: bash
+processes:
+  postgres:
+    docker:
+      image: "postgres:18.1"
+    env:
+      PGPORT: "61001"
+    health:
+      command: "pg_isready --username=$POSTGRES_USER"
+      interval_secs: 2
+      timeout_secs: 30
+
+  reset:
+    type: oneshot
+    docker:
+      build: .
+      dockerfile: Dockerfile.sqlx
+    command: "database reset -y"
+    env:
+      DATABASE_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:${POSTGRES_PORT}/${POSTGRES_DB}"
+    depends_on:
+      - postgres
+
+  app:
+    docker:
+      build: .
+      dockerfile: Dockerfile.server
+    env:
+      APP_DOMAIN: app
+      REVISION: test
+    depends_on:
+      - reset
+    health:
+      command: "curl --fail --silent http://localhost:$APP_PORT/health"
+      interval_secs: 2
+      timeout_secs: 60
+
+  seed:
+    type: oneshot
+    docker:
+      image: app
+    exec:
+      ["sh", "-c", "./tasks admin-user && ./tasks categories && ./tasks seed"]
+    depends_on:
+      - app
+
+  playwright:
+    docker:
+      build: .
+      dockerfile: Dockerfile.playwright
+      volumes:
+        - "./playwright/screenshots:/app/playwright/screenshots"
+        - "./test-results:/app/test-results"
+    exec: ["sh", "-c", "npx playwright test $PLAYWRIGHT_ARGS"]
+    env:
+      APP_DOMAIN: app
+    depends_on:
+      - seed

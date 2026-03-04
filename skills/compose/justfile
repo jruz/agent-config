@@ -1,0 +1,13 @@
+compose-dev:
+  compose up --config compose.dev.yaml
+
+compose-db *ARGS='':
+  DB_RUN_ARGS="{{ARGS}}" compose run --config compose.db.yaml
+
+compose-test:
+  compose run --config compose.test.yaml
+
+playwright *ARGS='':
+  PLAYWRIGHT_ARGS="{{ARGS}}" compose run \
+    --config compose.playwright.yaml \
+    --env-file <(just sops-decrypt-test)
