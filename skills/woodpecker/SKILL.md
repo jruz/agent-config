@@ -53,6 +53,26 @@ Woodpecker is a simple, container-native CI/CD engine. Use `woodpecker-cli` to i
    woodpecker-cli pipeline ps <repo> <number>
    ```
 
+## Activating a Repo
+
+To activate a new repo in Woodpecker:
+
+1. Sync repos from Codeberg to discover new repos:
+
+   ```bash
+   woodpecker-cli repo sync
+   ```
+
+2. Find the forge remote ID in the sync output (e.g., `forgeRemoteID: 1360109`)
+
+3. Activate by forge remote ID:
+
+   ```bash
+   woodpecker-cli repo add <forgeRemoteID>
+   ```
+
+Note: `woodpecker-cli repo add owner/repo` does not work — use the numeric forge remote ID.
+
 ## Repo Format
 
 Repos use the format `owner/repo-name` (e.g., `jruz/jruz.io`).

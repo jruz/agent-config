@@ -3,7 +3,8 @@
 build-linux:
     rustup target add x86_64-unknown-linux-gnu
     cargo build --release --target x86_64-unknown-linux-gnu
-    cp target/x86_64-unknown-linux-gnu/release/BINARY_NAME BINARY_NAME-linux-x86_64
+    cp target/x86_64-unknown-linux-gnu/release/BINARY_NAME \
+        BINARY_NAME-linux-x86_64
 
 build-macos:
     rustup target add x86_64-apple-darwin
@@ -16,7 +17,8 @@ build-macos:
 build-windows:
     rustup target add x86_64-pc-windows-msvc
     cargo xwin build --release --target x86_64-pc-windows-msvc
-    cp target/x86_64-pc-windows-msvc/release/BINARY_NAME.exe BINARY_NAME-windows-x86_64.exe
+    cp target/x86_64-pc-windows-msvc/release/BINARY_NAME.exe \
+        BINARY_NAME-windows-x86_64.exe
 
 # ---------------- CI WRAPPERS
 
@@ -58,5 +60,5 @@ ci-check:
 
 # ---------------- RELEASE
 
-release-upload tag:
-    bun scripts/release-upload.ts {{ tag }}
+release-upload TAG:
+    bun scripts/release-upload.ts {{ TAG }}
