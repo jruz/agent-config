@@ -1,4 +1,8 @@
 {
+  "env": {
+    "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
+    "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1"
+  },
   "attribution": {},
   "permissions": {
     "allow": [
@@ -111,6 +115,7 @@
       "Bash(yazi:*)",
       "Bash(zellij --version:*)",
       "Bash(zellij list-sessions:*)",
+      "Read(**/.ssh/config)",
       "Skill(axum)",
       "Skill(checks)",
       "Skill(chrome)",
@@ -272,9 +277,8 @@
     "mode": "replace",
     "verbs": ["Thinking"]
   },
-  "alwaysThinkingEnabled": true,
-  "autoUpdatesChannel": "latest",
+  "promptSuggestionEnabled": false,
+  "autoUpdatesChannel": "stable",
   "prefersReducedMotion": true,
-  "skipDangerousModePermissionPrompt": true,
-  "promptSuggestionEnabled": false
+  "skipDangerousModePermissionPrompt": true
 }
