@@ -1,51 +1,75 @@
-# Global Agent Configuration
+# claude base
 
-This repository (`~/dev/.claude/`) contains shared configuration for AI coding agents (Claude Code, OpenCode, Codex, etc.). Each agent has its own config directory but shares the same base instructions and skills through symlinking.
+- be concise. avoid long-winded explanations.
+- no sycophancy. never start responses with filler phrases (e.g., "You're right", "Great question", "That makes sense", "Good catch")
+- never give opinions or recommendations unless the user asks for them
+- when asking the user to make decisions, present one point at a time. wait for feedback, apply it, then proceed to the next
+- prefer bullet points over paragraphs
 
-## Structure
+## environment and secrets
 
-- `AGENTS_BASE.md` - Shared instructions loaded by all agents (Claude Code, OpenCode, Codex)
-- `AGENTS_CLAUDE.md` - Claude Code-specific instructions (appended to CLAUDE.md)
-- `settings.json` - Claude Code settings (permissions, model preferences)
-- `agents/` - Custom agent definitions
-- `commands/` - Custom slash commands
-- `hooks/` - Event hooks for automation
-- `skills/` - Custom skills
+- never read env vars from the shell, assume they are already set
+- never read .env files
+- never read ~/.ssh/ (keys, config, or any other file)
+- never read, print, or extract secrets from any source (containers, vaults, APIs, config files, logs, memory, or anywhere else)
 
-## Symlinking
+## coding style
 
-The justfile provides two recipes that symlink this repo's contents into the agent-specific config directories.
+- never provide defaults
+- never hide errors
+- in doubt ask the user how to handle errors
+- functional style
+- never write comments instead make sure code is easy to follow
+- never bypass the linter or playwright, look for ways to solve the problem either refactoring or following the recommendations
+- if you find a pre-existing issue/bug, tell the user even if unrelated
+- avoid complecting code, one function per action
+- connect small functions in a pipeline style
+- early return edge cases
+- last part of the function should return coherent with the name
 
-### `just link-claude`
+## rust
 
-Links into `~/.claude/` for Claude Code:
+- bubble errors up with `?`
+- every module should have a thiserror enum
+- never write code on a mod.rs only exports
+- if something can fail, use Result. never convert a Result to Option
 
-- Symlinks `commands/`, `hooks/`, `skills/`, and `settings.json`
-- Generates `~/.claude/CLAUDE.md` by concatenating `AGENTS_BASE.md` + `AGENTS_CLAUDE.md`
+## typescript
 
-### `just link-agents`
+- if something can fail, always use try/catch and log the error
+- use type not interface
 
-Links into `~/.agents/` for other agents (OpenCode, Codex):
+## justfiles
 
-- Symlinks `agents/`, `commands/`, `hooks/`, and `skills/`
-- Copies `AGENTS_BASE.md` as `~/.agents/AGENTS.md`
+- recipe names should follow format <area>-<action> e.g: `rust-check`
+- use long version of command flags (e.g., --session instead of -s)
+- long commands should be split into multiple lines
+- inline recipe scripts should be written in nushell
+- if an inline script exceeds 10 lines, extract it to scripts/<recipe-name>.ts and execute with bun
 
-## Other Recipes
+## skills
 
-- `just nu-check` - Lint all `.nu` files with `nu-check` and `nu-lint`
-- `just nu-fix` - Auto-fix nu-lint issues
-- `just check` - Run fix then lint
-- `just lint` - Alias for `nu-check`
+- always use the Skill(commit) when creating commits
+- always follow the Skill(plan-md) format when writing PLAN.md
+- when user writes p: issue, means add that topic to PLAN.md using Skill(plan-md) format
 
-## TypeScript Coding Style
+## tools
 
-- Use `type` instead of `interface`
-- Never use `??` or `||` to silently provide default values; check explicitly and handle the missing case
-- Never return `undefined` silently; log the error using the shared logger (`hooks/logger.ts`) before returning
-- Import the logger with `import { log } from "./logger"` and call `await log("ERROR", "hook_name", { reason: "..." })`
-- Use `console.error` instead of `process.stderr.write`
+- use ripgrep (rg) instead of grep for searching
+- use fd instead of find for finding files
+- when adding dependencies, use the package manager add command (e.g., cargo add, npm install) to get the latest version instead of manually editing manifest files
+- never run multiple Bash commands in a single line, execute them one at a time so each can be reviewed
 
-## Notes
+## paths
 
-- When editing settings.json, keep all allow and deny lists sorted alphabetically
-- Hook logs are written to `$TMPDIR/claude/hooks.log`
+- Global Skills: ~/dev/.claude/skills/
+- Global Settings: ~/dev/.claude/settings.json
+- Global Hooks: ~/dev/.claude/hooks/
+- Personal Projects: ~/dev/projects/
+- Dotfiles: ~/dev/dotfiles/
+
+# claude tools
+
+- never use AskUserQuestion tool, ask in plain text
+- never use EnterPlanMode tool, just do the work directly
+- never read or write to auto memory directories (~/.claude/projects/\*/memory/)
