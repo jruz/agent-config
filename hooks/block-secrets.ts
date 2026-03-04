@@ -28,6 +28,11 @@ async function main() {
     return;
   }
 
+  const isSshConfig = filePath.endsWith(".ssh/config");
+  if (isSshConfig) {
+    return;
+  }
+
   const sensitivePattern = /(^|\s|\/)(\.env|\.ssh)(\.|\/|\s|$)/;
   if (sensitivePattern.test(filePath)) {
     await log("WARN", "block_secrets", {
