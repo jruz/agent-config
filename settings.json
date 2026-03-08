@@ -191,7 +191,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun run ~/.claude/hooks/notify_conductor.ts"
+            "command": "bun run ~/.claude/hooks/notify_claude_trees.ts"
           }
         ]
       },
