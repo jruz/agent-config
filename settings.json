@@ -161,8 +161,8 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:readthedocs.io)",
       "WebFetch(domain:search.nixos.org)",
-      "WebSearch",
-      "mcp__chrome-devtools__*"
+      "Bash(chrome-cli:*)",
+      "WebSearch"
     ],
     "deny": [
       "Bash(sops --decrypt:*)",
