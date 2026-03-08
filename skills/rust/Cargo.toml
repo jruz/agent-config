@@ -47,7 +47,10 @@ single_call_fn = "allow"
 std_instead_of_alloc = "allow"
 std_instead_of_core = "allow"
 str_to_string = "allow"
+print_stderr = "allow"
+print_stdout = "allow"
 struct_excessive_bools = "allow"
+tests_outside_test_module = "allow"
 
 # this project
 

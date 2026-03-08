@@ -17,6 +17,10 @@ THE system SHALL create a `.envrc` file from `skills/rust/envrc` for direnv inte
 
 THE `.gitignore` SHALL include direnv entries from `skills/rust/gitignore-additions.txt`.
 
+AFTER creating files THE system SHALL run `git add flake.nix flake.lock rust-toolchain.toml` so the nix flake can read them.
+
+AFTER staging flake files THE system SHALL run `direnv allow` to activate the devshell.
+
 ## Code Paradigm: Functional Only
 
 THE system SHALL use pure functions for ALL logic.
@@ -129,15 +133,7 @@ THE system SHALL NOT implement methods on error types for business logic.
 
 THE system SHALL add `thiserror` crate to `Cargo.toml` dependencies.
 
-THE system SHALL add `color-eyre` crate to `Cargo.toml` dependencies.
-
-THE system SHALL import Result using `use color_eyre::Result;`.
-
-THE main function SHALL call `color_eyre::install()?;` to install the error handler.
-
-THE system SHALL use `Result<T>` for all fallible operations.
-
-THE system SHALL use `Result<T, E>` for custom error types where E is a module-specific Error enum.
+THE system SHALL use `Result<T, E>` for all fallible operations where E is a module-specific Error enum.
 
 THE system SHALL propagate errors using the `?` operator.
 
