@@ -1,0 +1,38 @@
+scheme := "APP_NAME"
+project := "APP_NAME.xcodeproj"
+source_dir := "APP_NAME"
+
+check:
+    just swift-lint
+    just swift-format-check
+
+fix:
+    just swift-format
+
+# ---------------- SWIFT
+
+swift-build:
+    xcodebuild \
+        -scheme {{scheme}} \
+        -project {{project}} \
+        -destination 'platform=macOS' \
+        -derivedDataPath .build \
+        build
+
+swift-run:
+    just swift-build
+    open .build/Build/Products/Debug/{{scheme}}.app
+
+swift-logs:
+    /usr/bin/log stream \
+        --predicate 'process == "{{scheme}}"' \
+        --level debug
+
+swift-lint:
+    swiftlint lint --strict {{source_dir}}
+
+swift-format:
+    swiftformat {{source_dir}}
+
+swift-format-check:
+    swiftformat --lint {{source_dir}}
