@@ -69,6 +69,10 @@ max_iterations: 20
 
 ---
 
+## Blocker
+
+---
+
 ## Loop Log
 
 - **Loop 1**: [What was tried] â†’ [Outcome]
@@ -115,6 +119,8 @@ THE `PLAN.md` file SHALL include a "Specs" section listing non-component specifi
 
 THE `PLAN.md` file SHALL contain phases, each as a level-2 heading separated by horizontal rules.
 
+THE `PLAN.md` file SHALL include a "Blocker" section for signaling unresolvable issues.
+
 THE `PLAN.md` file SHALL include a "Loop Log" section tracking what was tried each iteration.
 
 ## Phases
@@ -157,6 +163,20 @@ THE loop log entries SHALL follow the format: `- **Loop N**: [What was tried] â†
 THE loop log entries SHALL be concise, one line per iteration.
 
 THE loop log SHALL be updated at the end of each iteration before stopping.
+
+## Blocker
+
+THE `PLAN.md` file SHALL contain a "Blocker" section after the last phase and before the Loop Log.
+
+THE Blocker section SHALL be empty by default.
+
+WHEN encountering a problem that cannot be resolved, Claude SHALL write the reason to the Blocker section and stop immediately.
+
+THE blocker text SHALL be concise and actionable - describe what failed and what the user needs to resolve.
+
+WHEN the Blocker section has content, automated execution (planner) SHALL stop and display the blocker.
+
+THE user SHALL clear the Blocker section content manually to resume.
 
 ## Todolist Format
 
