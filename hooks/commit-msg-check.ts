@@ -12,10 +12,13 @@ export function shouldSkip(command: string): boolean {
 }
 
 export function extractTitle(command: string): string | undefined {
-  const inlineMatch = /git commit\s+.*-m\s+"([^"\n]+)"/.exec(command);
-  const captured = inlineMatch?.[1];
-  if (captured) {
-    return (captured.split("\n")[0] ?? captured).trim();
+  const isHeredoc = command.includes("$(cat <<");
+  if (!isHeredoc) {
+    const inlineMatch = /git commit\s+.*-m\s+"([^"]+)"/.exec(command);
+    const firstLine = inlineMatch?.[1]?.split("\n")[0]?.trim();
+    if (firstLine) {
+      return firstLine;
+    }
   }
   return command
     .split("\n")
