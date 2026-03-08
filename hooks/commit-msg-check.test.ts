@@ -118,17 +118,20 @@ describe("extractTitle", () => {
 
   describe("cd prefix", () => {
     test("extracts title when prefixed with cd &&", () => {
-      const cmd = 'cd /Users/jruz/dev/dotfiles && git commit -m "[bugs] Deff: Update source hash"';
+      const cmd =
+        'cd /Users/jruz/dev/dotfiles && git commit -m "[bugs] Deff: Update source hash"';
       expect(extractTitle(cmd)).toBe("[bugs] Deff: Update source hash");
     });
 
     test("extracts title when prefixed with subshell cd &&", () => {
-      const cmd = '(cd /Users/jruz/dev/dotfiles && git commit -m "[bugs] Deff: Update source hash")';
+      const cmd =
+        '(cd /Users/jruz/dev/dotfiles && git commit -m "[bugs] Deff: Update source hash")';
       expect(extractTitle(cmd)).toBe("[bugs] Deff: Update source hash");
     });
 
     test("extracts title from cd && with multiline -m", () => {
-      const cmd = 'cd /some/path && git commit -m "[feat] Auth: Add login\n\nCo-Authored-By: Claude <noreply@anthropic.com>"';
+      const cmd =
+        'cd /some/path && git commit -m "[feat] Auth: Add login\n\nCo-Authored-By: Claude <noreply@anthropic.com>"';
       expect(extractTitle(cmd)).toBe("[feat] Auth: Add login");
     });
   });
