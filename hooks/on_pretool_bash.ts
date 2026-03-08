@@ -31,7 +31,7 @@ export const rules: Rule[] = [
   },
   { pattern: /age --decrypt/, message: "Access to sensitive command blocked" },
   {
-    pattern: /sops --decrypt/,
+    pattern: /sops (--decrypt|decrypt)/,
     message: "Don't decrypt sops files, just read them directly",
   },
   {
