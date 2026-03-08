@@ -39,21 +39,22 @@ All templates are in this skill folder:
 
 ## Tool Reference
 
-| Language       | Tool                  | Flake Package                                        | Config                              |
-| -------------- | --------------------- | ---------------------------------------------------- | ----------------------------------- |
-| Gleam          | gleam format/build    | `pkgs.gleam`                                         | None                                |
-| JS/TS/JSON/CSS | Biome                 | `pkgs.biome`                                         | `biome.json`                        |
-| Markdown       | markdownlint-cli2     | `pkgs.markdownlint-cli2`                             | `.markdownlint-cli2.jsonc`          |
-| Rust           | clippy/rustfmt        | rust-overlay                                         | None                                |
-| Nushell        | nu-check/nu-lint      | See Skill(nushell)                                   | `nu-lint.toml` — see Skill(nushell) |
-| Nix            | statix/deadnix/nixfmt | `pkgs.statix`, `pkgs.deadnix`, `pkgs.nixfmt-classic` | None                                |
-| Shell          | shellcheck/shfmt      | `pkgs.shellcheck`, `pkgs.shfmt`                      | None                                |
-| YAML           | yamllint              | `pkgs.yamllint`                                      | `.yamllint.yaml`                    |
-| TOML           | taplo                 | `pkgs.taplo`                                         | None                                |
-| CSS            | stylelint             | Via npm                                              | `.stylelintrc.json`                 |
-| Lua            | selene/stylua         | `pkgs.selene`, `pkgs.stylua`                         | None                                |
-| SQL            | sqlx                  | `pkgs.sqlx-cli`                                      | None                                |
-| CI             | woodpecker-cli        | `pkgs.woodpecker-cli`                                | None                                |
+| Language       | Tool                  | Flake Package                                | Config                              |
+| -------------- | --------------------- | -------------------------------------------- | ----------------------------------- |
+| Gleam          | gleam format/build    | `pkgs.gleam`                                 | None                                |
+| JS/TS/JSON/CSS | Biome                 | `pkgs.biome`                                 | `biome.json`                        |
+| Markdown       | markdownlint-cli2     | `pkgs.markdownlint-cli2`                     | `.markdownlint-cli2.jsonc`          |
+| Rust           | clippy/rustfmt        | rust-overlay                                 | None                                |
+| Nushell        | nu-check/nu-lint      | See Skill(nushell)                           | `nu-lint.toml` — see Skill(nushell) |
+| Ansible        | ansible-lint          | `pkgs.ansible-lint`                          | None                                |
+| Nix            | statix/deadnix/nixfmt | `pkgs.statix`, `pkgs.deadnix`, `pkgs.nixfmt` | None                                |
+| Shell          | shellcheck/shfmt      | `pkgs.shellcheck`, `pkgs.shfmt`              | None                                |
+| YAML           | yamllint              | `pkgs.yamllint`                              | `.yamllint.yaml`                    |
+| TOML           | taplo                 | `pkgs.taplo`                                 | None                                |
+| CSS            | stylelint             | Via npm                                      | `.stylelintrc.json`                 |
+| Lua            | selene/stylua         | `pkgs.selene`, `pkgs.stylua`                 | None                                |
+| SQL            | sqlx                  | `pkgs.sqlx-cli`                              | None                                |
+| CI             | woodpecker-cli        | `pkgs.woodpecker-cli`                        | None                                |
 
 ### Nushell
 

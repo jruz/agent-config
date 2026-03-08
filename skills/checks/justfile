@@ -102,6 +102,12 @@ woodpecker-check:
         --strict \
         .woodpecker/
 
+# Ansible - ansible-lint
+ansible-check:
+    ansible-lint \
+        --strict \
+        --profile safety
+
 # Aggregate recipes (adapt based on project languages)
 check:
     just js-check

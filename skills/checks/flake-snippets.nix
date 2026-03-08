@@ -15,7 +15,7 @@
     fd = "pkgs.fd";
     just = "pkgs.just";
     markdownlint-cli2 = "pkgs.markdownlint-cli2";
-    nixfmt = "pkgs.nixfmt-classic";
+    nixfmt = "pkgs.nixfmt";
     ripgrep = "pkgs.ripgrep";
     selene = "pkgs.selene";
     shellcheck = "pkgs.shellcheck";
@@ -25,6 +25,7 @@
     stylua = "pkgs.stylua";
     taplo = "pkgs.taplo";
     woodpecker-cli = "pkgs.woodpecker-cli";
+    ansible-lint = "pkgs.ansible-lint";
     yamllint = "pkgs.yamllint";
   };
 
@@ -91,7 +92,7 @@
                 fd
                 just
                 markdownlint-cli2
-                nixfmt-classic
+                nixfmt
                 ripgrep
                 selene
                 shellcheck
