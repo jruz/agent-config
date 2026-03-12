@@ -1,6 +1,57 @@
 import { preToolUseInputSchema } from "./types";
 import { log } from "./logger";
 
+type CheckResult = "skip" | "allow" | "block";
+
+const pathBoundary = String.raw`(^|\s|\/)`;
+const pathTrailer = String.raw`(\.|\/|\s|$)`;
+
+function isDotEnv(filePath: string): boolean {
+  return new RegExp(`${pathBoundary}\\.env${pathTrailer}`).test(filePath);
+}
+
+function isDotSsh(filePath: string): boolean {
+  return new RegExp(`${pathBoundary}\\.ssh${pathTrailer}`).test(filePath);
+}
+
+export function checkFilePath(filePath: string): CheckResult {
+  const isEncryptedEnv = /\.env\.[^.]+\.yaml$/.test(filePath);
+  if (isEncryptedEnv) {
+    return "allow";
+  }
+
+  const isSshConfig = filePath.endsWith(".ssh/config");
+  if (isSshConfig) {
+    return "allow";
+  }
+
+  if (/INSECURE/i.test(filePath)) {
+    return "block";
+  }
+
+  if (isDotEnv(filePath) || isDotSsh(filePath)) {
+    return "block";
+  }
+
+  return "allow";
+}
+
+export function checkToolInput(
+  toolName: string,
+  toolInput: Record<string, unknown>,
+): CheckResult {
+  if (toolName !== "Read" && toolName !== "Grep") {
+    return "skip";
+  }
+
+  const filePath = toolInput["file_path"];
+  if (typeof filePath !== "string") {
+    return "skip";
+  }
+
+  return checkFilePath(filePath);
+}
+
 async function main() {
   const raw: unknown = await Bun.stdin.json().catch(() => null);
   const parsed = preToolUseInputSchema.safeParse(raw);
@@ -14,29 +65,11 @@ async function main() {
   }
 
   const data = parsed.data;
-  if (data.tool_name !== "Read" && data.tool_name !== "Grep") {
-    return;
-  }
+  const result = checkToolInput(data.tool_name, data.tool_input);
 
-  const filePath = data.tool_input["file_path"];
-  if (typeof filePath !== "string") {
-    return;
-  }
-
-  const isEncryptedEnv = /\.env\.[^.]+\.yaml$/.test(filePath);
-  if (isEncryptedEnv) {
-    return;
-  }
-
-  const isSshConfig = filePath.endsWith(".ssh/config");
-  if (isSshConfig) {
-    return;
-  }
-
-  const sensitivePattern = /(^|\s|\/)(\.env|\.ssh)(\.|\/|\s|$)/;
-  if (sensitivePattern.test(filePath)) {
+  if (result === "block") {
     await log("WARN", "block_secrets", {
-      file_path: filePath,
+      file_path: data.tool_input["file_path"],
       tool_name: data.tool_name,
     });
     console.log(
