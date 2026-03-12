@@ -1,0 +1,20 @@
+clj-check:
+    fd \
+        --extension clj \
+        --exec zprint -c
+    fd \
+        --extension clj \
+        --exec clj-kondo \
+        --fail-level warning \
+        --lint
+
+clj-fix:
+    fd \
+        --extension clj \
+        --exec zprint -w
+
+check:
+    just clj-check
+
+fix:
+    just clj-fix
