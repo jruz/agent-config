@@ -21,3 +21,4 @@ statsig/
 tasks/
 telemetry/
 todos/
+.lsp/.cache
