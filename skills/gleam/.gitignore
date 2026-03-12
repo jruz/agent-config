@@ -1,0 +1,3 @@
+build/
+.direnv/
+erl_crash.dump

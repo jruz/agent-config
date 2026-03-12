@@ -379,7 +379,8 @@ Pin all dependencies to exact versions using `==` in `gleam.toml`:
 
 ```toml
 [dependencies]
-gleam_stdlib = "== 0.68.1"
+gleam_stdlib = "== 0.70.0"
+gleam_erlang = "== 1.3.0"
 gleam_otp = "== 1.2.0"
 lustre = "== 5.5.1"
 wisp = "== 2.1.0"
@@ -401,3 +402,11 @@ Reference: [justfile](mdc:justfile)
 ## Nix Flake
 
 Reference: [flake.nix](mdc:flake.nix)
+
+## Direnv
+
+Reference: [.envrc](mdc:.envrc)
+
+## Gitignore
+
+Reference: [.gitignore](mdc:.gitignore)

@@ -1,13 +1,53 @@
-set dotenv-load := true
-
 default:
   just --list
 
+check:
+  just gleam-check
+
+fix:
+  just gleam-fix
+
+run:
+  just gleam-run
+
+watch:
+  just gleam-watch
+
+# ──────────────────────────────────────── gleam
+
+gleam-check:
+  gleam format --check
+  gleam build
+  gleam test
+
+gleam-fix:
+  gleam format
+
 gleam-build:
-  gleam build --warnings-as-errors
+  gleam build
 
 gleam-clean:
   rm -rf build
+
+gleam-export:
+  gleam export erlang-shipment
+
+gleam-format:
+  gleam format
+
+gleam-format-check:
+  gleam format --check
+
+gleam-run:
+  gleam run
+
+gleam-test:
+  gleam test
+
+gleam-watch:
+  watchexec --exts gleam --restart gleam run
+
+# ──────────────────────────────────────── gleam-deps
 
 gleam-deps:
   gleam deps download
@@ -17,12 +57,3 @@ gleam-deps-outdated:
 
 gleam-deps-update:
   gleam deps update
-
-gleam-run:
-  gleam run
-
-gleam-test:
-  gleam test
-
-gleam-watch:
-  watchexec --exts gleam --restart gleam build --warnings-as-errors
