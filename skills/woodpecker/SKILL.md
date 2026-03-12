@@ -180,7 +180,7 @@ When deploying containers to Docker Swarm, use `scripts/grafana-logs.ts` to quer
 
 ### Setup
 
-When adding deploy workflows to a project, copy `scripts/grafana-logs.ts` and `scripts/log.ts` from the hetzner repo, and add this justfile recipe:
+When adding deploy workflows to a project, copy `scripts/grafana-logs.ts` and `scripts/log.ts` from this skill, and add this justfile recipe:
 
 ```just
 grafana-logs stack limit="20":
