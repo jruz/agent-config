@@ -117,7 +117,8 @@ Templates are in this skill folder:
 | `.woodpecker/tag.yml`       | Push to main: read version from Cargo.toml, create git tag if missing |
 | `.woodpecker/release.yml`   | On tag: multi-platform build (linux, macOS, windows), release upload  |
 | `scripts/release-upload.ts` | TypeScript script to upload release binaries to Codeberg              |
-| `justfile`                  | Build recipes for release builds and upload                           |
+| `scripts/release-delete.ts` | TypeScript script to delete local/remote tag and Codeberg release     |
+| `justfile`                  | Build recipes for release builds, upload, and delete                  |
 | `woodpecker-settings.yaml`  | Default repo settings template                                        |
 
 ### Dockerfile templates

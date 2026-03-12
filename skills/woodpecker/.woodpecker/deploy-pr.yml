@@ -9,7 +9,7 @@ when:
 
 steps:
   - name: PUSH
-    image: docker:cli
+    image: docker:29.3.0-cli
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
@@ -44,7 +44,7 @@ steps:
       event: pull_request
 
   - name: SEED
-    image: docker:cli
+    image: docker:29.3.0-cli
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
@@ -64,7 +64,7 @@ steps:
       event: pull_request
 
   - name: CLEANUP
-    image: docker:cli
+    image: docker:29.3.0-cli
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
