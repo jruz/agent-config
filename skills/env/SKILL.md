@@ -43,7 +43,7 @@ THE project SHALL include the recipes from this skill's `justfile` under `# ----
 
 ## Scripts
 
-WHERE `scripts/log.ts` does not exist THE project SHALL copy it from the TypeScript skill (`scripts/log.ts`).
+WHERE `scripts/log.ts` does not exist THE project SHALL copy it from this skill.
 
 THE project SHALL include `scripts/dotenv-load.nu` for loading `.env` into nushell inline recipes.
 
