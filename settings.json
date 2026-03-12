@@ -191,69 +191,19 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun run ~/.claude/hooks/notify_claude_trees.ts"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun run ~/.claude/hooks/notify_zellij.ts"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun run ~/.claude/hooks/stop_check.ts",
+            "command": "~/.cargo/bin/claude-hooks stop",
             "timeout": 300
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun run ~/.claude/hooks/stop_plan.ts"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun run ~/.claude/hooks/stop_slop.ts"
           }
         ]
       }
     ],
     "PreToolUse": [
       {
-        "matcher": "Read|Grep",
+        "matcher": "Bash|Read|Grep",
         "hooks": [
           {
             "type": "command",
-            "command": "bun run ~/.claude/hooks/block-secrets.ts"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun run ~/.claude/hooks/commit-msg-check.ts"
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun run ~/.claude/hooks/on_pretool_bash.ts"
+            "command": "~/.cargo/bin/claude-hooks pre-tool-use"
           }
         ]
       }
@@ -263,7 +213,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun run ~/.claude/hooks/on_prompt_submit.ts"
+            "command": "~/.cargo/bin/claude-hooks prompt-submit"
           }
         ]
       }
