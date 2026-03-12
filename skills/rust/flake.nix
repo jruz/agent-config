@@ -40,7 +40,6 @@
             echo "  Rust Development Shell"
             echo "  ───────────────────────────"
             echo "  Rust:        ${rustVersion}"
-            echo "  Nextest:     ${pkgs.cargo-nextest.version}"
             echo ""
           '' + pkgs.lib.optionalString pkgs.stdenv.isLinux ''
             export LOCALE_ARCHIVE="${pkgs.glibcLocales}/lib/locale/locale-archive"
