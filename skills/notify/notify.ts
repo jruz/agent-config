@@ -7,7 +7,13 @@ if (!message) {
 }
 
 const toplevel = Bun.spawnSync(["git", "rev-parse", "--show-toplevel"]);
-const title = toplevel.stdout.toString().trim().split("/").pop() ?? "Claude";
+const title = toplevel.stdout.toString().trim().split("/").pop();
+if (!title) {
+  await log("ERROR", "notify", {
+    reason: "could not extract project name from git toplevel",
+  });
+  process.exit(1);
+}
 const icon = `${process.env["HOME"]}/.claude/hooks/clawd-icon.png`;
 
 Bun.spawn([

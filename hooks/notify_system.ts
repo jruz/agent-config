@@ -21,7 +21,14 @@ async function main() {
   }
 
   const input = parsed.data;
-  const project = input.cwd.split("/").pop() ?? "Claude";
+  const project = input.cwd.split("/").pop();
+  if (!project) {
+    await log("ERROR", "notify_system", {
+      reason: "could not extract project name from cwd",
+      cwd: input.cwd,
+    });
+    return;
+  }
   const icon = `${process.env["HOME"]}/.claude/hooks/clawd-icon.png`;
 
   Bun.spawn([
