@@ -2,9 +2,13 @@
 
 build-linux:
     rustup target add x86_64-unknown-linux-gnu
-    cargo build --release --target x86_64-unknown-linux-gnu
+    rustup target add aarch64-unknown-linux-gnu
+    cargo zigbuild --release --target x86_64-unknown-linux-gnu
+    cargo zigbuild --release --target aarch64-unknown-linux-gnu
     cp target/x86_64-unknown-linux-gnu/release/BINARY_NAME \
         BINARY_NAME-linux-x86_64
+    cp target/aarch64-unknown-linux-gnu/release/BINARY_NAME \
+        BINARY_NAME-linux-arm64
 
 build-macos:
     rustup target add x86_64-apple-darwin
@@ -31,7 +35,7 @@ ci-build-macos:
         --rm
         --volume $"(pwd):/work"
         --workdir /work
-        ghcr.io/rust-cross/cargo-zigbuild
+        ghcr.io/rust-cross/cargo-zigbuild:0.21.4
         ^sh -c "cargo install just && just build-macos")
 
 ci-check:
