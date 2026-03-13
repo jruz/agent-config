@@ -7,56 +7,18 @@ description: Write Playwright E2E tests. Use when creating integration tests or 
 
 ## Installation
 
-Playwright requires a hybrid setup:
+Merge these files into the project:
 
-- **Nix** provides browsers via `playwright-driver.browsers`
-- **npm** provides `@playwright/test` package
+- [flake.nix](flake.nix) — Nix provides browsers, npm provides `@playwright/test`
+- [package.json](package.json) — `@playwright/test` version SHALL match `nix eval nixpkgs#playwright-driver.version --raw`
+- [playwright.config.ts](playwright.config.ts)
+- [fixtures.ts](fixtures.ts) → `playwright/fixtures.ts`
+- [load-test-env.nu](load-test-env.nu)
+- [justfile](justfile) — merge recipes into project justfile
+- [gitignore-additions.txt](gitignore-additions.txt) — merge into `.gitignore`
+- [scripts/log.ts](scripts/log.ts)
 
-This is necessary because Node.js ESM module resolution does not respect `NODE_PATH`, making a pure-Nix approach impractical.
-
-## Nix Flake Integration
-
-WHERE a project uses Nix flakes THE developer SHALL merge dependencies from [flake.nix](flake.nix) into the project flake.
-
-THE flake SHALL set `PLAYWRIGHT_BROWSERS_PATH` to `${pkgs.playwright-driver.browsers}`.
-
-THE flake SHALL set `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=true`.
-
-## npm Package
-
-THE project SHALL have a [package.json](package.json) with `@playwright/test` as a devDependency.
-
-THE `@playwright/test` version SHALL match the Nix `playwright-driver.browsers` version.
-
-To check the Nix browser version:
-
-```bash
-nix eval nixpkgs#playwright-driver.browsers.version --raw
-```
-
-THE `.gitignore` SHALL include `node_modules/`.
-
-## Configuration
-
-THE project SHALL have a [playwright.config.ts](playwright.config.ts) at the root.
-
-## Test Environment
-
-THE system SHALL use a dedicated test environment (`.env.test`).
-
-THE test environment SHALL use a different port than development.
-
-THE system SHALL use a separate test database.
-
-THE [load-test-env.nu](load-test-env.nu) script loads the test environment.
-
-## Common Commands
-
-```bash
-just playwright                    # Run all E2E tests
-just playwright -g "pattern"       # Run specific tests
-just playwright-update-snapshots   # Update snapshots (ONLY after intentional UI changes)
-```
+THE test environment SHALL use `.env.test` with a different port than development.
 
 ## Test Isolation
 
@@ -80,64 +42,27 @@ WHERE tests verify rendering or interaction THE system SHALL place them in `clie
 
 ## Fixtures
 
-THE project SHALL have a [fixtures.ts](fixtures.ts) file in `playwright/` directory.
-
-THE fixtures file SHALL export a custom `test` that extends `@playwright/test`.
-
-THE fixtures file SHALL include an auto-fixture that fails tests on console errors.
-
-THE test files SHALL import `test` from `./fixtures` or `../fixtures` instead of `@playwright/test`:
-
-```typescript
-import { expect } from "@playwright/test";
-import { test } from "../fixtures";
-```
+THE test files SHALL import `test` from `./fixtures` or `../fixtures` instead of `@playwright/test`.
 
 THE test files SHALL import `expect` from `@playwright/test`.
 
 ## File Organization
 
-THE test files SHALL reside in `playwright/` directory.
-
-THE test files SHALL use `.spec.ts` suffix.
-
-THE fixtures file SHALL reside at `playwright/fixtures.ts`.
+THE test files SHALL reside in `playwright/` directory with `.spec.ts` suffix.
 
 THE helper functions SHALL reside in `playwright/helpers/`.
 
-THE screenshot baselines SHALL reside in `playwright/screenshots/` as defined by `snapshotPathTemplate` in the config.
+THE screenshot baselines SHALL reside in `playwright/screenshots/`.
 
 ## Subdirectory Organization
 
-THE server tests SHALL be organized by route, mirroring the handler structure.
+THE server tests SHALL be organized by route in `server/`, mirroring the handler structure.
 
-THE server test file SHALL be named after the route (e.g., `historical.spec.ts`).
-
-THE client tests SHALL be organized by view.
-
-WHERE a view has a single test file THE client test file SHALL be named after the route (e.g., `historical.spec.ts`).
+THE client tests SHALL be organized by view in `client/`.
 
 WHERE a view has multiple test files THE client tests SHALL reside in a folder named after the route.
 
-THE client test file for the main view SHALL be named after the route (e.g., `historical.spec.ts`).
-
-THE client test file for a module SHALL be named after the module (e.g., `chart_day.spec.ts`).
-
 WHERE a module is used across multiple views THE module tests SHALL reside in the view folder where they are primarily used.
-
-Example structure:
-
-```
-playwright/
-├── server/
-│   └── historical.spec.ts       # Tests: GET /historical/:ticker
-└── client/
-    └── historical/              # View with multiple tests
-        ├── historical.spec.ts   # Tests: historical view
-        ├── chart_day.spec.ts    # Tests: chart_day module
-        ├── calendar.spec.ts     # Tests: calendar module
-        └── message.spec.ts      # Tests: message module
-```
 
 ## Test Data
 
