@@ -14,12 +14,6 @@ build-macos:
     cp target/x86_64-apple-darwin/release/BINARY_NAME BINARY_NAME-macos-x86_64
     cp target/aarch64-apple-darwin/release/BINARY_NAME BINARY_NAME-macos-arm64
 
-build-windows:
-    rustup target add x86_64-pc-windows-msvc
-    cargo xwin build --release --target x86_64-pc-windows-msvc
-    cp target/x86_64-pc-windows-msvc/release/BINARY_NAME.exe \
-        BINARY_NAME-windows-x86_64.exe
-
 # ---------------- CI WRAPPERS
 
 ci-build-linux:
@@ -39,15 +33,6 @@ ci-build-macos:
         --workdir /work
         ghcr.io/rust-cross/cargo-zigbuild
         ^sh -c "cargo install just && just build-macos")
-
-ci-build-windows:
-    #!/usr/bin/env nu
-    (docker run
-        --rm
-        --volume $"(pwd):/work"
-        --workdir /work
-        ghcr.io/rust-cross/cargo-xwin
-        ^sh -c "cargo install just && just build-windows")
 
 ci-check:
     #!/usr/bin/env nu

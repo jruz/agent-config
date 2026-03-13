@@ -1,7 +1,4 @@
 import { log } from "./log";
-import { z } from "zod";
-
-const ReleaseSchema = z.object({ id: z.number() });
 
 const headers = (token: string) => ({
   Authorization: `token ${token}`,
@@ -51,9 +48,8 @@ const findRelease = async (
   const res = await fetch(url, { headers: headers(token) });
 
   if (res.ok) {
-    const data: unknown = await res.json();
-    const release = ReleaseSchema.parse(data);
-    return release.id;
+    const data = (await res.json()) as { id: number };
+    return data.id;
   }
 
   if (res.status === 404) {
@@ -91,7 +87,8 @@ const main = async () => {
   const token = process.env["CODEBERG_TOKEN"];
   if (!token) throw new Error("CODEBERG_TOKEN is not set");
 
-  const repo = process.env["CI_REPO"] ?? "jruz/REPO_NAME";
+  const repo = process.env["CI_REPO"];
+  if (!repo) throw new Error("CI_REPO is not set");
 
   await deleteLocalTag(tag);
   await deleteRemoteTag(tag);

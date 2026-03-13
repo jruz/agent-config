@@ -20,13 +20,6 @@ steps:
       - cp target/x86_64-apple-darwin/release/BINARY_NAME BINARY_NAME-macos-x86_64
       - cp target/aarch64-apple-darwin/release/BINARY_NAME BINARY_NAME-macos-arm64
 
-  - name: BUILD_WINDOWS
-    image: ghcr.io/rust-cross/cargo-xwin
-    commands:
-      - rustup target add x86_64-pc-windows-msvc
-      - cargo xwin build --release --target x86_64-pc-windows-msvc
-      - cp target/x86_64-pc-windows-msvc/release/BINARY_NAME.exe BINARY_NAME-windows-x86_64.exe
-
   - name: RELEASE
     image: 127.0.0.1:5000/woodpecker-job:v0.0.15
     environment:

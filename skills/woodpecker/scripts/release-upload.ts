@@ -1,8 +1,5 @@
 import { log } from "./log";
 import { Glob } from "bun";
-import { z } from "zod";
-
-const ReleaseSchema = z.object({ id: z.number() });
 
 const headers = (token: string) => ({
   Authorization: `token ${token}`,
@@ -17,10 +14,9 @@ const ensureRelease = async (
   const res = await fetch(url, { headers: headers(token) });
 
   if (res.ok) {
-    const data: unknown = await res.json();
-    const release = ReleaseSchema.parse(data);
-    log.info(`release ${tag} already exists (id: ${release.id})`);
-    return release.id;
+    const data = (await res.json()) as { id: number };
+    log.info(`release ${tag} already exists (id: ${data.id})`);
+    return data.id;
   }
 
   if (res.status !== 404) {
@@ -43,10 +39,9 @@ const ensureRelease = async (
     throw new Error(`create release: ${createRes.status} ${text}`);
   }
 
-  const created: unknown = await createRes.json();
-  const createdRelease = ReleaseSchema.parse(created);
-  log.info(`created release ${tag} (id: ${createdRelease.id})`);
-  return createdRelease.id;
+  const created = (await createRes.json()) as { id: number };
+  log.info(`created release ${tag} (id: ${created.id})`);
+  return created.id;
 };
 
 const upload = async (
