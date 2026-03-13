@@ -1,1 +1,0 @@
-../../typescript/scripts/log.ts

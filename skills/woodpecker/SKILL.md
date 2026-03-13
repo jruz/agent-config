@@ -111,15 +111,12 @@ Templates are in this skill folder:
 
 ### Binary projects (Codeberg releases)
 
-| File                        | Purpose                                                               |
-| --------------------------- | --------------------------------------------------------------------- |
-| `.woodpecker/check.yml`     | Push to main, manual, or PR: run checks via nix develop               |
-| `.woodpecker/tag.yml`       | Push to main: read version from Cargo.toml, create git tag if missing |
-| `.woodpecker/release.yml`   | On tag: multi-platform build (linux, macOS), release upload           |
-| `scripts/release-upload.ts` | TypeScript script to upload release binaries to Codeberg              |
-| `scripts/release-delete.ts` | TypeScript script to delete local/remote tag and Codeberg release     |
-| `justfile`                  | Build recipes for release builds, upload, and delete                  |
-| `woodpecker-settings.yaml`  | Default repo settings template                                        |
+| File                       | Purpose                                                 |
+| -------------------------- | ------------------------------------------------------- |
+| `.woodpecker/check.yml`    | Push to main, manual, or PR: run checks via nix develop |
+| `woodpecker-settings.yaml` | Default repo settings template                          |
+
+Release pipelines, scripts, and justfile recipes are defined in the **release** skill.
 
 ### Dockerfile templates
 
@@ -133,13 +130,11 @@ Copy the appropriate Dockerfile template as `Dockerfile` in the project root.
 
 ### Setup
 
-Copy the appropriate files to the project root. Merge `justfile` recipes into the project's justfile.
+Copy the appropriate files to the project root.
 
 THE project SHALL add `bun` and `woodpecker-cli` to the nix flake devshell packages.
 
 THE project SHALL add `bun` and `woodpecker-cli` versions to the flake shellHook output.
-
-**Note:** `release.yml`, `release-upload.ts`, and `justfile` use `BINARY_NAME` as a placeholder. Replace with the actual binary name. The upload script uses `CI_REPO` (set by Woodpecker) for the Codeberg API repo path.
 
 ## Linting
 
