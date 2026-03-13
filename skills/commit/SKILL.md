@@ -156,7 +156,7 @@ THE developer SHALL use `git rebase -i` to reorganize commits before PR.
 
 THE developer MAY use `git add -p` to split changes across commits.
 
-THE developer MAY use `git-lines` to stage specific lines by line number.
+THE developer MAY use `git-add-lines` to stage specific lines by line number.
 
 THE developer MAY use `git commit --fixup` with `git rebase --autosquash` to target fixes.
 
@@ -164,9 +164,9 @@ THE developer MAY use `git reword <commit> "<new message>"` to reword any commit
 
 THE final commit history SHALL be clean regardless of how it was developed.
 
-### git-lines
+### git-add-lines
 
-THE `git-lines` tool stages specific lines from a file's diff.
+THE `git-add-lines` tool stages specific lines from a file's diff.
 
 THE line numbers are 1-indexed positions within the diff body, NOT file line numbers.
 
@@ -174,20 +174,20 @@ THE numbering starts at line 1 after each hunk header (`@@`) and counts every li
 
 THE developer can only stage changed lines (additions `+` and deletions `-`), not context lines.
 
-TO see the numbered diff THE developer SHALL run `git-lines` with only a filename:
+TO see the numbered diff THE developer SHALL run `git-add-lines` with only a filename:
 
 ```bash
-git-lines src/main.rs                   # show numbered diff
+git-add-lines src/main.rs                   # show numbered diff
 ```
 
 TO stage specific lines THE developer SHALL pass line numbers after the filename:
 
 ```bash
-git-lines src/main.rs 10 15 20          # stage diff lines 10, 15, 20
-git-lines --dry-run src/main.rs 10 15   # preview patch without staging
+git-add-lines src/main.rs 10 15 20          # stage diff lines 10, 15, 20
+git-add-lines --dry-run src/main.rs 10 15   # preview patch without staging
 ```
 
-THE developer SHALL use `git-lines` when `git add -p` hunk boundaries do not align with desired commit boundaries.
+THE developer SHALL use `git-add-lines` when `git add -p` hunk boundaries do not align with desired commit boundaries.
 
 ## Quick Reference
 
