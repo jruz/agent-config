@@ -1,6 +1,6 @@
 ---
 name: chrome
-description: Debug UI with Chrome Browser DevTools MCP.
+description: Debug UI with chrome-cli via CDP. Use when visually verifying changes, taking screenshots, inspecting DOM, network capture, or browser automation.
 ---
 
 # UI Debugging with chrome-cli
@@ -12,7 +12,7 @@ Use `chrome-cli` to control Chrome via CDP for visual verification during develo
 1. Launch: `chrome-cli launch` (returns port)
 2. Navigate: `chrome-cli navigate --port <port> --url <url> --timeout 10000`
 3. Snapshot: `chrome-cli snapshot --port <port>` (get uids)
-4. Screenshot: `chrome-cli screenshot --port <port> --path /tmp/debug.png`
+4. Screenshot: `chrome-cli screenshot --port <port> --format png --path /tmp/debug.png`
 5. Interact using uids from snapshot
 6. Kill: `chrome-cli kill --port <port>`
 
@@ -28,7 +28,7 @@ Use `chrome-cli` to control Chrome via CDP for visual verification during develo
 | `forward`               | Navigate forward              | `--port`                                                                                                        |
 | `reload`                | Reload page                   | `--port [--ignore-cache]`                                                                                       |
 | `snapshot`              | Accessibility tree (get uids) | `--port [--verbose] [--path]`                                                                                   |
-| `screenshot`            | Capture image                 | `--port [--path] [--full-page] [--format] [--quality] [--uid]`                                                  |
+| `screenshot`            | Capture image                 | `--port --format [--path] [--full-page] [--quality] [--uid]`                                                    |
 | `click`                 | Click element                 | `--port --uid [--dbl-click] [--include-snapshot]`                                                               |
 | `hover`                 | Hover element                 | `--port --uid [--include-snapshot]`                                                                             |
 | `fill`                  | Type into input               | `--port --uid --value [--include-snapshot]`                                                                     |
