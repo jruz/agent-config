@@ -19,7 +19,7 @@ steps:
       - docker push 127.0.0.1:5000/${CI_REPO_NAME}:main
 
   - name: DEPLOY
-    image: 127.0.0.1:5000/woodpecker-job:v0.0.15
+    image: 127.0.0.1:5000/woodpecker-job:v0.0.16
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:

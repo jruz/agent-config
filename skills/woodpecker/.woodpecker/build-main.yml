@@ -6,7 +6,7 @@ when:
 
 steps:
   - name: BUILD FRONTEND
-    image: 127.0.0.1:5000/woodpecker-job:v0.0.15
+    image: 127.0.0.1:5000/woodpecker-job:v0.0.16
     commands:
       - . /entrypoint.sh
       - nix develop --command just frontend-install
