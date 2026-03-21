@@ -152,6 +152,7 @@
       "WebFetch(domain:code.claude.com)",
       "WebFetch(domain:developer.mozilla.org)",
       "WebFetch(domain:doc.rust-lang.org)",
+      "WebFetch(domain:docs.docker.com)",
       "WebFetch(domain:docs.python.org)",
       "WebFetch(domain:docs.rs)",
       "WebFetch(domain:gist.github.com)",
@@ -173,7 +174,8 @@
       "Read(**/.config/sops/age/keys.txt)",
       "Read(**/.env)",
       "Read(**/.ssh/*)",
-      "Bash(docker compose*)"
+      "Bash(docker compose*)",
+      "EnterPlanMode"
     ],
     "defaultMode": "acceptEdits"
   },
@@ -226,11 +228,13 @@
     "command": "~/.cargo/bin/claude-statusline"
   },
   "enabledPlugins": {},
+  "outputStyle": "Direct",
   "spinnerTipsEnabled": false,
   "spinnerVerbs": {
     "mode": "replace",
     "verbs": ["Thinking"]
   },
+  "effortLevel": "high",
   "promptSuggestionEnabled": false,
   "autoUpdatesChannel": "stable",
   "prefersReducedMotion": true,
