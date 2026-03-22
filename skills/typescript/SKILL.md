@@ -343,7 +343,7 @@ declare global {
 | ------------ | --------------------------------------------- |
 | Bun/Node CLI | ESLint (see `eslint.md` in this skill folder) |
 | Next.js      | ESLint (see `eslint.md` in this skill folder) |
-| Web frontend | Biome (Skill(checks))                         |
+| Web frontend | ESLint (see `eslint.md` in this skill folder) |
 
 THE developer SHALL NOT bypass the linter by adding ignore comments.
 
@@ -357,10 +357,10 @@ THE project SHALL pin the Bun or Node version (e.g., `.node-version`, `package.j
 
 ### Base Dependencies
 
-Install with latest versions when setting up a new project:
+Copy `package.json` from this skill folder to the project root, then install:
 
 ```bash
-bun install --dev @tsconfig/strictest @types/bun typescript eslint @eslint/js typescript-eslint jiti prettier
+bun install
 ```
 
 THE system SHALL pin exact dependency versions in `package.json` (no `^` or `~` prefix).
