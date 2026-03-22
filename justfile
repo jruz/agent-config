@@ -11,6 +11,7 @@ link:
     ln -sfn {{justfile_directory()}}/skills ~/.claude/skills
     ln -sfn {{justfile_directory()}}/settings.json ~/.claude/settings.json
     ln -sfn {{justfile_directory()}}/CLAUDE.md ~/.claude/CLAUDE.md
+    ln -sfn {{justfile_directory()}}/output-styles ~/.claude/output-styles
 
 # TypeScript
 ts-check:
