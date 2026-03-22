@@ -349,6 +349,14 @@ THE developer SHALL NOT bypass the linter by adding ignore comments.
 
 THE system SHALL integrate linting into the CI pipeline.
 
+## Package Manager
+
+THE system SHALL use `bun` as the default package manager and runtime.
+
+WHERE the project uses Playwright, THE system SHALL use `pnpm` instead of `bun` (available via the project's Nix flake).
+
+THE system SHALL NOT use `npm` or `yarn`.
+
 ## Dependencies
 
 ### Runtime
@@ -367,4 +375,4 @@ THE system SHALL pin exact dependency versions in `package.json` (no `^` or `~` 
 
 THE developer SHALL check pinned versions for API compatibility.
 
-WHERE external libraries are added THE system SHALL install them via `bun add` or `npm install`.
+WHERE external libraries are added THE system SHALL install them via `bun add` (or `pnpm add` for Playwright projects).
