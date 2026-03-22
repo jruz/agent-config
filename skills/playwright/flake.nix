@@ -14,7 +14,7 @@
       {
         devShells.default = pkgs.mkShell {
           buildInputs = [
-            pkgs.nodejs_24
+            pkgs.pnpm
           ];
 
           shellHook = ''
@@ -22,7 +22,7 @@
             export PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=true
             echo ""
             echo "  Playwright (nix):  ${pkgs.playwright-driver.version}"
-            echo "  Playwright (npm):  $(npx playwright --version)"
+            echo "  Playwright (pnpm): $(pnpm exec playwright --version)"
             echo ""
           '';
         };

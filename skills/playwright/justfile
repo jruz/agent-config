@@ -8,10 +8,10 @@ playwright *ARGS='':
   #!/usr/bin/env nu
   ^just playwright-build
   source {{justfile_directory()}}/scripts/load-test-env.nu
-  ^npx playwright test {{ARGS}}
+  ^pnpm exec playwright test {{ARGS}}
 
 playwright-update-snapshots:
   #!/usr/bin/env nu
   ^just playwright-build
   source {{justfile_directory()}}/scripts/load-test-env.nu
-  ^npx playwright test --update-snapshots
+  ^pnpm exec playwright test --update-snapshots

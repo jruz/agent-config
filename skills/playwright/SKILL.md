@@ -5,6 +5,12 @@ description: Write Playwright E2E tests. Use when creating integration tests or 
 
 # Playwright Testing
 
+## Package Manager
+
+THE system SHALL use `pnpm` for Playwright projects (available via the Nix devShell flake in dotfiles).
+
+THE system SHALL NOT use `npm`, `yarn`, or `bun` for Playwright projects.
+
 ## Installation
 
 Merge these files into the project:
