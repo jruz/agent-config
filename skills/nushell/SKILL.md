@@ -351,20 +351,20 @@ THE `^` prefix SHALL be used to invoke external commands directly without `exter
 
 ## Colored Output
 
-THE nushell scripts SHALL use text prefixes for all message types:
+THE nushell scripts SHALL use bracketed prefixes with only the label colored:
 
-- `OK:` for success messages (green)
-- `WARN:` for warnings (yellow)
-- `ERROR:` for errors (red, via error make)
-- No prefix for informational messages (white)
+- `[INFO]` in blue for informational messages
+- `[WARN]` in yellow for warnings
+- `[ERROR]` in red for errors
+- `[OK]` in green for success messages
 
 THE nushell scripts SHALL use the `ansi` command for colored output.
 
 ```nushell
-print $"(ansi green)OK: Success message(ansi reset)"
-print $"(ansi yellow)WARN: Warning message(ansi reset)"
-print "Info message"
-error make {msg: "ERROR: Error message"}
+print $"[(ansi blue)INFO(ansi reset)] ($msg)"
+print $"[(ansi yellow)WARN(ansi reset)] ($msg)"
+print $"[(ansi red)ERROR(ansi reset)] ($msg)"
+print $"[(ansi green)OK(ansi reset)] ($msg)"
 ```
 
 THE colored output SHALL always end with `(ansi reset)` to restore default colors.
