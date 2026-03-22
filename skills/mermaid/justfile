@@ -1,15 +1,10 @@
 mermaid-check:
   #!/usr/bin/env nu
-  let chrome = (
-      ^fd --type executable --follow headless_shell
-          $env.PLAYWRIGHT_BROWSERS_PATH
-      | lines
-      | first
-  )
   glob specs/**/*.mmd | each { |f|
-      print $"Checking ($f)"
-      with-env { PUPPETEER_EXECUTABLE_PATH: $chrome } {
-          ^mmdc --input $f --output /tmp/mermaid-check.svg
-      }
+      print $"[(ansi blue)INFO(ansi reset)] Checking ($f)"
+      ^mmdc --input $f --output /tmp/mermaid-check.svg
   }
-  print $"(ansi green)OK: Mermaid diagrams are valid(ansi reset)"
+  print $"[(ansi green)OK(ansi reset)] Mermaid diagrams are valid"
+
+mermaid-preview:
+    bun run scripts/mermaid-preview.ts

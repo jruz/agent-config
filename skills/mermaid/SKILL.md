@@ -15,22 +15,39 @@ Validate Mermaid diagram files using `mmdc` (Mermaid CLI).
 
 ## Templates
 
-| File         | Purpose                      |
-| ------------ | ---------------------------- |
-| `justfile`   | Recipe for `mermaid-check`   |
-| `devenv.nix` | Devenv packages and env vars |
+| File                         | Purpose                         |
+| ---------------------------- | ------------------------------- |
+| `justfile`                   | Recipes                         |
+| `flake.nix`                  | Nix flake packages and env vars |
+| `scripts/mermaid-preview.ts` | Live preview server (Bun)       |
+| `scripts/log.ts`             | Logging utility                 |
+| `example.mmd`                | Example flowchart               |
 
-## Dependencies
+## Flowchart Shapes (ISO 5807)
 
-| Tool     | Nix Package                       | Purpose                        |
-| -------- | --------------------------------- | ------------------------------ |
-| `mmdc`   | `pkgs.mermaid-cli`                | Mermaid CLI renderer/validator |
-| Chromium | `pkgs.playwright-driver.browsers` | Headless browser for rendering |
+| Syntax     | Shape          | Use for              |
+| ---------- | -------------- | -------------------- |
+| `[text]`   | Rectangle      | Process / action     |
+| `{text}`   | Diamond        | Decision / branching |
+| `[/text/]` | Parallelogram  | Output to user       |
+| `([text])` | Pill / stadium | Start / end          |
+| `[(text)]` | Cylinder       | Data store           |
+| `((text))` | Circle         | Connector            |
+
+## Styling
+
+Use `classDef` and `class` instead of per-node `style` lines.
+
+| Class        | Color  | Hex       | Use for      |
+| ------------ | ------ | --------- | ------------ |
+| `ok`         | Green  | `#a6e3a1` | Ok / skip    |
+| `action`     | Yellow | `#f9e2af` | Warnings     |
+| `error`      | Red    | `#f38ba8` | Errors       |
+| `sideEffect` | Mauve  | `#cba6f7` | Side effects |
+
+Node text: `#1e1e2e`, node border: `#1e1e2e`.
 
 ## Rules
 
-THE recipe SHALL use Playwright's bundled Chromium via `PUPPETEER_EXECUTABLE_PATH`.
-
-THE recipe SHALL use nushell for cross-platform compatibility.
-
-THE glob pattern SHALL match the project's diagram directory (e.g., `specs/**/*.mmd`).
+- Recipes use nushell
+- Glob pattern matches the project's diagram directory (e.g., `specs/**/*.mmd`)

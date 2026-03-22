@@ -1,0 +1,22 @@
+---
+title: Example
+---
+
+flowchart TD
+    Start([start]) --> Check{condition?}
+
+    Check -->|yes| Action[do something]
+    Action --> SideEffect[side effect]
+
+    Check -->|no| Warn[/warning: reason/]
+
+    SideEffect --> Ok[ok: done]
+
+    classDef ok fill:#a6e3a1,color:#1e1e2e,stroke:#1e1e2e
+    classDef action fill:#f9e2af,color:#1e1e2e,stroke:#1e1e2e
+    classDef error fill:#f38ba8,color:#1e1e2e,stroke:#1e1e2e
+    classDef sideEffect fill:#cba6f7,color:#1e1e2e,stroke:#1e1e2e
+
+    class Ok ok
+    class Warn action
+    class SideEffect sideEffect
