@@ -4,12 +4,16 @@ when:
 steps:
   - name: BUILD_LINUX
     image: ghcr.io/rust-cross/cargo-zigbuild:0.21.4
+    environment:
+      REVISION: $${CI_COMMIT_SHA}
     commands:
       - scripts/release-build.sh unknown-linux-gnu x86_64
       - scripts/release-build.sh unknown-linux-gnu aarch64
 
   - name: BUILD_MACOS
     image: ghcr.io/rust-cross/cargo-zigbuild:0.21.4
+    environment:
+      REVISION: $${CI_COMMIT_SHA}
     commands:
       - scripts/release-build.sh apple-darwin x86_64
       - scripts/release-build.sh apple-darwin aarch64

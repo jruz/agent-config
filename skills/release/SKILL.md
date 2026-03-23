@@ -23,9 +23,13 @@ THE `main.rs` SHALL declare `mod version;`.
 
 ## REVISION Environment Variable
 
+THE project SHALL contain a `.envrc` from the template at `skills/release/.envrc`.
+
 THE `.envrc` SHALL append `export REVISION=dev` for local development.
 
 THE Woodpecker CI steps SHALL set `REVISION: $${CI_COMMIT_SHA}` in their environment.
+
+AFTER modifying `.envrc` THE system SHALL tell the user to reload their shell and wait for confirmation before proceeding with any build or check commands.
 
 ## Nix Flake
 
@@ -63,13 +67,14 @@ WHEN adding release versioning to a project THE system SHALL:
 2. Create `src/version.rs` from `skills/release/src/version.rs`
 3. Add `mod version;` to `main.rs`
 4. Set `#[command(version = version::clap_version())]` on the clap parser
-5. Add `export REVISION=dev` to `.envrc`
-6. Add `REVISION: $${CI_COMMIT_SHA}` to all Woodpecker CI build steps
-7. Create `flake.nix` from `skills/release/flake.nix`, replacing `description` and adding project-specific dev dependencies
-8. Create `.woodpecker/tag.yml` from `skills/release/.woodpecker/tag.yml`
-9. Create `.woodpecker/release.yml` from `skills/release/.woodpecker/release.yml`
-10. Create `scripts/release-build.sh` from `skills/release/scripts/release-build.sh`
-11. Create `scripts/release-upload.ts` from `skills/release/scripts/release-upload.ts`
-12. Create `scripts/release-delete.ts` from `skills/release/scripts/release-delete.ts`
-13. Create `scripts/log.ts` from `skills/release/scripts/log.ts`
-14. Merge recipes from `skills/release/justfile` into the project justfile
+5. Create `.envrc` from `skills/release/.envrc`, preserving any existing content
+6. Tell the user to reload their shell and wait for confirmation before running any build or check commands
+7. Add `REVISION: $${CI_COMMIT_SHA}` to all Woodpecker CI build steps
+8. Create `flake.nix` from `skills/release/flake.nix`, replacing `description` and adding project-specific dev dependencies
+9. Create `.woodpecker/tag.yml` from `skills/release/.woodpecker/tag.yml`
+10. Create `.woodpecker/release.yml` from `skills/release/.woodpecker/release.yml`
+11. Create `scripts/release-build.sh` from `skills/release/scripts/release-build.sh`
+12. Create `scripts/release-upload.ts` from `skills/release/scripts/release-upload.ts`
+13. Create `scripts/release-delete.ts` from `skills/release/scripts/release-delete.ts`
+14. Create `scripts/log.ts` from `skills/release/scripts/log.ts`
+15. Merge recipes from `skills/release/justfile` into the project justfile
