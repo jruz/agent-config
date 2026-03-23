@@ -28,7 +28,6 @@ rust-check:
     just rust-cargo-check
     just rust-fmt-check
     just rust-clippy-check
-    just rust-test
 
 rust-clippy-check *ARGS='':
     cargo clippy --all-targets {{ARGS}}

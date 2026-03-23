@@ -516,6 +516,8 @@ THE justfile template is available at `skills/rust/justfile`.
 
 This template contains all Rust recipes: build, check, clippy, fmt-check, fmt-fix, fix, test, install, outdated, upgrade.
 
+THE project SHALL have a pre-push git hook as defined in the `checks` skill Git Hooks section.
+
 ## Serialization
 
 THE system SHALL use `serde` for JSON serialization.
