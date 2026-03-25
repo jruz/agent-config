@@ -195,7 +195,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.cargo/bin/claude-hooks stop",
+            "command": "~/.nix-profile/bin/claude-hooks stop",
             "timeout": 300
           }
         ]
@@ -207,7 +207,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.cargo/bin/claude-hooks pre-tool-use"
+            "command": "~/.nix-profile/bin/claude-hooks pre-tool-use"
           }
         ]
       }
@@ -217,7 +217,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.cargo/bin/claude-hooks prompt-submit"
+            "command": "~/.nix-profile/bin/claude-hooks prompt-submit"
           }
         ]
       }
@@ -225,7 +225,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "~/.cargo/bin/claude-statusline"
+    "command": "~/.nix-profile/bin/claude-statusline"
   },
   "enabledPlugins": {},
   "outputStyle": "Direct",
