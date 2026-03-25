@@ -1,5 +1,13 @@
 import { log } from "./log";
 
+const parseId = (data: unknown): number => {
+  if (typeof data !== "object" || data === null || !("id" in data))
+    throw new Error("missing id in response");
+  const { id } = data;
+  if (typeof id !== "number") throw new Error("id is not a number");
+  return id;
+};
+
 const headers = (token: string) => ({
   Authorization: `token ${token}`,
 });
@@ -15,7 +23,7 @@ const repoFromRemote = async (): Promise<string> => {
   const result = await run(["git", "remote", "get-url", "origin"]);
   if (!result.ok) throw new Error("failed to get origin remote URL");
   const match = /codeberg\.org[:/](.+?)(?:\.git)?$/.exec(result.stdout);
-  if (!match)
+  if (!match?.[1])
     throw new Error(`cannot parse repo from remote: ${result.stdout}`);
   return match[1];
 };
@@ -57,8 +65,7 @@ const findRelease = async (
   const res = await fetch(url, { headers: headers(token) });
 
   if (res.ok) {
-    const data = (await res.json()) as { id: number };
-    return data.id;
+    return parseId(await res.json());
   }
 
   if (res.status === 404) {

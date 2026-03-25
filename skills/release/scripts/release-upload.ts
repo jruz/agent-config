@@ -1,6 +1,14 @@
 import { log } from "./log";
 import { Glob } from "bun";
 
+const parseId = (data: unknown): number => {
+  if (typeof data !== "object" || data === null || !("id" in data))
+    throw new Error("missing id in response");
+  const { id } = data;
+  if (typeof id !== "number") throw new Error("id is not a number");
+  return id;
+};
+
 const headers = (token: string) => ({
   Authorization: `token ${token}`,
 });
@@ -14,9 +22,9 @@ const ensureRelease = async (
   const res = await fetch(url, { headers: headers(token) });
 
   if (res.ok) {
-    const data = (await res.json()) as { id: number };
-    log.info(`release ${tag} already exists (id: ${data.id})`);
-    return data.id;
+    const id = parseId(await res.json());
+    log.info(`release ${tag} already exists (id: ${id})`);
+    return id;
   }
 
   if (res.status !== 404) {
@@ -39,9 +47,9 @@ const ensureRelease = async (
     throw new Error(`create release: ${createRes.status} ${text}`);
   }
 
-  const created = (await createRes.json()) as { id: number };
-  log.info(`created release ${tag} (id: ${created.id})`);
-  return created.id;
+  const id = parseId(await createRes.json());
+  log.info(`created release ${tag} (id: ${id})`);
+  return id;
 };
 
 const upload = async (
