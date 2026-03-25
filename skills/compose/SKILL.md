@@ -90,7 +90,7 @@ processes:
     env:
       PGPORT: "61001"
     health:
-      command: "pg_isready --username=$POSTGRES_USER"
+      command: "pg_isready --username=${POSTGRES_USER}"
       interval_secs: 2
       timeout_secs: 30
 
@@ -115,7 +115,7 @@ processes:
     depends_on:
       - reset
     health:
-      command: "curl --fail --silent http://localhost:$APP_PORT/health"
+      command: "curl --fail --silent http://localhost:${APP_PORT}/health"
       interval_secs: 2
       timeout_secs: 60
 
@@ -177,13 +177,37 @@ playwright:
       - "./test-results:/app/test-results"
 ```
 
+## Variable Interpolation
+
+All string values support `${VAR}` interpolation. Variables resolve from: inline `env`, `env_file`, `--env-file`, and host environment. Undefined variables stay literal.
+
+THE string values SHALL use `${VAR}` syntax (not `$VAR`) for compose-level interpolation.
+
+Interpolation applies to: `command`, `exec`, `ports`, `volumes`, `health.command`, `health.exec`.
+
+```yaml
+processes:
+  api:
+    docker:
+      build: .
+      ports:
+        - "${API_PORT}:${API_PORT}"
+    env:
+      API_PORT: "8000"
+    command: "uvicorn app:app --port ${API_PORT}"
+    health:
+      exec: ["curl", "--fail", "http://localhost:${API_PORT}/health"]
+      interval_secs: 2
+      timeout_secs: 15
+```
+
 ## Health Checks
 
 THE health checks SHALL use `command` for shell commands:
 
 ```yaml
 health:
-  command: "pg_isready --username=$POSTGRES_USER"
+  command: "pg_isready --username=${POSTGRES_USER}"
   interval_secs: 2
   timeout_secs: 30
 ```
@@ -192,12 +216,7 @@ THE health checks MAY use `exec` for non-shell execution:
 
 ```yaml
 health:
-  exec:
-    [
-      "bun",
-      "-e",
-      "const r = await fetch('http://localhost:3000/healthz'); process.exit(r.ok ? 0 : 1)",
-    ]
+  exec: ["curl", "--fail", "http://localhost:${APP_PORT}/health"]
   interval_secs: 1
   timeout_secs: 30
 ```

@@ -1,7 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
-    composeSrc.url = "git+https://codeberg.org/jruz/compose.git?ref=refs/tags/v0.1.2";
+    composeSrc.url = "git+https://codeberg.org/jruz/compose.git?ref=refs/tags/v0.4.1";
   };
 
   outputs = { nixpkgs, composeSrc, ... }:
