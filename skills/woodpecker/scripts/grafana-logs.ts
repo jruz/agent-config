@@ -15,7 +15,43 @@ type LokiResponse = {
   };
 };
 
-function main() {
+function parseLokiStream(data: unknown): LokiStream {
+  if (
+    typeof data !== "object" ||
+    data === null ||
+    !("values" in data) ||
+    !Array.isArray(data.values)
+  )
+    throw new Error("unexpected stream shape");
+  return {
+    values: data.values.map((v: unknown) => {
+      if (
+        !Array.isArray(v) ||
+        v.length !== 2 ||
+        typeof v[0] !== "string" ||
+        typeof v[1] !== "string"
+      )
+        throw new Error("unexpected stream value shape");
+      return [v[0], v[1]];
+    }),
+  };
+}
+
+function parseLokiResponse(data: unknown): LokiResponse {
+  if (
+    typeof data !== "object" ||
+    data === null ||
+    !("data" in data) ||
+    typeof data.data !== "object" ||
+    data.data === null ||
+    !("result" in data.data) ||
+    !Array.isArray(data.data.result)
+  )
+    throw new Error("unexpected Loki response shape");
+  return { data: { result: data.data.result.map(parseLokiStream) } };
+}
+
+function parseArgs(): { stack: string; limit: number } {
   const args = process.argv.slice(2);
   const stack = args[0];
   const limit = args[1] ? Number(args[1]) : DEFAULT_LIMIT;
@@ -30,40 +66,46 @@ function main() {
     process.exit(1);
   }
 
+  return { stack, limit };
+}
+
+function formatEntries(results: LokiStream[]): string {
+  const entries = results.flatMap((stream) => stream.values);
+  return entries
+    .map(([ts, msg]) => {
+      const date = new Date(Number(ts) / 1_000_000);
+      const formatted = date.toISOString().replace("T", " ").slice(0, 19);
+      return `${formatted} ${msg.trim()}`;
+    })
+    .sort()
+    .join("\n");
+}
+
+async function main() {
+  const { stack, limit } = parseArgs();
   const query = encodeURIComponent(`{stack="${stack}"}`);
   const url = `${GRAFANA_URL}/api/datasources/proxy/uid/${LOKI_UID}/loki/api/v1/query_range?query=${query}&limit=${limit}`;
 
-  fetch(url)
-    .then((res) => {
-      if (!res.ok) {
-        log.error(`Grafana returned ${res.status}: ${res.statusText}`);
-        process.exit(1);
-      }
-      return res.json() as Promise<LokiResponse>;
-    })
-    .then((body) => {
-      const results = body.data.result;
-
-      if (results.length === 0) {
-        log.warn("No logs found");
-        return;
-      }
-
-      const entries = results.flatMap((stream) => stream.values);
-      const logs = entries
-        .map(([ts, msg]) => {
-          const date = new Date(Number(ts) / 1_000_000);
-          const formatted = date.toISOString().replace("T", " ").slice(0, 19);
-          return `${formatted} ${msg.trim()}`;
-        })
-        .sort();
-
-      console.log(logs.join("\n"));
-    })
-    .catch((err) => {
-      log.error(`Failed to fetch logs: ${err}`);
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      log.error(`Grafana returned ${res.status}: ${res.statusText}`);
       process.exit(1);
-    });
+    }
+
+    const body = parseLokiResponse(await res.json());
+    const results = body.data.result;
+
+    if (results.length === 0) {
+      log.warn("No logs found");
+      return;
+    }
+
+    console.log(formatEntries(results));
+  } catch (err: unknown) {
+    log.error(`Failed to fetch logs: ${String(err)}`);
+    process.exit(1);
+  }
 }
 
-main();
+void main();
