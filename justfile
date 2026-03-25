@@ -15,9 +15,17 @@ link:
 
 # TypeScript
 ts-check:
-    npx prettier --check .
-    npx tsc --noEmit
-    bun run eslint .
+    #!/usr/bin/env nu
+    let results = [
+        (do { ^npx prettier --check . } | complete)
+        (do { ^npx tsc --noEmit } | complete)
+        (do { ^bun run eslint . } | complete)
+    ]
+    $results | each { |r|
+        if ($r.stdout | str trim) != "" { print $r.stdout }
+        if ($r.stderr | str trim) != "" { print --stderr $r.stderr }
+    }
+    if ($results | any { |r| $r.exit_code != 0 }) { exit 1 }
 
 ts-fix:
     npx prettier --write .
