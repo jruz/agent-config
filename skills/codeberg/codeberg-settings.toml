@@ -42,7 +42,7 @@ enable_time_tracker = true
 apply_to_admins = true
 enable_push = true
 enable_status_check = true
-status_check_contexts = []
+status_check_contexts = ["ci/woodpecker/push/check", "ci/woodpecker/pr/check"]
 
 [labels.bugs]
 color = "d73a4a"
