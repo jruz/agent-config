@@ -19,6 +19,7 @@
             just
             nodejs
             ripgrep
+            woodpecker-cli
           ];
 
           shellHook = ''
@@ -27,6 +28,7 @@
             echo "  ───────────────────────────"
             echo "  bun ${pkgs.bun.version}"
             echo "  node ${pkgs.nodejs.version}"
+            echo "  woodpecker-cli ${pkgs.woodpecker-cli.version}"
             echo ""
           '';
         };

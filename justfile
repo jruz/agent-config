@@ -1,8 +1,15 @@
+setup:
+    bun install
+
 fix:
     just ts-fix
 
 check:
+    just ci-check
     just ts-check
+
+ci-check:
+    woodpecker-cli lint .woodpecker/
 
 link:
     ln -sfn {{justfile_directory()}}/agents ~/.claude/agents
