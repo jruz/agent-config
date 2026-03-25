@@ -3,7 +3,7 @@ import { log } from "./log.ts";
 
 const root = process.cwd();
 
-const listMmdFiles = async (): Promise<string[]> => {
+const listMmdFiles = (): string[] => {
   const glob = new Glob("specs/**/*.mmd");
   const files = Array.from(glob.scanSync({ cwd: root }));
   return files.sort();
@@ -143,7 +143,7 @@ const server = Bun.serve({
     }
 
     if (url.pathname === "/api/files") {
-      const files = await listMmdFiles();
+      const files = listMmdFiles();
       return Response.json(files);
     }
 
