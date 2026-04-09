@@ -1,6 +1,7 @@
 {
   "env": {
-    "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1"
+    "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
+    "CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING": "1"
   },
   "attribution": {
     "commit": "",
@@ -122,6 +123,7 @@
       "Skill(checks)",
       "Skill(chrome)",
       "Skill(commands)",
+      "Skill(docker)",
       "Skill(ears)",
       "Skill(git-commits)",
       "Skill(git-hooks)",
@@ -137,6 +139,7 @@
       "Skill(playwright)",
       "Skill(pr)",
       "Skill(rust)",
+      "Skill(sandbox)",
       "Skill(scss)",
       "Skill(skills)",
       "Skill(slop-detector)",
@@ -195,8 +198,16 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.nix-profile/bin/claude-hooks stop",
+            "command": "~/.cargo/bin/claude-hooks stop",
             "timeout": 300
+          },
+          {
+            "type": "command",
+            "command": "~/.cargo/bin/tab-renamer-hook question"
+          },
+          {
+            "type": "command",
+            "command": "~/.cargo/bin/claude-trees-hook question"
           }
         ]
       }
@@ -207,7 +218,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.nix-profile/bin/claude-hooks pre-tool-use"
+            "command": "~/.cargo/bin/claude-hooks pre-tool-use --agent claude"
           }
         ]
       }
@@ -217,7 +228,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.nix-profile/bin/claude-hooks prompt-submit"
+            "command": "~/.cargo/bin/tab-renamer-hook thinking"
+          },
+          {
+            "type": "command",
+            "command": "~/.cargo/bin/claude-trees-hook thinking"
           }
         ]
       }
