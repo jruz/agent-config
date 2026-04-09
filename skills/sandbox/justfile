@@ -1,0 +1,10 @@
+check:
+    sandbox just ts-check
+
+ts-check:
+    bun run prettier --check .
+    bun run tsc --noEmit
+    bun run eslint .
+
+sandbox-test:
+    bun scripts/sandbox-test.ts
