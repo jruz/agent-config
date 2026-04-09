@@ -7,8 +7,15 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { nixpkgs, rust-overlay, flake-utils, ... }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      nixpkgs,
+      rust-overlay,
+      flake-utils,
+      ...
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         overlays = [ (import rust-overlay) ];
         pkgs = import nixpkgs { inherit system overlays; };
@@ -24,12 +31,12 @@
           rust
         ];
         darwinPackages = with pkgs; [ libiconv ];
-        linuxPackages = with pkgs; [ glibc glibcLocales ];
+        linuxPackages = with pkgs; [
+          glibc
+          glibcLocales
+        ];
         platformPackages =
-          if pkgs.stdenv.isDarwin then
-            commonPackages ++ darwinPackages
-          else
-            commonPackages ++ linuxPackages;
+          if pkgs.stdenv.isDarwin then commonPackages ++ darwinPackages else commonPackages ++ linuxPackages;
       in
       {
         devShells.default = pkgs.mkShell {
@@ -41,9 +48,11 @@
             echo "  ───────────────────────────"
             echo "  Rust:        ${rustVersion}"
             echo ""
-          '' + pkgs.lib.optionalString pkgs.stdenv.isLinux ''
+          ''
+          + pkgs.lib.optionalString pkgs.stdenv.isLinux ''
             export LOCALE_ARCHIVE="${pkgs.glibcLocales}/lib/locale/locale-archive"
           '';
         };
-      });
+      }
+    );
 }
