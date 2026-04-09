@@ -157,17 +157,23 @@ def greet_all [...names: string] {
 }
 ```
 
-### Error Handling with error make
+### Error Handling with log and exit
 
-THE nushell scripts SHALL use `error make` to create proper nushell errors.
+THE nushell scripts SHALL use `use log.nu` and call `log err` followed by `exit 1` for user-facing errors.
+
+THE project SHALL contain `scripts/log.nu` from the template at `skills/nushell/scripts/log.nu`.
 
 ```nushell
+use log.nu
+
 if ($env.PORT? | is-empty) {
-    error make {msg: "PORT environment variable is not set"}
+    log err "PORT environment variable is not set"
+    exit 1
 }
 
 if not ($path | path exists) {
-    error make {msg: $"Path does not exist: ($path)"}
+    log err $"Path does not exist: ($path)"
+    exit 1
 }
 ```
 
