@@ -3,3 +3,4 @@ rules = []
 files = []
 
 [ignore.by-rule]
+no-direct-env-access = ["skills/release/src/build.rs"]
