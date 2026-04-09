@@ -1,8 +1,8 @@
-# claude base
+# rules
 
 - be concise. avoid long-winded explanations.
-- don't ask questions you can answer yourself. research first, ask only when stuck or before dangerous operations
-- never give opinions or recommendations unless the user asks for them
+- don't ask questions you can answer yourself. research first, ask only when stuck.
+- don't ask the user to run commands, run them
 - when asking the user to make decisions, present one point at a time. wait for feedback, apply it, then proceed to the next
 - prefer bullet points over paragraphs
 
@@ -65,7 +65,7 @@
 - Global Skills: ~/dev/.claude/skills/
 - Global Settings: ~/dev/.claude/settings.json
 - Global Hooks: ~/dev/.claude/hooks/
-- Personal Projects: ~/dev/projects/
+- Personal Projects: /mnt/work/projects/
 - Dotfiles: ~/dev/dotfiles/
 
 # claude tools
