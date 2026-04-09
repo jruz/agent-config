@@ -82,6 +82,18 @@ gh search code "pattern" --json path --jq '.[].path'
 
 Available JSON fields: `path`, `repository`, `sha`, `textMatches`, `url`
 
+## Rate Limits
+
+Code search uses a separate `code_search` bucket.
+
+```bash
+gh api rate_limit | jq '.resources | { core, search, code_search }'
+```
+
+Use one broad query, then inspect results locally instead of issuing many near-duplicate searches.
+
+If `code_search.remaining` is low, stop and wait for `code_search.reset`.
+
 ## Key Rules
 
 - Requires authentication via `gh auth login`
