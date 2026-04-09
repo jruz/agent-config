@@ -61,6 +61,10 @@ THE project SHALL contain `scripts/release-delete.ts` from the template at `skil
 
 THE project SHALL contain `scripts/log.ts` from the template at `skills/release/scripts/log.ts`.
 
+THE project SHALL contain `scripts/log.nu` from the template at `skills/nushell/scripts/log.nu`.
+
+THE project SHALL contain `scripts/release-bump.nu` from the template at `skills/release/scripts/release-bump.nu`.
+
 ## Justfile Recipes
 
 THE project SHALL merge recipes from `skills/release/justfile` into the project justfile.
@@ -105,6 +109,8 @@ WHEN adding release versioning to a project THE system SHALL:
 12. Create `scripts/release-upload.ts` from `skills/release/scripts/release-upload.ts`
 13. Create `scripts/release-delete.ts` from `skills/release/scripts/release-delete.ts`
 14. Create `scripts/log.ts` from `skills/release/scripts/log.ts`
-15. Merge recipes from `skills/release/justfile` into the project justfile
-16. Merge entries from `skills/release/.gitignore` into the project `.gitignore`
-17. Enable releases on Codeberg (`has_releases = true`) via the codeberg skill
+15. Create `scripts/log.nu` from `skills/release/scripts/log.nu`
+16. Create `scripts/release-bump.nu` from `skills/release/scripts/release-bump.nu`
+17. Merge recipes from `skills/release/justfile` into the project justfile
+18. Merge entries from `skills/release/.gitignore` into the project `.gitignore`
+19. Enable releases on Codeberg (`has_releases = true`) via the codeberg skill

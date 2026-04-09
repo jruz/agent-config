@@ -1,0 +1,1 @@
+../../nushell/scripts/log.nu

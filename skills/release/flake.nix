@@ -7,30 +7,31 @@
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, rust-overlay, ... }:
-    let
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ];
-      forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f {
+  outputs =
+    {
+      self,
+      nixpkgs,
+      rust-overlay,
+      flake-utils,
+      ...
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
+      let
         pkgs = import nixpkgs {
           inherit system;
           overlays = [ rust-overlay.overlays.default ];
         };
-      });
-      cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
-      revision = self.rev or "dirty";
-    in
-    {
-      packages = forAllSystems ({ pkgs }: {
-        default = pkgs.rustPlatform.buildRustPackage {
+        cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
+        revision = self.rev or "dirty";
+      in
+      {
+        packages.default = pkgs.rustPlatform.buildRustPackage {
           pname = cargoToml.package.name;
-          version = cargoToml.package.version;
+          inherit (cargoToml.package) version;
           src = ./.;
           cargoLock.lockFile = ./Cargo.lock;
           REVISION = revision;
@@ -38,10 +39,8 @@
           doCheck = false;
           buildInputs = pkgs.lib.optionals pkgs.stdenv.isDarwin [ pkgs.libiconv ];
         };
-      });
 
-      devShells = forAllSystems ({ pkgs }: {
-        default = pkgs.mkShell {
+        devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             (rust-bin.fromRustupToolchainFile ./rust-toolchain.toml)
           ];
@@ -54,6 +53,6 @@
             echo ""
           '';
         };
-      });
-    };
+      }
+    );
 }

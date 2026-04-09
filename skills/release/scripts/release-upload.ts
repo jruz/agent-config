@@ -22,7 +22,8 @@ const ensureRelease = async (
   const res = await fetch(url, { headers: headers(token) });
 
   if (res.ok) {
-    const id = parseId(await res.json());
+    const data: unknown = await res.json();
+    const id = parseId(data);
     log.info(`release ${tag} already exists (id: ${id})`);
     return id;
   }
@@ -47,7 +48,8 @@ const ensureRelease = async (
     throw new Error(`create release: ${createRes.status} ${text}`);
   }
 
-  const id = parseId(await createRes.json());
+  const createData: unknown = await createRes.json();
+  const id = parseId(createData);
   log.info(`created release ${tag} (id: ${id})`);
   return id;
 };
@@ -94,7 +96,8 @@ const main = async () => {
   if (!name) throw new Error("CI_REPO_NAME is not set");
 
   const glob = new Glob(`${name}-*`);
-  const files = Array.from(glob.scanSync("."));
+  const scanned = glob.scanSync(".");
+  const files = Array.from(scanned);
 
   if (files.length === 0) {
     log.error(`no ${name}-* files found`);
@@ -103,13 +106,12 @@ const main = async () => {
 
   const releaseId = await ensureRelease(tag, token, repo);
 
-  await Promise.all(
-    files.map(async (file) => {
-      log.info(`uploading ${file}...`);
-      await upload(file, releaseId, token, repo);
-      log.info(`uploaded ${file}`);
-    }),
-  );
+  const uploads = files.map(async (file) => {
+    log.info(`uploading ${file}...`);
+    await upload(file, releaseId, token, repo);
+    log.info(`uploaded ${file}`);
+  });
+  await Promise.all(uploads);
 
   log.info("release upload complete");
 };
