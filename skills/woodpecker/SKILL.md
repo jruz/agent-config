@@ -102,8 +102,8 @@ Templates are in this skill folder:
 | ----------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `.woodpecker/check.yml`       | Push to main, manual, or PR: run checks via nix develop                                                        |
 | `.woodpecker/playwright.yml`  | Push to main, manual, or PR: run Playwright E2E tests                                                          |
-| `.woodpecker/build-main.yml`  | Push to main: build frontend + backend docker image                                                            |
-| `.woodpecker/build-pr.yml`    | Pull request: build frontend + backend docker image                                                            |
+| `.woodpecker/build-main.yml`  | Push to main: build frontend + podman image                                                                    |
+| `.woodpecker/build-pr.yml`    | Pull request: build frontend + podman image                                                                    |
 | `.woodpecker/deploy-main.yml` | Push to main: push image, deploy to production (depends on check, playwright, build-main)                      |
 | `.woodpecker/deploy-pr.yml`   | Pull request: push image, deploy preview, seed data, cleanup on close (depends on check, playwright, build-pr) |
 | `docker-compose.yaml`         | Docker Swarm service definition with Traefik, Postgres                                                         |
@@ -158,8 +158,7 @@ Declarative repo settings via `woodpecker-settings.yaml`.
 ### Setup
 
 1. `woodpecker-settings init`
-2. Set `trusted.volumes: true` under `settings:`
-3. `woodpecker-settings apply`
+2. `woodpecker-settings apply`
 
 ### Secrets
 

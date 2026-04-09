@@ -9,18 +9,14 @@ when:
 
 steps:
   - name: PUSH
-    image: docker:29.3.0-cli
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    image: bash
     commands:
-      - docker push 127.0.0.1:5000/${CI_REPO_NAME}:pr-${CI_COMMIT_PULL_REQUEST}
+      - podman push 127.0.0.1:5000/${CI_REPO_NAME}:pr-${CI_COMMIT_PULL_REQUEST}
     when:
       event: pull_request
 
   - name: DEPLOY
-    image: 127.0.0.1:5000/woodpecker-job:v0.0.17
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    image: bash
     environment:
       APP_DOMAIN: ${CI_REPO_NAME}-pr-${CI_COMMIT_PULL_REQUEST}.jruz.io
       REVISION: ${CI_COMMIT_SHA}
@@ -29,7 +25,6 @@ steps:
         from_secret: SOPS_AGE_KEY
       TAG: pr-${CI_COMMIT_PULL_REQUEST}
     commands:
-      - . /entrypoint.sh
       - >-
         nix develop --command bash -c '
         docker pull 127.0.0.1:5000/${CI_REPO_NAME}:pr-${CI_COMMIT_PULL_REQUEST} &&
@@ -44,9 +39,7 @@ steps:
       event: pull_request
 
   - name: SEED
-    image: docker:29.3.0-cli
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    image: bash
     commands:
       - >-
         docker exec
@@ -64,9 +57,7 @@ steps:
       event: pull_request
 
   - name: CLEANUP
-    image: docker:29.3.0-cli
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    image: bash
     commands:
       - docker stack rm ${CI_REPO_NAME}-pr-${CI_COMMIT_PULL_REQUEST}
     when:

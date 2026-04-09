@@ -21,4 +21,4 @@ settings:
   trusted:
     network: false
     security: false
-    volumes: true
+    volumes: false

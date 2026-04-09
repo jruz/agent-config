@@ -11,17 +11,13 @@ when:
 
 steps:
   - name: PUSH
-    image: docker:29.3.0-cli
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    image: bash
     commands:
-      - docker push 127.0.0.1:5000/${CI_REPO_NAME}:${CI_COMMIT_SHA}
-      - docker push 127.0.0.1:5000/${CI_REPO_NAME}:main
+      - podman push 127.0.0.1:5000/${CI_REPO_NAME}:${CI_COMMIT_SHA}
+      - podman push 127.0.0.1:5000/${CI_REPO_NAME}:main
 
   - name: DEPLOY
-    image: 127.0.0.1:5000/woodpecker-job:v0.0.17
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    image: bash
     environment:
       APP_DOMAIN: ${CI_REPO_NAME}.jruz.io
       REVISION: ${CI_COMMIT_SHA}
@@ -30,7 +26,6 @@ steps:
         from_secret: SOPS_AGE_KEY
       TAG: main
     commands:
-      - . /entrypoint.sh
       - >-
         nix develop --command bash -c '
         docker pull 127.0.0.1:5000/${CI_REPO_NAME}:main &&

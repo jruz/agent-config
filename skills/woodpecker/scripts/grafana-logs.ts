@@ -93,7 +93,8 @@ async function main() {
       process.exit(1);
     }
 
-    const body = parseLokiResponse(await res.json());
+    const raw: unknown = await res.json();
+    const body = parseLokiResponse(raw);
     const results = body.data.result;
 
     if (results.length === 0) {
@@ -101,7 +102,8 @@ async function main() {
       return;
     }
 
-    console.log(formatEntries(results));
+    const output = formatEntries(results);
+    console.log(output);
   } catch (err: unknown) {
     log.error(`Failed to fetch logs: ${String(err)}`);
     process.exit(1);

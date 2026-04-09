@@ -6,12 +6,9 @@ when:
 
 steps:
   - name: PLAYWRIGHT
-    image: 127.0.0.1:5000/woodpecker-job:v0.0.17
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    image: bash
     environment:
       SOPS_AGE_KEY:
         from_secret: SOPS_AGE_KEY
     commands:
-      - . /entrypoint.sh
       - nix develop --command just playwright

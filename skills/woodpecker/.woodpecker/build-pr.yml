@@ -3,19 +3,16 @@ when:
 
 steps:
   - name: BUILD FRONTEND
-    image: 127.0.0.1:5000/woodpecker-job:v0.0.17
+    image: bash
     commands:
-      - . /entrypoint.sh
       - nix develop --command just frontend-install
       - nix develop --command just frontend-build
 
   - name: BUILD BACKEND
-    image: docker:29.3.0-cli
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    image: bash
     commands:
       - >-
-        docker build
+        podman build
         --tag 127.0.0.1:5000/${CI_REPO_NAME}:pr-${CI_COMMIT_PULL_REQUEST}
         --label org.opencontainers.image.revision=${CI_COMMIT_SHA}
         .
