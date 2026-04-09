@@ -11,12 +11,11 @@ async function main() {
       input: JSON.stringify(raw),
       errors: parsed.error.issues,
     });
-    console.log(
-      JSON.stringify({
-        systemMessage:
-          "notify_system: schema mismatch — check hooks.log for details",
-      }),
-    );
+    const output = JSON.stringify({
+      systemMessage:
+        "notify_system: schema mismatch — check hooks.log for details",
+    });
+    console.log(output);
     return;
   }
 
