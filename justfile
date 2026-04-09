@@ -1,11 +1,13 @@
 setup:
-    bun install
+    sandbox bun install
 
 fix:
+    just nix-fix
     just ts-fix
 
 check:
     just ci-check
+    just nix-check
     just ts-check
 
 ci-check:
@@ -24,9 +26,9 @@ link:
 ts-check:
     #!/usr/bin/env nu
     let results = [
-        (do { ^npx prettier --check . } | complete)
-        (do { ^npx tsc --noEmit } | complete)
-        (do { ^bun run eslint . } | complete)
+        (do { ^sandbox bun run prettier --check . } | complete)
+        (do { ^sandbox bun run tsc --noEmit } | complete)
+        (do { ^sandbox bun run eslint . } | complete)
     ]
     $results | each { |r|
         if ($r.stdout | str trim) != "" { print $r.stdout }
@@ -35,5 +37,26 @@ ts-check:
     if ($results | any { |r| $r.exit_code != 0 }) { exit 1 }
 
 ts-fix:
-    npx prettier --write .
-    bun run eslint . --fix
+    sandbox bun run prettier --write .
+    sandbox bun run eslint . --fix
+
+nix-check:
+    fd \
+        --extension nix \
+        --exec nixfmt --check
+    statix check .
+    deadnix --fail .
+
+nix-fix:
+    fd \
+        --extension nix \
+        --exec nixfmt
+    statix fix .
+    deadnix --edit .
+
+sandbox-test:
+    sandbox bun scripts/sandbox-test.ts
+
+codex:
+  stow -t ~/.codex/skills -v skills
+  ln -s ~/.claude/CLAUDE.md ~/.codex/AGENTS.md
