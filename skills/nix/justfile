@@ -1,0 +1,14 @@
+# ──────────────── NIX
+nix-check:
+    fd \
+        --extension nix \
+        --exec nixfmt --check
+    statix check .
+    deadnix --fail .
+
+nix-fix:
+    fd \
+        --extension nix \
+        --exec nixfmt
+    statix fix .
+    deadnix --edit .
