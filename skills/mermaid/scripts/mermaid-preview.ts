@@ -5,7 +5,8 @@ const root = process.cwd();
 
 const listMmdFiles = (): string[] => {
   const glob = new Glob("specs/**/*.mmd");
-  const files = Array.from(glob.scanSync({ cwd: root }));
+  const scanned = glob.scanSync({ cwd: root });
+  const files = Array.from(scanned);
   return files.sort();
 };
 
