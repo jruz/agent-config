@@ -53,7 +53,8 @@ function printUsedPorts(files: string[]) {
       log.error(`Failed to read ${f}`);
       return;
     }
-    const name = basename(dirname(f));
+    const dir = dirname(f);
+    const name = basename(dir);
     const ports = content
       .split("\n")
       .filter((l) => l.includes("_PORT="))

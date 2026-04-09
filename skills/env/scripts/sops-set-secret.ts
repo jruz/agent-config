@@ -9,7 +9,8 @@ const readSecret = (): Promise<string> => {
   return new Promise((resolve) => {
     rl.question("Secret: ", (answer) => {
       rl.close();
-      resolve(answer.trim());
+      const trimmed = answer.trim();
+      resolve(trimmed);
     });
   });
 };

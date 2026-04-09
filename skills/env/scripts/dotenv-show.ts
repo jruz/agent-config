@@ -34,7 +34,8 @@ function main() {
     return;
   }
 
-  const maxKeyLen = Math.max(...entries.map(([k]) => k.length));
+  const keyLengths = entries.map(([k]) => k.length);
+  const maxKeyLen = Math.max(...keyLengths);
   entries.forEach(([key, value]) => {
     log.info(`  ${key.padEnd(maxKeyLen)}  ${value}`);
   });
