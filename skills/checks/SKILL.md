@@ -132,33 +132,21 @@ THE project SHALL use a pre-push hook to run checks before pushing.
 
 THE hook SHALL be stored in `.githooks/pre-push`.
 
-THE hook SHALL use nushell for cross-platform compatibility.
-
-THE hook SHALL support `SKIP_HOOKS` environment variable to bypass checks.
-
-### Pre-commit Hook Template
+### Pre-push Hook Template
 
 **Without Playwright:**
 
-```nu
-#!/usr/bin/env nu
-
-if "SKIP_HOOKS" not-in $env {
-    just check
-    just test
-}
+```
+just check
+just test
 ```
 
 **With Playwright:**
 
-```nu
-#!/usr/bin/env nu
-
-if "SKIP_HOOKS" not-in $env {
-    just check
-    just test
-    just playwright
-}
+```
+just check
+just test
+just playwright
 ```
 
 ### Setup
@@ -167,7 +155,3 @@ if "SKIP_HOOKS" not-in $env {
 2. Create `.githooks/pre-push` with appropriate template
 3. Make executable: `chmod +x .githooks/pre-push`
 4. Configure git: `git config core.hooksPath .githooks`
-
-### Bypass
-
-Skip hooks for a single push: `SKIP_HOOKS=1 git push`
