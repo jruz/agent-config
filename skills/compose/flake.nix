@@ -4,13 +4,19 @@
     composeSrc.url = "git+https://codeberg.org/jruz/compose.git?ref=refs/tags/v0.4.1";
   };
 
-  outputs = { nixpkgs, composeSrc, ... }:
+  outputs =
+    { nixpkgs, composeSrc, ... }:
     let
-      supportedSystems = [ "aarch64-darwin" "aarch64-linux" "x86_64-linux" ];
+      supportedSystems = [
+        "aarch64-darwin"
+        "aarch64-linux"
+        "x86_64-linux"
+      ];
       forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
     in
     {
-      devShells = forAllSystems (system:
+      devShells = forAllSystems (
+        system:
         let
           pkgs = import nixpkgs { inherit system; };
           compose = composeSrc.packages.${system}.default;
@@ -26,6 +32,7 @@
               echo ""
             '';
           };
-        });
+        }
+      );
     };
 }

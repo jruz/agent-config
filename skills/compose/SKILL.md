@@ -142,10 +142,43 @@ processes:
       - seed
 ```
 
-## Process Types
+## Config Fields
 
-- Default: long-running process, stays alive
+### runtime
+
+Optional top-level field. Sets the container runtime binary.
+
+```yaml
+runtime: podman
+```
+
+Values: `docker` (default), `podman`.
+
+### shell
+
+Optional top-level field. Sets the shell used for exec processes and shell health checks.
+
+```yaml
+shell: bash
+```
+
+Default: `sh`.
+
+### type
+
+- Default (`service`): long-running process, stays alive
 - `type: oneshot`: runs once then exits
+
+### exec
+
+CMD override in exec form (docker processes only). Mutually exclusive with `command` on docker processes.
+
+```yaml
+seed:
+  docker:
+    image: app
+  exec: ["sh", "-c", "./tasks admin-user && ./tasks seed"]
+```
 
 ## Docker Processes
 
@@ -176,6 +209,21 @@ playwright:
     volumes:
       - "./test-results:/app/test-results"
 ```
+
+## Build Args
+
+THE docker processes MAY specify explicit `build_args` passed as `--build-arg` to `docker build`:
+
+```yaml
+app:
+  docker:
+    build: .
+    build_args:
+      NODE_VERSION: "22"
+      ENV: "development"
+```
+
+WHEN `build_args` is omitted, all resolved env vars (inline `env`, `env_file`, global `--env-file`) are forwarded as `--build-arg`.
 
 ## Variable Interpolation
 
