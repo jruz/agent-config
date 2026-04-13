@@ -36,6 +36,11 @@ sops-set ENV KEY VALUE:
 sops-set-secret ENV KEY:
   sandbox bun run scripts/sops-set-secret.ts {{ENV}} {{KEY}}
 
+sops-set-password ENV KEY:
+  #!/usr/bin/env nu
+  let pass = (nix run nixpkgs#xkcdpass -- --delimiter=- --numwords=4)
+  ^just --quiet sops-set {{ENV}} {{KEY}} $pass
+
 sops-set-secret-most KEY:
   sandbox bun run scripts/sops-set-secret.ts dev pr prod {{KEY}}
 

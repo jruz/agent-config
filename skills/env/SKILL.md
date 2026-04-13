@@ -70,6 +70,12 @@ THE `PORT_VARS` constant in `dotenv-setup-ports.ts` and `dotenv-kill-ports.ts` S
 5. Use `just sops-run-test 'command'` to run commands with test env
 6. Use `just sops-sync-check` to validate all env files have matching keys
 
+## Passwords
+
+THE project SHALL generate passwords with `just sops-set-password ENV KEY`.
+
+EACH environment SHALL have a unique password per service.
+
 ## Key Rules
 
 - NEVER read `.env`, `.env.*`, or `~/.config/sops/age/keys.txt`
