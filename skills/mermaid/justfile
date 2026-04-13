@@ -1,8 +1,16 @@
 mermaid-check:
   #!/usr/bin/env nu
+  let config = "/tmp/puppeteer-config.json"
+  {
+      executablePath: $env.PUPPETEER_EXECUTABLE_PATH,
+      args: ["--no-sandbox"]
+  } | to json | save --force $config
   glob specs/**/*.mmd | each { |f|
       print $"[(ansi blue)INFO(ansi reset)] Checking ($f)"
-      ^mmdc --input $f --output /tmp/mermaid-check.svg
+      (^mmdc
+          --input $f
+          --output /tmp/mermaid-check.svg
+          --puppeteerConfigFile $config)
   }
   print $"[(ansi green)OK(ansi reset)] Mermaid diagrams are valid"
 
