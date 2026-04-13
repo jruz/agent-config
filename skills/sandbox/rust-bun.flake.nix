@@ -62,9 +62,8 @@
             --tmpfs "$HOME"
             --bind "$(pwd)" "$(pwd)"
             --bind /tmp /tmp
-            --bind-try "$HOME/.bun" "$HOME/.bun"
-            --bind-try "$HOME/.cargo" "$HOME/.cargo"
             --bind-try /var/run/docker.sock /var/run/docker.sock
+            --ro-bind "$(git rev-parse --git-common-dir)" "$(git rev-parse --git-common-dir)"
             --ro-bind-try "$HOME/.gitconfig" "$HOME/.gitconfig"
             --ro-bind-try "$HOME/.ssh/known_hosts" "$HOME/.ssh/known_hosts"
             --setenv PATH "${sandboxPath}:$SELF_DIR"
@@ -74,11 +73,17 @@
             --proc /proc
             )
           ARGS+=(
-            --bind "$HOME/.config/nvim" "$HOME/.config/nvim"
-            --bind "$HOME/.local/share/nvim" "$HOME/.local/share/nvim"
-            --bind "$HOME/.local/state/nvim" "$HOME/.local/state/nvim"
-            --bind "$HOME/.cache/nvim" "$HOME/.cache/nvim"
-            --bind "$HOME/.supermaven" "$HOME/.supermaven"
+            --bind-try "$HOME/.cargo" "$HOME/.cargo"
+            --bind-try "$HOME/.bun" "$HOME/.bun"
+            --bind-try "$HOME/.local/share/pnpm" "$HOME/.local/share/pnpm"
+            --setenv npm_config_store_dir "$HOME/.local/share/pnpm/store"
+          )
+          ARGS+=(
+            --bind-try "$HOME/.config/nvim" "$HOME/.config/nvim"
+            --bind-try "$HOME/.local/share/nvim" "$HOME/.local/share/nvim"
+            --bind-try "$HOME/.local/state/nvim" "$HOME/.local/state/nvim"
+            --bind-try "$HOME/.cache/nvim" "$HOME/.cache/nvim"
+            --bind-try "$HOME/.supermaven" "$HOME/.supermaven"
           )
           exec ${pkgs.bubblewrap}/bin/bwrap $SANDBOX_CMD
         '';

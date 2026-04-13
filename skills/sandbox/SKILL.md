@@ -25,13 +25,13 @@ During setup, the `sandbox` command won't exist until the user reloads their she
 
 ## Architecture
 
-| Component                 | Purpose                                                           |
-| ------------------------- | ----------------------------------------------------------------- |
-| `devShells.default`       | Safe tools only + `sandbox` wrapper                               |
-| `sandbox` wrapper         | `writeShellScriptBin` — enters bwrap with hardcoded `makeBinPath` |
-| `scripts/sandbox-test.ts` | Verifies sensitive paths are blocked                              |
+| Component                  | Purpose                                                           |
+| -------------------------- | ----------------------------------------------------------------- |
+| `devShells.default`        | Safe tools only + `sandbox` wrapper                               |
+| `sandbox` wrapper          | `writeShellScriptBin` — enters bwrap with hardcoded `makeBinPath` |
+| `scripts/sandbox-check.ts` | Verifies sensitive paths are blocked                              |
 
-Reference files: `rust-bun.flake.nix` (rust + bun), `rust-playwright.flake.nix` (rust + pnpm + playwright), `justfile`, `scripts/sandbox-test.ts`
+Reference files: `rust-bun.flake.nix` (rust + bun), `rust-playwright.flake.nix` (rust + pnpm + playwright), `justfile`, `scripts/sandbox-check.ts`
 
 ## Single Shell Design
 
@@ -130,14 +130,14 @@ Without this, pnpm creates a `.pnpm-store` in the project directory because `$HO
 
 1. Add the package to `sandboxPackages`
 2. Add its cache directory as `--bind` in the `sandbox` wrapper
-3. Verify with `sandbox-test`
+3. Verify with `sandbox-check`
 
 ## Key Rules
 
 - NEVER put untrusted tools in `commonPackages`
 - ALWAYS use `--tmpfs "$HOME"` then selectively bind back cache dirs
 - ALWAYS use `makeBinPath` for PATH inside sandbox
-- ALWAYS test with `scripts/sandbox-test.ts` after changes
+- ALWAYS test with `scripts/sandbox-check.ts` after changes
 - ALWAYS use conditional mounts (`[[ -d ... ]]`) for paths that may not exist
 - ALWAYS symlink `/bin/sh` — needed by pnpm/npm wrapper scripts
 - DO NOT use `--unshare-pid` — breaks bun's `posix_spawn`

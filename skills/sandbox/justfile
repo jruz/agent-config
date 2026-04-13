@@ -1,10 +1,11 @@
 check:
-    sandbox just ts-check
+    just sandbox-check
+    just ts-check
 
 ts-check:
-    bun run prettier --check .
-    bun run tsc --noEmit
-    bun run eslint .
+    sandbox bun run prettier --check .
+    sandbox bun run tsc --noEmit
+    sandbox bun run eslint .
 
-sandbox-test:
-    bun scripts/sandbox-test.ts
+sandbox-check:
+    sandbox bun scripts/sandbox-check.ts
