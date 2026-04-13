@@ -53,7 +53,7 @@ THE project SHALL contain `.woodpecker/release.yml` from the template at `skills
 
 ## Release Scripts
 
-THE project SHALL contain `scripts/release-build.sh` from the template at `skills/release/scripts/release-build.sh`.
+THE project SHALL contain `scripts/release-build.nu` from the template at `skills/release/scripts/release-build.nu`.
 
 THE project SHALL contain `scripts/release-upload.ts` from the template at `skills/release/scripts/release-upload.ts`.
 
@@ -105,7 +105,7 @@ WHEN adding release versioning to a project THE system SHALL:
 8. Create `flake.nix` from `skills/release/flake.nix`, replacing `description` and adding project-specific dev dependencies
 9. Create `.woodpecker/tag.yml` from `skills/release/.woodpecker/tag.yml`
 10. Create `.woodpecker/release.yml` from `skills/release/.woodpecker/release.yml`
-11. Create `scripts/release-build.sh` from `skills/release/scripts/release-build.sh`
+11. Create `scripts/release-build.nu` from `skills/release/scripts/release-build.nu`
 12. Create `scripts/release-upload.ts` from `skills/release/scripts/release-upload.ts`
 13. Create `scripts/release-delete.ts` from `skills/release/scripts/release-delete.ts`
 14. Create `scripts/log.ts` from `skills/release/scripts/log.ts`
