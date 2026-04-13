@@ -20,16 +20,17 @@ See `justfile` in this skill folder for `ts-lint`, `ts-lint-fix`, and aggregate 
 
 Config file: `eslint.config.ts` in this skill folder.
 
-| Rule                                | Setting             | Why                                                  |
-| ----------------------------------- | ------------------- | ---------------------------------------------------- |
-| `max-depth`                         | 2                   | Prevent deep nesting                                 |
-| `consistent-type-assertions`        | `never`             | Ban `as` casts, force runtime validation             |
-| `consistent-type-definitions`       | `type`              | Enforce `type` over `interface`                      |
-| `no-deprecated`                     | error               | Catch deprecated API usage                           |
-| `restrict-template-expressions`     | `allowNumber: true` | Ban `${unknown}` / `${object}` but allow `${number}` |
-| `non-nullable-type-assertion-style` | off                 | Conflicts with banning `as` casts                    |
-| `prefer-nullish-coalescing`         | off                 | Conflicts with banning `??`                          |
-| `prefer-for-of`                     | off                 | Conflicts with banning loops                         |
+| Rule                                | Setting             | Why                                                      |
+| ----------------------------------- | ------------------- | -------------------------------------------------------- |
+| `max-depth`                         | 2                   | Prevent deep nesting                                     |
+| `no-void`                           | error               | Force `.catch()` instead of silently discarding promises |
+| `consistent-type-assertions`        | `never`             | Ban `as` casts, force runtime validation                 |
+| `consistent-type-definitions`       | `type`              | Enforce `type` over `interface`                          |
+| `no-deprecated`                     | error               | Catch deprecated API usage                               |
+| `restrict-template-expressions`     | `allowNumber: true` | Ban `${unknown}` / `${object}` but allow `${number}`     |
+| `non-nullable-type-assertion-style` | off                 | Conflicts with banning `as` casts                        |
+| `prefer-nullish-coalescing`         | off                 | Conflicts with banning `??`                              |
+| `prefer-for-of`                     | off                 | Conflicts with banning loops                             |
 
 Rules inherited from `strictTypeChecked` + `stylisticTypeChecked`:
 
@@ -60,7 +61,9 @@ Floating promises:
 // bad
 program.parseAsync();
 // good
-void program.parseAsync();
+program.parseAsync().catch((e: unknown) => {
+  log.error(`parse failed: ${String(e)}`);
+});
 ```
 
 Async callback in void position:
@@ -72,9 +75,11 @@ emitter.once("event", async (data) => {
 });
 // good
 emitter.once("event", (data) => {
-  void (async () => {
+  (async () => {
     await handle(data);
-  })();
+  })().catch((e: unknown) => {
+    log.error(`event handler failed: ${String(e)}`);
+  });
 });
 ```
 
