@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
-import { basename, dirname, resolve } from "node:path";
+import { resolve } from "node:path";
 import process from "node:process";
 import { log } from "./log.ts";
 
@@ -25,7 +25,7 @@ function findSiblingEnvFiles(): string[] {
       .filter((d) => d.isDirectory() && resolve(parent, d.name) !== cwd)
       .map((d) => resolve(parent, d.name, ".env"))
       .filter((f) => existsSync(f));
-  } catch (e) {
+  } catch (e: unknown) {
     log.error(`Failed to read directory ${parent}: ${String(e)}`);
     return [];
   }
@@ -46,23 +46,6 @@ function collectUsedPorts(files: string[]): number[] {
     .sort((a, b) => a - b);
 }
 
-function printUsedPorts(files: string[]) {
-  files.forEach((f) => {
-    const content = readFile(f);
-    if (content === null) {
-      log.error(`Failed to read ${f}`);
-      return;
-    }
-    const dir = dirname(f);
-    const name = basename(dir);
-    const ports = content
-      .split("\n")
-      .filter((l) => l.includes("_PORT="))
-      .join(", ");
-    log.warn(`  ${name}: ${ports}`);
-  });
-}
-
 function assignPorts(usedPorts: number[]): PortAssignment[] {
   const last = usedPorts.at(-1);
   const base = last === undefined ? BASE_PORT : last + PORT_GAP;
@@ -73,7 +56,7 @@ function writeEnvFile(ports: PortAssignment[]) {
   const content = readFile(".env");
   if (content === null) {
     log.error("No .env file found. Run: just sops-decrypt-dev");
-    return;
+    process.exit(1);
   }
   const env = content
     .split("\n")
@@ -84,22 +67,16 @@ function writeEnvFile(ports: PortAssignment[]) {
     .join("\n");
   try {
     writeFileSync(".env", env);
-  } catch (e) {
+  } catch (e: unknown) {
     log.error(`Failed to write .env: ${String(e)}`);
+    process.exit(1);
   }
 }
 
 function main() {
   const siblings = findSiblingEnvFiles();
   const usedPorts = collectUsedPorts(siblings);
-
-  if (usedPorts.length > 0) {
-    log.warn("Ports in use by other worktrees:");
-    printUsedPorts(siblings);
-  }
-
   const ports = assignPorts(usedPorts);
-
   log.info("Setting ports for this worktree:");
   ports.forEach(([k, v]) => {
     log.info(`  ${k}=${v}`);
