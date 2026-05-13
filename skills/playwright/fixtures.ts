@@ -11,7 +11,10 @@ export const test = base.extend<ConsoleFixtures>({
 
       page.on("pageerror", (error: Error) => errors.push(error.message));
       page.on("console", (msg) => {
-        if (msg.type() === "error") errors.push(msg.text());
+        const type = msg.type();
+        if (type !== "error") return;
+        const text = msg.text();
+        errors.push(text);
       });
 
       await use(errors);

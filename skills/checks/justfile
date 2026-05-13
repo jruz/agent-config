@@ -46,7 +46,8 @@ nix-fix:
 sh-check:
     fd \
         --extension sh \
-        --exec shellcheck --shell=bash
+        --exec shellcheck \
+        --shell=bash
     fd \
         --extension sh \
         --exec shfmt --diff
