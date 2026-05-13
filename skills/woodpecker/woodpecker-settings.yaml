@@ -7,6 +7,12 @@ secrets:
       - tag
       - push
     value: ASK_USER
+  SOPS_AGE_KEY:
+    events:
+      - push
+      - pull_request
+      - manual
+    value: ASK_USER
 
 settings:
   allow_deploy: false
