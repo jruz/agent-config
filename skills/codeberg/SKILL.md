@@ -1,6 +1,6 @@
 ---
 name: codeberg
-description: Manage Codeberg repository settings. Use when configuring repos on Codeberg.
+description: Manage Codeberg repository settings and branch protection.
 ---
 
 # Codeberg

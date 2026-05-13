@@ -11,7 +11,7 @@ Prepare and push PR automatically, then report what was created.
 5. Create one clean commit
 6. Push to remote
 7. Create PR with label
-8. Verify CI passes
+8. Monitor CI via woodpecker-channel
 9. Report final status
 
 **For Existing PRs:**
@@ -23,24 +23,35 @@ Prepare and push PR automatically, then report what was created.
 5. Create commit with new changes
 6. Push to remote
 7. Update PR title and description to reflect all changes
-8. Verify CI passes
+8. Monitor CI via woodpecker-channel
 9. Report final status
 
 ## Instructions
 
 ### 1. Check Current State
 
-Check if PR exists:
+Detect repo from git remote:
 
 ```bash
-gh pr view
+git remote get-url origin | sed -E 's|.*codeberg\.org[:/]||; s|\.git$||'
 ```
+
+This gives `{owner}/{repo}` used in all API calls below.
 
 Check current branch:
 
 ```bash
 git rev-parse --abbrev-ref HEAD
 ```
+
+Check if PR exists for current branch:
+
+```bash
+curl -s "https://codeberg.org/api/v1/repos/{owner}/{repo}/pulls?state=open&head={owner}:{branch}" \
+  -H "Authorization: token $CODEBERG_TOKEN"
+```
+
+If the response array is non-empty, a PR already exists. Extract `number`, `title`, and `body` from the first element.
 
 Check if branch exists on remote:
 
@@ -167,7 +178,7 @@ Reference `Skill(github-pr)` for:
 
 **For Existing PRs:**
 
-Get current title and description from `gh pr view`.
+Get current title and description from the PR API response in step 1.
 
 Analyze if title needs updating based on new changes (follow `Skill(github-pr)` for format).
 
@@ -293,57 +304,76 @@ Normal push, no force needed.
 
 **For New PRs:**
 
-Create PR:
+Create PR via Codeberg API:
 
 ```bash
-gh pr create --title "TITLE" --body "DESCRIPTION"
+curl -s -X POST "https://codeberg.org/api/v1/repos/{owner}/{repo}/pulls" \
+  -H "Authorization: token $CODEBERG_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "$(cat <<'EOF'
+{
+  "title": "TITLE",
+  "head": "{branch}",
+  "base": "main",
+  "body": "DESCRIPTION",
+  "labels": [LABEL_ID]
+}
+EOF
+)"
 ```
 
-Extract prefix from title (Feature, Fix, Refactor, Deps, Tools).
+Extract `number` and `html_url` from the response.
 
-Map to label (lowercase):
-
-- [Feature] → feature
-- [Fix] → fix
-- [Refactor] → refactor
-- [Deps] → dependencies
-- [Tools] → tooling
-
-Set label:
+To find the label ID, list repo labels first:
 
 ```bash
-gh pr edit --add-label "feature"
+curl -s "https://codeberg.org/api/v1/repos/{owner}/{repo}/labels" \
+  -H "Authorization: token $CODEBERG_TOKEN"
 ```
+
+Map prefix to label name:
+
+- [feat] → feat
+- [bugs] → bugs
+- [refa] → refa
+- [deps] → deps
+- [tool] → tool
 
 **For Existing PRs:**
 
-Update PR description to reflect all changes:
+Update PR title, description, and labels via PATCH:
 
 ```bash
-gh pr edit --body "DESCRIPTION"
+curl -s -X PATCH "https://codeberg.org/api/v1/repos/{owner}/{repo}/pulls/{pr_number}" \
+  -H "Authorization: token $CODEBERG_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "$(cat <<'EOF'
+{
+  "title": "NEW_TITLE",
+  "body": "DESCRIPTION"
+}
+EOF
+)"
 ```
 
-Update title if needed:
+Update labels if prefix changed:
 
 ```bash
-gh pr edit --title "NEW_TITLE"
+curl -s -X POST "https://codeberg.org/api/v1/repos/{owner}/{repo}/pulls/{pr_number}/labels" \
+  -H "Authorization: token $CODEBERG_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"labels": [LABEL_ID]}'
 ```
 
-Update label if prefix changed:
+### 10. Monitor CI
 
-```bash
-gh pr edit --add-label "feature"
+Start watching the branch for CI pipeline results using the woodpecker-channel MCP tool:
+
+```
+mcp__woodpecker-channel__watch(repo: "{owner}/{repo}", branch: "{branch}")
 ```
 
-### 10. Verify CI
-
-Check CI status:
-
-```bash
-gh pr checks
-```
-
-If checks are failing, note which ones for the report.
+This will poll Woodpecker CI every 5s and notify on failure. The watch stays active until CI completes or is manually stopped with `mcp__woodpecker-channel__stop_watch(branch: "{branch}")`.
 
 ### 11. Report Final Status
 
@@ -381,7 +411,7 @@ Report everything together:
 
 **CI Status:**
 
-- ✅ All checks passing / ❌ `<failed check names>`
+- ⏳ Watching via woodpecker-channel (will notify on failure)
 
 **Unrelated Files Left Unstaged:** (if any)
 
@@ -397,6 +427,6 @@ Report everything together:
 
 ## Reference Information
 
-All PR conventions (title format, description structure, size guidelines, splitting strategies) are defined in the `github-pr` skill (use `Skill(github-pr)`).
+All PR conventions (title format, description structure, size guidelines, splitting strategies) are defined in the `pr` skill (use `Skill(pr)`).
 
 When PR size exceeds 1000 lines, warn the user and suggest they may want to split the PR using strategies from the `github-pr` skill.
