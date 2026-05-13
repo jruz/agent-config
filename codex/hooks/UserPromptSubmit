@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+~/.cargo/bin/tab-renamer-hook thinking
+~/.cargo/bin/claude-trees-hook thinking

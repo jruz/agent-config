@@ -14,7 +14,15 @@ ci-check:
     woodpecker-cli lint .woodpecker/
 
 link:
+  just link-codex
   just link-claude
+
+link-codex:
+    ln -sfn {{justfile_directory()}}/codex/hooks ~/.codex/hooks
+    ln -sfn {{justfile_directory()}}/codex/hooks.json ~/.codex/hooks.json
+    ln -sfn {{justfile_directory()}}/skills ~/.codex/skills
+    ln -sfn {{justfile_directory()}}/AGENTS.md ~/.codex/AGENTS.md
+
 link-claude:
     ln -sfn {{justfile_directory()}}/agents ~/.claude/agents
     ln -sfn {{justfile_directory()}}/commands ~/.claude/commands
@@ -61,6 +69,3 @@ nix-fix:
 sandbox-test:
     sandbox bun scripts/sandbox-test.ts
 
-codex:
-  stow -t ~/.codex/skills -v skills
-  ln -s ~/.claude/CLAUDE.md ~/.codex/AGENTS.md
