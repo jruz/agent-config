@@ -41,6 +41,6 @@ export default defineConfig([
     extends: [tseslint.configs.disableTypeChecked],
   },
   {
-    ignores: ["node_modules/"],
+    ignores: ["node_modules/", "skills/.system"],
   },
 ]);
