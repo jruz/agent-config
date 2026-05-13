@@ -4,3 +4,4 @@ files = []
 
 [ignore.by-rule]
 no-direct-env-access = ["skills/release/src/build.rs"]
+no-latest-tag = ["skills/compose/compose.playwright.yaml"]

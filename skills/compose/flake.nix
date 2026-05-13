@@ -1,38 +1,34 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    flake-utils.url = "github:numtide/flake-utils";
     composeSrc.url = "git+https://codeberg.org/jruz/compose.git?ref=refs/tags/v0.5.0";
   };
 
   outputs =
-    { nixpkgs, composeSrc, ... }:
-    let
-      supportedSystems = [
-        "aarch64-darwin"
-        "aarch64-linux"
-        "x86_64-linux"
-      ];
-      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-    in
     {
-      devShells = forAllSystems (
-        system:
-        let
-          pkgs = import nixpkgs { inherit system; };
-          compose = composeSrc.packages.${system}.default;
-        in
-        {
-          default = pkgs.mkShell {
-            buildInputs = [
-              compose
-            ];
+      nixpkgs,
+      flake-utils,
+      composeSrc,
+      ...
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
+      let
+        pkgs = import nixpkgs { inherit system; };
+        compose = composeSrc.packages.${system}.default;
+      in
+      {
+        devShells.default = pkgs.mkShell {
+          buildInputs = [
+            compose
+          ];
 
-            shellHook = ''
-              echo "compose  ${compose.version}"
-              echo ""
-            '';
-          };
-        }
-      );
-    };
+          shellHook = ''
+            echo "compose  ${compose.version}"
+            echo ""
+          '';
+        };
+      }
+    );
 }
