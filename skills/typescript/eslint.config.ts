@@ -17,6 +17,7 @@ export default defineConfig([
     },
     rules: {
       "max-depth": ["error", 2],
+      "no-nested-ternary": "error",
       "no-void": "error",
       "@typescript-eslint/consistent-type-assertions": [
         "error",

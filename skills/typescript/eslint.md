@@ -20,30 +20,6 @@ See `justfile` in this skill folder for `ts-lint`, `ts-lint-fix`, and aggregate 
 
 Config file: `eslint.config.ts` in this skill folder.
 
-| Rule                                | Setting             | Why                                                      |
-| ----------------------------------- | ------------------- | -------------------------------------------------------- |
-| `max-depth`                         | 2                   | Prevent deep nesting                                     |
-| `no-void`                           | error               | Force `.catch()` instead of silently discarding promises |
-| `consistent-type-assertions`        | `never`             | Ban `as` casts, force runtime validation                 |
-| `consistent-type-definitions`       | `type`              | Enforce `type` over `interface`                          |
-| `no-deprecated`                     | error               | Catch deprecated API usage                               |
-| `restrict-template-expressions`     | `allowNumber: true` | Ban `${unknown}` / `${object}` but allow `${number}`     |
-| `non-nullable-type-assertion-style` | off                 | Conflicts with banning `as` casts                        |
-| `prefer-nullish-coalescing`         | off                 | Conflicts with banning `??`                              |
-| `prefer-for-of`                     | off                 | Conflicts with banning loops                             |
-
-Rules inherited from `strictTypeChecked` + `stylisticTypeChecked`:
-
-| Rule                            | What it catches                     |
-| ------------------------------- | ----------------------------------- |
-| `no-floating-promises`          | Unhandled promises                  |
-| `no-misused-promises`           | Async callbacks where void expected |
-| `require-await`                 | `async` without `await`             |
-| `no-unsafe-*`                   | `any` leaking through               |
-| `no-confusing-void-expression`  | Void returns in arrow shorthands    |
-| `no-unnecessary-condition`      | Unnecessary optional chains         |
-| `no-unnecessary-type-arguments` | Redundant default type params       |
-
 ## Common Fixes for strictTypeChecked
 
 Void arrow returns:
