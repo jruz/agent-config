@@ -107,7 +107,7 @@ WHERE the project targets unconventional platforms THE toolchain SHALL declare e
 
 ```toml
 [toolchain]
-channel = "1.93.0"
+channel = "1.95.0"
 targets = ["wasm32-wasip1"]
 ```
 
