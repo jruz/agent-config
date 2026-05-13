@@ -63,7 +63,12 @@ THE project SHALL contain `scripts/log.ts` from the template at `skills/release/
 
 THE project SHALL contain `scripts/log.nu` from the template at `skills/nushell/scripts/log.nu`.
 
-THE project SHALL contain `scripts/release-bump.nu` from the template at `skills/release/scripts/release-bump.nu`.
+THE skill provides two variants of the version bump script:
+
+- `skills/release/scripts/release-bump-rs.nu` — for Rust projects (bumps `Cargo.toml` and `Cargo.lock`)
+- `skills/release/scripts/release-bump-js.nu` — for Bun/Node projects (bumps `package.json`)
+
+THE project SHALL copy the appropriate variant and rename it to `scripts/release-bump.nu`.
 
 ## Justfile Recipes
 
@@ -110,7 +115,7 @@ WHEN adding release versioning to a project THE system SHALL:
 13. Create `scripts/release-delete.ts` from `skills/release/scripts/release-delete.ts`
 14. Create `scripts/log.ts` from `skills/release/scripts/log.ts`
 15. Create `scripts/log.nu` from `skills/release/scripts/log.nu`
-16. Create `scripts/release-bump.nu` from `skills/release/scripts/release-bump.nu`
+16. Copy the appropriate `release-bump-*.nu` variant and rename to `scripts/release-bump.nu`
 17. Merge recipes from `skills/release/justfile` into the project justfile
 18. Merge entries from `skills/release/.gitignore` into the project `.gitignore`
 19. Enable releases on Codeberg (`has_releases = true`) via the codeberg skill

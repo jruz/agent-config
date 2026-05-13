@@ -1,6 +1,9 @@
 release-build OS ARCH:
     nu scripts/release-build.nu {{ OS }} {{ ARCH }}
 
+release-bump VERSION:
+    nu scripts/release-bump.nu {{ VERSION }}
+
 release-upload TAG:
     sandbox bun scripts/release-upload.ts {{ TAG }}
 
