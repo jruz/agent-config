@@ -21,24 +21,43 @@ sops-edit ENV:
   sops .env.{{ENV}}.yaml
 
 sops-decrypt-dev:
-  sops --decrypt --output-type dotenv --output .env .env.dev.yaml
+  sops \
+    --decrypt \
+    --output-type dotenv \
+    --output .env \
+    .env.dev.yaml
 
 sops-fix ENV:
-  sops --ignore-mac --rotate --in-place .env.{{ENV}}.yaml
+  sops \
+    --ignore-mac \
+    --rotate \
+    --in-place \
+    .env.{{ENV}}.yaml
 
 sops-unset ENV KEY:
   sops unset .env.{{ENV}}.yaml '["{{KEY}}"]'
 
 sops-set ENV KEY VALUE:
   sops set .env.{{ENV}}.yaml '["{{KEY}}"]' '"{{VALUE}}"'
-  sops --ignore-mac --rotate --in-place .env.{{ENV}}.yaml
+  sops \
+    --ignore-mac \
+    --rotate \
+    --in-place \
+    .env.{{ENV}}.yaml
+
+sops-rename-key OLD_KEY NEW_KEY:
+  bun run scripts/sops-rename-key.ts {{OLD_KEY}} {{NEW_KEY}}
 
 sops-set-secret ENV KEY:
   sandbox bun run scripts/sops-set-secret.ts {{ENV}} {{KEY}}
 
 sops-set-password ENV KEY:
   #!/usr/bin/env nu
-  let pass = (nix run nixpkgs#xkcdpass -- --delimiter=- --numwords=4)
+  let pass = (
+    nix run nixpkgs#xkcdpass
+      -- --delimiter=-
+      --numwords 4
+  )
   ^just --quiet sops-set {{ENV}} {{KEY}} $pass
 
 sops-set-secret-most KEY:

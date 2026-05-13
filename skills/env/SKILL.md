@@ -55,6 +55,8 @@ THE project SHALL include `scripts/dotenv-show.ts` for masked secret display.
 
 THE project SHALL include `scripts/sops-set-secret.ts` for interactive secret input with paste support.
 
+THE project SHALL include `scripts/sops-rename-key.ts` for renaming keys across all env files.
+
 THE project SHALL include `scripts/dotenv-setup-ports.ts` for worktree port assignment.
 
 THE project SHALL include `scripts/dotenv-kill-ports.ts` for killing processes on all port variables.
@@ -69,6 +71,7 @@ THE `PORT_VARS` constant in `dotenv-setup-ports.ts` and `dotenv-kill-ports.ts` S
 4. Use `just dotenv-show` to verify decrypted values (secrets masked)
 5. Use `just sops-run-test 'command'` to run commands with test env
 6. Use `just sops-sync-check` to validate all env files have matching keys
+7. Use `just sops-rename-key OLD_KEY NEW_KEY` to rename a key across all env files
 
 ## Passwords
 
