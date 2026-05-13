@@ -46,7 +46,6 @@
         ];
         sandbox = pkgs.writeShellScriptBin "sandbox" ''
           SELF_DIR="$(dirname "$(readlink -f "$0")")"
-          SANDBOX_CMD="''${@:-$SHELL}"
           ARGS=(
             --unshare-all
             --share-net
@@ -85,7 +84,7 @@
             --bind-try "$HOME/.cache/nvim" "$HOME/.cache/nvim"
             --bind-try "$HOME/.supermaven" "$HOME/.supermaven"
           )
-          exec ${pkgs.bubblewrap}/bin/bwrap $SANDBOX_CMD
+          exec ${pkgs.bubblewrap}/bin/bwrap "''${ARGS[@]}" -- "$@"
         '';
         defaultPackages = with pkgs; [
           deadnix

@@ -1,4 +1,4 @@
-import { accessSync, constants } from "fs";
+import { accessSync, constants, readdirSync } from "fs";
 import { homedir } from "os";
 import { join } from "path";
 import { log } from "./log";
@@ -16,8 +16,24 @@ const checkBlocked = (path: string): Result => {
   }
 };
 
+const checkSshDir = (): Result => {
+  const sshDir = join(home, ".ssh");
+  try {
+    const files = readdirSync(sshDir);
+    const unexpected = files.filter((f) => f !== "known_hosts");
+    if (unexpected.length > 0) {
+      return {
+        pass: false,
+        msg: `${sshDir} — unexpected files: ${unexpected.join(", ")}`,
+      };
+    }
+    return { pass: true, msg: `${sshDir} — only known_hosts` };
+  } catch {
+    return { pass: true, msg: `${sshDir} — access denied` };
+  }
+};
+
 const blockedPaths = [
-  join(home, ".ssh"),
   join(home, ".config/sops"),
   "/var/lib/sops-nix/key.txt",
   "/etc/initrd-host-key",
@@ -29,7 +45,7 @@ const blockedPaths = [
   "/mnt/backup",
 ];
 
-const results = blockedPaths.map(checkBlocked);
+const results = [checkSshDir(), ...blockedPaths.map(checkBlocked)];
 results.forEach((r) => {
   if (r.pass) {
     log.ok(r.msg);

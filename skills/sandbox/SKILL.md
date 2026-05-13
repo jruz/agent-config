@@ -59,21 +59,21 @@ Defined in `flake.nix` as `writeShellScriptBin "sandbox"`. Key properties:
 
 ## Mount Rules
 
-| Mount                     | Type                  | Purpose                         |
-| ------------------------- | --------------------- | ------------------------------- |
-| `/nix`                    | ro-bind               | Nix store (tools, libraries)    |
-| `/etc/resolv.conf`        | ro-bind               | DNS resolution                  |
-| `/etc/ssl`, `/etc/static` | ro-bind (conditional) | TLS certificates                |
-| `/run/current-system/sw`  | ro-bind (conditional) | NixOS system packages           |
-| `$HOME/.gitconfig`        | ro-bind (conditional) | Git config (read-only)          |
-| `$HOME/.ssh/known_hosts`  | ro-bind (conditional) | SSH known hosts only (NOT keys) |
-| `/usr/bin/env`            | symlink               | Required by shebangs            |
-| `/bin/sh`                 | symlink               | Required by shell scripts       |
-| `/dev`                    | dev                   | Device files                    |
-| `/proc`                   | proc                  | Process info                    |
-| `$HOME`                   | tmpfs                 | Blanks entire home              |
-| `$(pwd)`                  | bind (rw)             | Project directory               |
-| `/tmp`                    | bind (rw)             | Temp files                      |
+| Mount                     | Type        | Purpose                         |
+| ------------------------- | ----------- | ------------------------------- |
+| `/nix`                    | ro-bind     | Nix store (tools, libraries)    |
+| `/etc/resolv.conf`        | ro-bind     | DNS resolution                  |
+| `/etc/ssl`, `/etc/static` | ro-bind-try | TLS certificates                |
+| `/run/current-system/sw`  | ro-bind-try | NixOS system packages           |
+| `$HOME/.gitconfig`        | ro-bind-try | Git config (read-only)          |
+| `$HOME/.ssh/known_hosts`  | ro-bind-try | SSH known hosts only (NOT keys) |
+| `/usr/bin/env`            | symlink     | Required by shebangs            |
+| `/bin/sh`                 | symlink     | Required by shell scripts       |
+| `/dev`                    | dev         | Device files                    |
+| `/proc`                   | proc        | Process info                    |
+| `$HOME`                   | tmpfs       | Blanks entire home              |
+| `$(pwd)`                  | bind (rw)   | Project directory               |
+| `/tmp`                    | bind (rw)   | Temp files                      |
 
 Per-tool cache mounts (add as needed):
 
@@ -138,7 +138,7 @@ Without this, pnpm creates a `.pnpm-store` in the project directory because `$HO
 - ALWAYS use `--tmpfs "$HOME"` then selectively bind back cache dirs
 - ALWAYS use `makeBinPath` for PATH inside sandbox
 - ALWAYS test with `scripts/sandbox-check.ts` after changes
-- ALWAYS use conditional mounts (`[[ -d ... ]]`) for paths that may not exist
+- ALWAYS use `--ro-bind-try` for paths that may not exist
 - ALWAYS symlink `/bin/sh` — needed by pnpm/npm wrapper scripts
 - DO NOT use `--unshare-pid` — breaks bun's `posix_spawn`
 - DO NOT use `--unshare-all` — use individual `--unshare-*` flags to avoid PID unshare
