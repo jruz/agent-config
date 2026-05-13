@@ -69,3 +69,5 @@ nix-fix:
 sandbox-test:
     sandbox bun scripts/sandbox-test.ts
 
+claude-migrate OLD_PATH NEW_PATH:
+    bun scripts/migrate-project.ts {{OLD_PATH}} {{NEW_PATH}}
