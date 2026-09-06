@@ -21,7 +21,7 @@ link-codex:
     ln -sfn {{justfile_directory()}}/codex/hooks ~/.codex/hooks
     ln -sfn {{justfile_directory()}}/codex/hooks.json ~/.codex/hooks.json
     ln -sfn {{justfile_directory()}}/skills ~/.codex/skills
-    ln -sfn {{justfile_directory()}}/AGENTS.md ~/.codex/AGENTS.md
+    ln -sfn {{justfile_directory()}}/global/AGENTS.md ~/.codex/AGENTS.md
 
 link-claude:
     ln -sfn {{justfile_directory()}}/agents ~/.claude/agents
@@ -31,7 +31,7 @@ link-claude:
     ln -sfn \
         {{justfile_directory()}}/claude/settings.json \
         ~/.claude/settings.json
-    ln -sfn {{justfile_directory()}}/AGENTS.md ~/.claude/CLAUDE.md
+    ln -sfn {{justfile_directory()}}/global/CLAUDE.md ~/.claude/CLAUDE.md
     ln -sfn {{justfile_directory()}}/output-styles ~/.claude/output-styles
 
 # TypeScript

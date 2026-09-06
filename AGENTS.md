@@ -1,75 +1,49 @@
-# rules
+# Agent Configuration
 
-- be concise. avoid long-winded explanations.
-- don't ask questions you can answer yourself. research first, ask only when stuck.
-- don't ask the user to run commands, run them
-- when asking the user to make decisions, present one point at a time. wait for feedback, apply it, then proceed to the next
-- prefer bullet points over paragraphs
+This repository is the source of truth for shared Pi, Claude Code, and Codex configuration.
 
-## environment and secrets
+## Shared
 
-- never read env vars from the shell, assume they are already set
-- never read .env files
-- never read ~/.ssh/ (keys, config, or any other file)
-- never read, print, or extract secrets from any source (containers, vaults, APIs, config files, logs, memory, or anywhere else)
+- `global/AGENTS.md` — shared agent instructions
+- `skills/` — shared skills
+- `justfile` — repository recipes
+- Edit repository sources, then run the relevant `link-*` recipe.
 
-## coding style
+### Status-line verification
 
-- never provide defaults
-- never hide errors
-- in doubt ask the user how to handle errors
-- functional style
-- never write comments instead make sure code is easy to follow
-- never bypass the linter or playwright, look for ways to solve the problem either refactoring or following the recommendations
-- if you find a pre-existing issue/bug, tell the user even if unrelated
-- avoid complecting code, one function per action
-- connect small functions in a pipeline style
-- early return edge cases
-- last part of the function should return coherent with the name
+Visually verify changes to `pi/extensions/status-line.ts` with Pi in tmux:
 
-## rust
+```bash
+tmux new-session -d -s pi-check -c /tmp/test-project 'pi --no-session --offline --no-tools --extension /path/to/status-line.ts'
+sleep 2
+tmux capture-pane -p -t pi-check
+tmux kill-session -t pi-check
+```
 
-- bubble errors up with `?`
-- every module should have a thiserror enum
-- never write code on a mod.rs only exports
-- if something can fail, use Result. never convert a Result to Option
+Check the captured footer, not only unit tests.
 
-## typescript
+## Codex
 
-- if something can fail, always use try/catch and log the error
-- use type not interface
+- `codex/config.shared.toml` — shared configuration merged into the local Codex config
+- `codex/hooks.json` and `codex/hooks/` — hooks
+- `just link-codex` — link Codex configuration
+- `just codex-config-sync` — sync shared configuration without replacing personal settings
 
-## justfiles
+## Claude Code
 
-- recipe names should follow format <area>-<action> e.g: `rust-check`
-- use long version of command flags (e.g., --session instead of -s)
-- long commands should be split into multiple lines
-- inline recipe scripts should be written in nushell
-- if an inline script exceeds 10 lines, extract it to scripts/<recipe-name>.ts and execute with bun
+- `claude/settings.json` — global settings
+- `agents/` — subagents
+- `commands/` — slash commands
+- `hooks/` — hooks
+- `output-styles/` — output styles
+- `just link-claude` — link Claude Code configuration
+- `just claude-migrate <OLD_PATH> <NEW_PATH>` — migrate Claude project history after moving a project
 
-## skills
+## Recipes
 
-- always use the Skill(commit) when creating commits
-- always follow the Skill(plan-md) format when writing PLAN.md
-- when user writes p: issue, means add that topic to PLAN.md using Skill(plan-md) format
+- `just setup` — install dependencies
+- `just check` — run checks
+- `just fix` — format and fix files
+- `just link` — link all agent configuration
 
-## tools
-
-- use ripgrep (rg) instead of grep for searching
-- use fd instead of find for finding files
-- when adding dependencies, use the package manager add command (e.g., cargo add, npm install) to get the latest version instead of manually editing manifest files
-- never run multiple Bash commands in a single line, execute them one at a time so each can be reviewed
-
-## paths
-
-- Global Skills: ~/dev/.claude/skills/
-- Global Settings: ~/dev/.claude/settings.json
-- Global Hooks: ~/dev/.claude/hooks/
-- Personal Projects: /mnt/work/projects/
-- Dotfiles: ~/dev/dotfiles/
-
-# claude tools
-
-- never use AskUserQuestion tool, ask in plain text
-- never use EnterPlanMode tool, just do the work directly
-- never read or write to auto memory directories (~/.claude/projects/\*/memory/)
+Keep commits scoped to one area, such as a skill, hook, or settings change.
