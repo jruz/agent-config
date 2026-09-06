@@ -26,6 +26,16 @@ Merge these files into the project:
 
 THE test environment SHALL use `.env.test` with a different port than development.
 
+## HTTP Test Hostnames
+
+WHEN Chromium tests use an HTTP service, THE service SHALL NOT use `app` as its hostname.
+
+Chromium reads `app` as the HSTS-preloaded `.app` name. It changes `http://app` to `https://app`.
+
+The Playwright error is `page.goto: net::ERR_SSL_PROTOCOL_ERROR`. A trace shows a `307 Internal Redirect` with `Non-Authoritative-Reason: HSTS`.
+
+THE HTTP service SHOULD use a name such as `web`.
+
 ## Test Isolation
 
 THE tests SHALL NOT share state between test files.
