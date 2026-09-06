@@ -50,8 +50,10 @@ const blockedPaths = [
 ];
 
 const sshDir = join(home, ".ssh");
+const codexDir = join(home, ".codex");
 const results = [
   checkDirAllowlist(sshDir, ["known_hosts"]),
+  checkDirAllowlist(codexDir, ["config.toml"]),
   checkDirAllowlist(projectsDir, [projectName]),
   ...blockedPaths.map(checkBlocked),
 ];

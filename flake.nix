@@ -37,6 +37,8 @@
             --symlink ${pkgs.coreutils}/bin/env /usr/bin/env
             --symlink ${pkgs.bash}/bin/bash /bin/sh
             --tmpfs "$HOME"
+            --dir "$HOME/.codex"
+            --bind-try "$HOME/.codex/config.toml" "$HOME/.codex/config.toml"
             --bind "$(pwd)" "$(pwd)"
             --bind /tmp /tmp
             --bind-try "$HOME/.bun" "$HOME/.bun"

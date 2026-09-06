@@ -1,0 +1,18 @@
+model = "gpt-5.6-luna"
+model_reasoning_effort = "medium"
+[tui]
+status_line = [
+  "model-with-reasoning",
+  "context-used",
+  "five-hour-limit",
+  "weekly-limit",
+  "used-tokens",
+]
+status_line_use_colors = true
+theme = "catppuccin-macchiato"
+
+[agents]
+enabled = true
+default_subagent_model = "gpt-5.6-luna"
+default_subagent_reasoning_effort = "medium"
+max_concurrent_threads_per_session = 2
