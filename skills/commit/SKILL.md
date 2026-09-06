@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Commit guidelines for claude-opus-4-6reviewable PRs. Use when committing code.
+description: Commit guidelines for reviewable PRs. Use when committing code.
 ---
 
 # Git Commits
