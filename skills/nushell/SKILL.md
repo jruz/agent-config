@@ -157,24 +157,21 @@ def greet_all [...names: string] {
 }
 ```
 
-### Error Handling with log and exit
+### Error Handling
 
-THE nushell scripts SHALL use `use log.nu` and call `log err` followed by `exit 1` for user-facing errors.
-
-THE project SHALL contain `scripts/log.nu` from the template at `skills/nushell/scripts/log.nu`.
+Expected operational failures SHALL print a concise, actionable message to stderr and exit non-zero. They SHALL NOT expose source spans.
 
 ```nushell
-use log.nu
-
 if ($env.PORT? | is-empty) {
-    log err "PORT environment variable is not set"
+    print --stderr "ERROR: PORT environment variable is not set"
     exit 1
 }
+```
 
-if not ($path | path exists) {
-    log err $"Path does not exist: ($path)"
-    exit 1
-}
+Unexpected programmatic failures that callers may catch SHALL use `error make`.
+
+```nushell
+error make "invalid internal state"
 ```
 
 ### Error Handling with Try/Catch
