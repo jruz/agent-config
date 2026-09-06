@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-~/.cargo/bin/claude-hooks stop
+~/.cargo/bin/agent-hooks stop
 ~/.cargo/bin/tab-renamer-hook question
 ~/.cargo/bin/claude-trees-hook question

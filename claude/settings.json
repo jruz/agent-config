@@ -207,7 +207,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.cargo/bin/claude-hooks stop",
+            "command": "~/.cargo/bin/agent-hooks stop",
             "timeout": 300
           },
           {
@@ -227,7 +227,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.cargo/bin/claude-hooks pre-tool-use --agent claude"
+            "command": "~/.cargo/bin/agent-hooks pre-tool-use --agent claude"
           }
         ]
       }
