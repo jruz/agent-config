@@ -216,7 +216,7 @@
           },
           {
             "type": "command",
-            "command": "~/.cargo/bin/claude-trees-hook question"
+            "command": "~/.cargo/bin/agent-manager-hook question"
           }
         ]
       }
@@ -241,7 +241,7 @@
           },
           {
             "type": "command",
-            "command": "~/.cargo/bin/claude-trees-hook thinking"
+            "command": "~/.cargo/bin/agent-manager-hook thinking"
           }
         ]
       }

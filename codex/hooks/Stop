@@ -2,8 +2,9 @@
 set -euo pipefail
 
 ~/.cargo/bin/agent-hooks stop
-~/.cargo/bin/claude-trees-hook question
 
 if [[ -v ZELLIJ_SESSION_NAME || -v ZELLIJ_PANE_ID ]]; then
   ~/.cargo/bin/tab-renamer-hook question
 fi
+
+~/.cargo/bin/agent-manager-hook question
