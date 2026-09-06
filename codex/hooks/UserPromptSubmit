@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-~/.cargo/bin/tab-renamer-hook thinking
+if [[ -v ZELLIJ_SESSION_NAME || -v ZELLIJ_PANE_ID ]]; then
+  ~/.cargo/bin/tab-renamer-hook thinking
+fi
 ~/.cargo/bin/claude-trees-hook thinking
