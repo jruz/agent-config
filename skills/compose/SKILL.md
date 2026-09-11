@@ -105,12 +105,12 @@ processes:
     depends_on:
       - postgres
 
-  app:
+  web:
     docker:
       build: .
       dockerfile: Dockerfile.server
     env:
-      APP_DOMAIN: app
+      APP_DOMAIN: web
       REVISION: test
     depends_on:
       - reset
@@ -122,11 +122,11 @@ processes:
   seed:
     type: oneshot
     docker:
-      image: app
+      image: web
     exec:
       ["sh", "-c", "./tasks admin-user && ./tasks categories && ./tasks seed"]
     depends_on:
-      - app
+      - web
 
   playwright:
     docker:
@@ -137,10 +137,20 @@ processes:
         - "./test-results:/app/test-results"
     exec: ["sh", "-c", "npx playwright test $PLAYWRIGHT_ARGS"]
     env:
-      APP_DOMAIN: app
+      APP_DOMAIN: web
     depends_on:
       - seed
 ```
+
+## Playwright Hostnames
+
+THE HTTP service for Chromium tests SHALL NOT use `app` as its hostname.
+
+Chromium reads `app` as the HSTS-preloaded `.app` name. It changes `http://app` to `https://app`.
+
+The Playwright error is `page.goto: net::ERR_SSL_PROTOCOL_ERROR`. A trace shows a `307 Internal Redirect` with `Non-Authoritative-Reason: HSTS`.
+
+THE HTTP service SHOULD use a name such as `web`.
 
 ## Config Fields
 
