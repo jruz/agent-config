@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+agent=$1
+exec ~/.cargo/bin/agent-hooks pre-tool-use --agent "$agent"

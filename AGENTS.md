@@ -6,6 +6,7 @@ This repository is the source of truth for shared Pi, Claude Code, and Codex con
 
 - `global/AGENTS.md` — shared agent instructions
 - `skills/` — shared skills
+- `hooks/` — centralized `on_input`, `on_tool`, and `on_stop` hooks used by all agents
 - `justfile` — repository recipes
 - Edit repository sources, then run the relevant `link-*` recipe.
 
@@ -25,7 +26,7 @@ Check the captured footer, not only unit tests.
 ## Codex
 
 - `codex/config.shared.toml` — shared configuration merged into the local Codex config
-- `codex/hooks.json` and `codex/hooks/` — hooks
+- `codex/hooks.json` and `hooks/` — shared hooks
 - `just link-codex` — link Codex configuration
 - `just codex-config-sync` — sync shared configuration without replacing personal settings
 

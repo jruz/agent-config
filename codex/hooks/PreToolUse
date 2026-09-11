@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
-~/.cargo/bin/agent-hooks pre-tool-use --agent codex

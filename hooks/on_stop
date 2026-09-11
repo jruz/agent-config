@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-~/.cargo/bin/agent-hooks stop
+agent=$1
 
 if [[ -v ZELLIJ_SESSION_NAME || -v ZELLIJ_PANE_ID ]]; then
   ~/.cargo/bin/tab-renamer-hook question
 fi
 
 ~/.cargo/bin/agent-manager-hook question
+
+~/.cargo/bin/agent-hooks stop

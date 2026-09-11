@@ -22,7 +22,7 @@ link-codex:
     let root = "{{ justfile_directory() }}"
     ^mkdir --parents ~/.codex
     ^rm --force ~/.codex/hooks
-    ^ln -sfnT $"($root)/codex/hooks" ~/.codex/hooks
+    ^ln -sfnT $"($root)/hooks" ~/.codex/hooks
     ^ln -sfnT $"($root)/codex/hooks.json" ~/.codex/hooks.json
     ^ln -sfnT $"($root)/skills" ~/.codex/skills
     ^ln -sfnT $"($root)/global/AGENTS.md" ~/.codex/AGENTS.md

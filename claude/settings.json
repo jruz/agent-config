@@ -197,7 +197,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun run ~/.claude/hooks/notify_system.ts"
+            "command": "~/.claude/hooks/on_notify"
           }
         ]
       }
@@ -207,16 +207,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.cargo/bin/agent-hooks stop",
+            "command": "~/.claude/hooks/on_stop claude",
             "timeout": 300
-          },
-          {
-            "type": "command",
-            "command": "~/.cargo/bin/tab-renamer-hook question"
-          },
-          {
-            "type": "command",
-            "command": "~/.cargo/bin/agent-manager-hook question"
           }
         ]
       }
@@ -227,7 +219,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.cargo/bin/agent-hooks pre-tool-use --agent claude"
+            "command": "~/.claude/hooks/on_tool claude"
           }
         ]
       }
@@ -237,11 +229,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.cargo/bin/tab-renamer-hook thinking"
-          },
-          {
-            "type": "command",
-            "command": "~/.cargo/bin/agent-manager-hook thinking"
+            "command": "~/.claude/hooks/on_input"
           }
         ]
       }

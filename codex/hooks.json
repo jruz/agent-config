@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.codex/hooks/PreToolUse"
+            "command": "~/.codex/hooks/on_tool codex"
           }
         ]
       }
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.codex/hooks/UserPromptSubmit"
+            "command": "~/.codex/hooks/on_input"
           }
         ]
       }
@@ -26,7 +26,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.codex/hooks/Stop",
+            "command": "~/.codex/hooks/on_stop codex",
             "timeout": 300
           }
         ]
