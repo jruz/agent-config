@@ -213,7 +213,7 @@ const runHookWithStatus = async (
   input?: string,
 ): Promise<HookResult> => {
   if (hookStatusTimer !== undefined) clearTimeout(hookStatusTimer);
-  const symbol = ctx.ui.theme.fg("accent", "●");
+  const symbol = ctx.ui.theme.fg("warning", "●");
   ctx.ui.setStatus(HOOK_STATUS_KEY, `${symbol}${name}`);
   const result = await runHook(path, args, input);
   const status = result.status === "success" ? "success" : "failure";

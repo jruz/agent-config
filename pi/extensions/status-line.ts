@@ -356,6 +356,7 @@ export const contextBarColor = (percent: number | undefined): BarColor => {
 const usageBarColor = (percent: number | undefined): BarColor => {
   if (percent === undefined) return "dim";
   if (percent < 20) return "error";
+  if (percent <= 40) return "warning";
   return "success";
 };
 
@@ -383,7 +384,7 @@ const coloredBar = (
 const renderColumn = (text: string, width: number): string =>
   truncateToWidth(text, width, "...", true);
 
-type RuntimeColor = "muted" | "success" | "text";
+type RuntimeColor = "muted" | "success" | "text" | "warning";
 
 type RuntimeForeground = (color: RuntimeColor, text: string) => string;
 
@@ -401,7 +402,7 @@ export const renderRuntimeLine = (
   hookStatus: string | undefined,
   width: number,
 ): string => {
-  const processColor = processCount === 0 ? "text" : "success";
+  const processColor = processCount === 0 ? "text" : "warning";
   const processLabel = fg("muted", "Process:");
   const processValue = fg(processColor, `${processCount}`);
   const process = `${processLabel} ${processValue}`;
