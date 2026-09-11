@@ -10,6 +10,15 @@ This repository is the source of truth for shared Pi, Claude Code, and Codex con
 - `justfile` — repository recipes
 - Edit repository sources, then run the relevant `link-*` recipe.
 
+## Pi
+
+- `pi/settings.json` — global settings
+- `pi/keybindings.json` — global keybindings
+- `pi/extensions/` — global extensions
+- `~/.local/state/pi/log/pi-agent-hooks.log` — agent-hook extension logs
+- `~/.local/state/pi/log/pi-status-line.log` — status-line extension logs
+- `just link-pi` — link Pi configuration
+
 ### Status-line verification
 
 Visually verify changes to `pi/extensions/status-line.ts` with Pi in tmux:

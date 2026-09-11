@@ -16,6 +16,21 @@ ci-check:
 link:
   just link-codex
   just link-claude
+  just link-pi
+
+link-pi:
+    #!/usr/bin/env nu
+    let root = "{{ justfile_directory() }}"
+    ^mkdir --parents ~/.pi/agent
+    ^rm --force ~/.pi/agent/hooks
+    ^ln -sfnT $"($root)/pi/settings.json" ~/.pi/agent/settings.json
+    ^ln -sfnT $"($root)/pi/keybindings.json" ~/.pi/agent/keybindings.json
+    ^ln -sfnT $"($root)/global/AGENTS.md" ~/.pi/agent/AGENTS.md
+    ^ln -sfnT $"($root)/skills" ~/.pi/agent/skills
+    ^ln -sfnT $"($root)/pi/extensions" ~/.pi/agent/extensions
+    let theme = $"($root)/pi/themes/agent-config-dark.json"
+    ^mkdir --parents ~/.pi/agent/themes
+    ^ln -sfn $theme ~/.pi/agent/themes/agent-config-dark.json
 
 link-codex:
     #!/usr/bin/env nu
