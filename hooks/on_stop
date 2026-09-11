@@ -7,6 +7,10 @@ if [[ -v ZELLIJ_SESSION_NAME || -v ZELLIJ_PANE_ID ]]; then
   ~/.cargo/bin/tab-renamer-hook question
 fi
 
+if [[ -v TMUX || -v TMUX_PANE ]]; then
+  "$(dirname "$0")/tmux-tab-renamer" question
+fi
+
 ~/.cargo/bin/agent-manager-hook question
 
 ~/.cargo/bin/agent-hooks stop

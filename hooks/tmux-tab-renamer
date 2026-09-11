@@ -1,0 +1,17 @@
+#!/usr/bin/env nu
+# vim: ft=nu
+
+def main [action: string] {
+    let name = (
+        ^tmux display-message -p -t $env.TMUX_PANE '#{window_name}'
+        | str replace --regex ' (✻|\?)$' ''
+    )
+
+    let indicator = match $action {
+        "thinking" => " ✻"
+        "question" => " ?"
+        "reset" => ""
+    }
+
+    ^tmux rename-window -t $env.TMUX_PANE $"($name)($indicator)"
+}

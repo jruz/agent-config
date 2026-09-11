@@ -5,4 +5,8 @@ if [[ -v ZELLIJ_SESSION_NAME || -v ZELLIJ_PANE_ID ]]; then
   ~/.cargo/bin/tab-renamer-hook thinking
 fi
 
+if [[ -v TMUX || -v TMUX_PANE ]]; then
+  "$(dirname "$0")/tmux-tab-renamer" thinking
+fi
+
 ~/.cargo/bin/agent-manager-hook thinking
