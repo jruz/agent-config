@@ -12,7 +12,7 @@ This repository is the source of truth for shared Pi, Claude Code, and Codex con
 
 ## Pi
 
-- `pi/settings.json` — global settings, including the selected theme
+- `pi/settings.json` — global settings, favorite models, and the selected theme
 - `pi/keybindings.json` — global keybindings
 - `pi/themes/agent-config-dark.json` — global Pi theme
 - `pi/extensions/` — global extensions

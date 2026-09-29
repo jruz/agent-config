@@ -1,7 +1,8 @@
 {
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.6-luna",
+  "defaultModel": "gpt-6-luna",
   "defaultThinkingLevel": "medium",
+  "enabledModels": ["gpt-6-luna:medium", "gpt-6-sol:high", "gpt-6-astra:low"],
   "lastChangelogVersion": "0.84.3",
   "theme": "agent-config-dark"
 }
