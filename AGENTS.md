@@ -50,9 +50,18 @@ Check the captured footer, not only unit tests.
 - `just link-claude` — link Claude Code configuration
 - `just claude-migrate <OLD_PATH> <NEW_PATH>` — migrate Claude project history after moving a project
 
+## Testing
+
+- Vitest is the only unit test runner.
+- Bun is the package manager and runtime used to execute Vitest.
+- Test files use `.test.ts` and import test APIs from `vitest`.
+- Run the full test suite with `just test` or the focused TypeScript recipe `just ts-test`.
+- Do not use `bun:test` or invoke `bun test` for repository tests.
+
 ## Recipes
 
 - `just setup` — install dependencies
+- `just test` — run the full test suite
 - `just check` — run checks
 - `just fix` — format and fix files
 - `just link` — link all agent configuration

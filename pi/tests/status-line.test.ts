@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vitest";
 import { visibleWidth } from "@earendil-works/pi-tui";
 import { resolvePiLogDirectory } from "../extensions/shared/log-path.ts";
 import {

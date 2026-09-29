@@ -54,6 +54,12 @@ link-claude:
     ln -sfn {{justfile_directory()}}/output-styles ~/.claude/output-styles
 
 # TypeScript
+ts-test:
+    sandbox bun run vitest
+
+test:
+    just ts-test
+
 ts-check:
     #!/usr/bin/env nu
     let results = [
