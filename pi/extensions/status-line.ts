@@ -29,7 +29,7 @@ const USAGE_LOCK_PATH = `${USAGE_CACHE_PATH}.lock`;
 const PROGRESS_WIDTH = 10;
 const LEFT_COLUMN_WIDTH = 35;
 const CENTER_COLUMN_WIDTH = 22;
-const EXPENSIVE_MODELS: ReadonlySet<string> = new Set(["gpt-5.6-sol"]);
+const PREFERRED_MODEL_SUFFIX = "-luna";
 
 type RateWindow = Readonly<{
   remainingPercent: number | undefined;
@@ -316,15 +316,16 @@ type BarColor = "accent" | "dim" | "error" | "success" | "warning";
 type ModelColor = "success" | "error";
 
 export const modelColor = (model: string): ModelColor =>
-  EXPENSIVE_MODELS.has(model) ? "error" : "success";
+  model.endsWith(PREFERRED_MODEL_SUFFIX) ? "success" : "error";
 
-const modelPrefix = /^gpt-\d+\.\d+-/;
+const modelPrefix = /^gpt-[^-]+(?:-|$)/;
 
 export const modelNameParts = (
   model: string,
 ): Readonly<{ prefix: string; suffix: string; color: ModelColor }> => {
   const match = modelPrefix.exec(model);
-  if (match === null) return { prefix: model, suffix: "", color: "success" };
+  if (match === null)
+    return { prefix: model, suffix: "", color: modelColor(model) };
   const prefix = match[0];
   return {
     prefix,

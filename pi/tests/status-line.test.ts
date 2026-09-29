@@ -50,7 +50,7 @@ describe("status line formatting", () => {
     expect(full).toBe("━━━━━━━━━━");
   });
 
-  test("colors expensive models red and other models teal", () => {
+  test("colors luna models green and other models red", () => {
     const lunaColor = modelColor("gpt-5.6-luna");
     const solColor = modelColor("gpt-5.6-sol");
     expect(lunaColor).toBe("success");
@@ -60,6 +60,8 @@ describe("status line formatting", () => {
   test("colors model prefix and suffix independently", () => {
     const luna = modelNameParts("gpt-5.6-luna");
     const sol = modelNameParts("gpt-5.6-sol");
+    const olderGpt = modelNameParts("gpt-4o-mini");
+    const futureGpt = modelNameParts("gpt-6-astra");
     const claude = modelNameParts("claude");
     expect(luna).toEqual({
       prefix: "gpt-5.6-",
@@ -71,10 +73,20 @@ describe("status line formatting", () => {
       suffix: "sol",
       color: "error",
     });
+    expect(olderGpt).toEqual({
+      prefix: "gpt-4o-",
+      suffix: "mini",
+      color: "error",
+    });
+    expect(futureGpt).toEqual({
+      prefix: "gpt-6-",
+      suffix: "astra",
+      color: "error",
+    });
     expect(claude).toEqual({
       prefix: "claude",
       suffix: "",
-      color: "success",
+      color: "error",
     });
   });
 
