@@ -1,8 +1,6 @@
 {
-  description = "Claude Code Config Shell";
-
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-25.11";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-26.05";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -11,21 +9,31 @@
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        pkgs = import nixpkgs { inherit system; };
-        sandboxPath = pkgs.lib.makeBinPath [
-          pkgs.bash
-          pkgs.bun
-          pkgs.coreutils
-          pkgs.git
-          pkgs.gnugrep
-          pkgs.gnused
-        ];
+        pkgs = nixpkgs.legacyPackages.${system};
+        pnpmPackage = pkgs.pnpm.override { nodejs-slim = pkgs.nodejs-slim_24; };
+        sandboxPath = pkgs.lib.makeBinPath (
+          with pkgs;
+          [
+            bash
+            pnpmPackage
+            nodejs_24
+            bun
+            coreutils
+            fd
+            git
+            gnugrep
+            gnused
+            just
+            nixfmt
+            nushell
+            ripgrep
+            statix
+          ]
+        );
         sandbox = pkgs.writeShellScriptBin "sandbox" ''
+          SELF_DIR="$(dirname "$(readlink -f "$0")")"
           ARGS=(
-            --unshare-user
-            --unshare-ipc
-            --unshare-uts
-            --unshare-cgroup
+            --unshare-all
             --share-net
             --die-with-parent
             --ro-bind /nix /nix
@@ -37,15 +45,25 @@
             --symlink ${pkgs.coreutils}/bin/env /usr/bin/env
             --symlink ${pkgs.bash}/bin/bash /bin/sh
             --tmpfs "$HOME"
-            --dir "$HOME/.codex"
-            --bind-try "$HOME/.codex/config.toml" "$HOME/.codex/config.toml"
+            --tmpfs /tmp
             --bind "$(pwd)" "$(pwd)"
-            --bind /tmp /tmp
-            --bind-try "$HOME/.bun" "$HOME/.bun"
-            --setenv PATH "${sandboxPath}"
+            --ro-bind "$(git rev-parse --path-format=absolute --git-common-dir)" "$(git rev-parse --path-format=absolute --git-common-dir)"
+            --ro-bind-try "$HOME/.gitconfig" "$HOME/.gitconfig"
+            --ro-bind-try "$HOME/.ssh/known_hosts" "$HOME/.ssh/known_hosts"
+            --setenv PATH "${sandboxPath}:$SELF_DIR"
             --setenv HOME "$HOME"
+            --setenv TMPDIR /tmp
             --dev /dev
             --proc /proc
+          )
+          ARGS+=(
+            --bind-try "$HOME/.local/share/pnpm" "$HOME/.local/share/pnpm"
+            --setenv pnpm_config_store_dir "$HOME/.local/share/pnpm/store"
+          )
+          ARGS+=(
+            --bind-try "$HOME/.bun" "$HOME/.bun"
+            --dir "$HOME/.codex"
+            --bind-try "$HOME/.codex/config.toml" "$HOME/.codex/config.toml"
           )
           exec ${pkgs.bubblewrap}/bin/bwrap "''${ARGS[@]}" -- "$@"
         '';
@@ -54,6 +72,7 @@
           fd
           just
           nixfmt
+          nu-lint
           nushell
           ripgrep
           sandbox
@@ -63,14 +82,16 @@
       in
       {
         devShells.default = pkgs.mkShell {
-          buildInputs = defaultPackages;
+          packages = defaultPackages;
 
           shellHook = ''
             echo ""
-            echo "  Claude Code Config Shell"
-            echo "  ───────────────────────────"
+            echo "  Agent Configuration Shell"
+            echo "  ─────────────────────────"
+            echo "  nixpkgs      ${pkgs.lib.trivial.release}"
+            echo "  node         ${pkgs.nodejs_24.version} (sandbox)"
+            echo "  pnpm         ${pnpmPackage.version} (sandbox)"
             echo "  bun          ${pkgs.bun.version} (sandbox)"
-            echo "  woodpecker   ${pkgs.woodpecker-cli.version}"
             echo ""
           '';
         };
