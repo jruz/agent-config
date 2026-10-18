@@ -27,7 +27,6 @@ link-pi:
     ^ln -sfnT $"($root)/pi/keybindings.json" ~/.pi/agent/keybindings.json
     ^ln -sfnT $"($root)/global/AGENTS.md" ~/.pi/agent/AGENTS.md
     ^ln -sfnT $"($root)/skills" ~/.pi/agent/skills
-    ^ln -sfnT $"($root)/pi/extensions" ~/.pi/agent/extensions
     let theme = $"($root)/pi/themes/agent-config-dark.json"
     ^mkdir --parents ~/.pi/agent/themes
     ^ln -sfn $theme ~/.pi/agent/themes/agent-config-dark.json

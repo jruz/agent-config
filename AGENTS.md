@@ -15,23 +15,8 @@ This repository is the source of truth for shared Pi, Claude Code, and Codex con
 - `pi/settings.json` — global settings, favorite models, and the selected theme
 - `pi/keybindings.json` — global keybindings
 - `pi/themes/agent-config-dark.json` — global Pi theme
-- `pi/extensions/` — global extensions
-- `~/.local/state/pi/log/pi-agent-hooks.log` — agent-hook extension logs
-- `~/.local/state/pi/log/pi-status-line.log` — status-line extension logs
 - `just link-pi` — link Pi configuration
-
-### Status-line verification
-
-Visually verify changes to `pi/extensions/status-line.ts` with Pi in tmux:
-
-```bash
-tmux new-session -d -s pi-check -c /tmp/test-project 'pi --no-session --offline --no-tools --extension /path/to/status-line.ts'
-sleep 2
-tmux capture-pane -p -t pi-check
-tmux kill-session -t pi-check
-```
-
-Check the captured footer, not only unit tests.
+- `~/dev/projects/pi-extensions` — global extensions, linked by its own `just link`
 
 ## Codex
 
