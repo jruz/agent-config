@@ -4,5 +4,13 @@
   "defaultThinkingLevel": "medium",
   "enabledModels": ["gpt-6-luna:medium", "gpt-6-sol:high", "gpt-6-astra:low"],
   "lastChangelogVersion": "0.84.3",
-  "theme": "agent-config-dark"
+  "theme": "agent-config-dark",
+  "extensions": [
+    "~/dev/projects/pi-extensions/extensions/agent-hooks.ts",
+    "~/dev/projects/pi-extensions/extensions/clear.ts",
+    "~/dev/projects/pi-extensions/extensions/context-handoff.ts",
+    "~/dev/projects/pi-extensions/extensions/messenger/index.ts",
+    "~/dev/projects/pi-extensions/extensions/status-line.ts",
+    "~/dev/projects/pi-extensions/extensions/woodpecker/index.ts"
+  ]
 }
