@@ -1,3 +1,5 @@
+root := justfile_directory()
+
 setup:
     sandbox bun install
 
@@ -32,14 +34,13 @@ link-pi:
     ^ln -sfn $theme ~/.pi/agent/themes/agent-config-dark.json
 
 link-codex:
-    #!/usr/bin/env nu
-    let root = "{{ justfile_directory() }}"
-    ^mkdir --parents ~/.codex
-    ^rm --force ~/.codex/hooks
-    ^ln -sfnT $"($root)/hooks" ~/.codex/hooks
-    ^ln -sfnT $"($root)/codex/hooks.json" ~/.codex/hooks.json
-    ^ln -sfnT $"($root)/skills" ~/.codex/skills
-    ^ln -sfnT $"($root)/global/AGENTS.md" ~/.codex/AGENTS.md
+    mkdir --parents ~/.codex ~/.agents
+    rm --force ~/.codex/hooks
+    ln -sfnT {{root}}/hooks ~/.codex/hooks
+    ln -sfnT {{root}}/codex/hooks.json ~/.codex/hooks.json
+    ln -sfnT {{root}}/skills ~/.codex/skills
+    ln -sfnT {{root}}/skills ~/.agents/skills
+    ln -sfnT {{root}}/global/AGENTS.md ~/.codex/AGENTS.md
 
 link-claude:
     ln -sfn {{justfile_directory()}}/agents ~/.claude/agents
