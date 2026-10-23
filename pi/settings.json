@@ -2,6 +2,9 @@
   "defaultProvider": "openai-codex",
   "defaultThinkingLevel": "medium",
   "lastChangelogVersion": "0.84.3",
+  "compaction": {
+    "enabled": false
+  },
   "enabledModels": [
     "openai-codex/gpt-6.1-sol:medium",
     "openai-codex/gpt-6-astra:medium",
