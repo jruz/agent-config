@@ -5,6 +5,7 @@
   "enabledModels": ["gpt-6-luna:medium", "gpt-6-sol:high", "gpt-6-astra:low"],
   "lastChangelogVersion": "0.84.3",
   "theme": "agent-config-dark",
+  "tuiMode": "regular",
   "extensions": [
     "~/dev/projects/pi-extensions/extensions/agent-hooks.ts",
     "~/dev/projects/pi-extensions/extensions/clear.ts",

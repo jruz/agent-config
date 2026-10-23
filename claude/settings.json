@@ -251,6 +251,7 @@
   "autoUpdatesChannel": "stable",
   "prefersReducedMotion": true,
   "autoMemoryEnabled": false,
+  "tui": "default",
   "skipDangerousModePermissionPrompt": true,
   "skipAutoPermissionPrompt": true
 }
