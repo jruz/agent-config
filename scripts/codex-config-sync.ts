@@ -60,6 +60,15 @@ const mergeValue = (
 
 const currentEntry = ([key, value]: Entry): Entry => [key, cloneValue(value)];
 
+const removeRootTuiSettings = (config: TomlTable): TomlTable => {
+  const entries = Object.entries(config);
+  const retainedEntries = entries.filter(
+    ([key]) =>
+      !["status_line", "status_line_use_colors", "theme"].includes(key),
+  );
+  return Object.fromEntries(retainedEntries);
+};
+
 const sharedEntry =
   (current: TomlTable) =>
   ([key, value]: Entry): Entry => [key, mergeValue(current[key], value)];
@@ -88,7 +97,8 @@ const writeCodexConfig = (config: TomlTable): void => {
 const main = (): void => {
   const current = readToml(CODEX_CONFIG_PATH);
   const shared = readToml(SHARED_CONFIG_PATH);
-  const merged = mergeTables(current, shared);
+  const cleanedCurrent = removeRootTuiSettings(current);
+  const merged = mergeTables(cleanedCurrent, shared);
   writeCodexConfig(merged);
   log.ok(`wrote ${CODEX_CONFIG_PATH}`);
 };
