@@ -1,5 +1,9 @@
 model = "gpt-6.1-sol"
 model_reasoning_effort = "medium"
+
+[features]
+daemon_auto_start = false
+
 [tui]
 alternate_screen = "never"
 status_line = [
