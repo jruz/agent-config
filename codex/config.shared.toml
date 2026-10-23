@@ -6,6 +6,7 @@ daemon_auto_start = false
 
 [tui]
 alternate_screen = "never"
+copy_on_select = "always"
 status_line = [
   "model-with-reasoning",
   "context-used",
