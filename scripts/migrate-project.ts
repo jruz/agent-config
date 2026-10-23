@@ -7,7 +7,7 @@ import {
   statSync,
 } from "fs";
 import { join } from "path";
-import { log } from "./log";
+import { log } from "./lib/log.ts";
 
 const args = process.argv.slice(2);
 const [oldPath, newPath] = args;

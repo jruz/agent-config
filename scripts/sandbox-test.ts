@@ -1,7 +1,7 @@
 import { accessSync, readdirSync, constants } from "fs";
 import { homedir } from "os";
 import { basename, dirname, join } from "path";
-import { log } from "./log";
+import { log } from "./lib/log.ts";
 
 const home = homedir();
 const scriptDir = dirname(import.meta.filename);

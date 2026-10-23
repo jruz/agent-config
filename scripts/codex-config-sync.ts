@@ -7,7 +7,7 @@ import {
   type TomlTable,
   type TomlValue,
 } from "smol-toml";
-import { log } from "./log";
+import { log } from "./lib/log.ts";
 
 const SCRIPT_DIR = dirname(import.meta.filename);
 const PROJECT_DIR = dirname(SCRIPT_DIR);
