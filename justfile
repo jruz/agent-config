@@ -21,17 +21,16 @@ link:
   just link-pi
 
 link-pi:
-    #!/usr/bin/env nu
-    let root = "{{ justfile_directory() }}"
-    ^mkdir --parents ~/.pi/agent
-    ^rm --force ~/.pi/agent/hooks
-    ^ln -sfnT $"($root)/pi/settings.json" ~/.pi/agent/settings.json
-    ^ln -sfnT $"($root)/pi/keybindings.json" ~/.pi/agent/keybindings.json
-    ^ln -sfnT $"($root)/global/AGENTS.md" ~/.pi/agent/AGENTS.md
-    ^ln -sfnT $"($root)/skills" ~/.pi/agent/skills
-    let theme = $"($root)/pi/themes/agent-config-dark.json"
-    ^mkdir --parents ~/.pi/agent/themes
-    ^ln -sfn $theme ~/.pi/agent/themes/agent-config-dark.json
+    mkdir --parents ~/.pi/agent/themes
+    rm --force ~/.pi/agent/hooks
+    ln -sfnT {{root}}/pi/settings.json ~/.pi/agent/settings.json
+    ln -sfnT {{root}}/pi/keybindings.json ~/.pi/agent/keybindings.json
+    ln -sfnT {{root}}/global/AGENTS.md ~/.pi/agent/AGENTS.md
+    ln -sfnT {{root}}/skills ~/.pi/agent/skills
+    ln -sfnT {{root}}/hooks ~/.pi/agent/agent-config-hooks
+    ln -sfnT \
+        {{root}}/pi/themes/agent-config-dark.json \
+        ~/.pi/agent/themes/agent-config-dark.json
 
 link-codex:
     mkdir --parents ~/.codex ~/.agents
