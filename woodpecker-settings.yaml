@@ -1,5 +1,5 @@
 repo:
-  name: jruz/.claude
+  name: jruz/agent-config
 secrets: {}
 settings:
   allow_deploy: false
@@ -14,4 +14,4 @@ settings:
     network: false
     security: false
     volumes: false
-  visibility: public
+  visibility: private
