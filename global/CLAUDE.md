@@ -1,3 +1,5 @@
+@~/dev/projects/agent-config/global/AGENTS.md
+
 # claude tools
 
 - never use AskUserQuestion tool, ask in plain text
