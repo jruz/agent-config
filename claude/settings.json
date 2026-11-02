@@ -256,5 +256,6 @@
   "autoCompactEnabled": false,
   "showTurnDuration": false,
   "terminalProgressBarEnabled": false,
+  "crossSessionInbound": "accept",
   "skipAutoPermissionPrompt": true
 }
