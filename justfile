@@ -90,11 +90,9 @@ nix-fix:
     statix fix .
     deadnix --edit .
 
-sandbox-test:
-    sandbox bun scripts/sandbox-test.ts
 
 claude-migrate OLD_PATH NEW_PATH:
     bun scripts/migrate-project.ts {{OLD_PATH}} {{NEW_PATH}}
 
 codex-config-sync:
-    sandbox bun scripts/codex-config-sync.ts
+    bun scripts/codex-config-sync.ts
