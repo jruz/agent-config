@@ -27,6 +27,9 @@ Uses `networkidle0` wait strategy — works with SPAs.
 5. Interact using uids from snapshot
 6. Kill: `chrome-cli kill --port <port>`
 
+`kill` waits for the requested browser to close before reporting success.
+`kill-all` and `daemon-stop` close only sessions tracked by that daemon.
+
 ## Commands
 
 | Command                 | Purpose                       | Key Flags                                                                                                       |
