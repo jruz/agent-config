@@ -241,6 +241,7 @@
   },
   "enabledPlugins": {},
   "outputStyle": "Direct",
+  "feedbackDrafts": "off",
   "spinnerTipsEnabled": false,
   "spinnerVerbs": {
     "mode": "replace",
@@ -248,10 +249,15 @@
   },
   "effortLevel": "xhigh",
   "promptSuggestionEnabled": false,
+  "awaySummaryEnabled": false,
   "autoUpdatesChannel": "stable",
+  "tui": "default",
   "prefersReducedMotion": true,
   "autoMemoryEnabled": false,
-  "tui": "default",
   "skipDangerousModePermissionPrompt": true,
+  "theme": "dark-ansi",
+  "autoCompactEnabled": false,
+  "showTurnDuration": false,
+  "terminalProgressBarEnabled": false,
   "skipAutoPermissionPrompt": true
 }
