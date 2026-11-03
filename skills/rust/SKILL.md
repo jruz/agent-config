@@ -11,19 +11,27 @@ This specification defines Rust-specific patterns and requirements for writing r
 
 ## Project Initialization
 
-THE system SHALL create a `flake.nix` from the template at `skills/rust/flake.nix`.
+THE system SHALL create a `flake.nix` from the closest template:
+
+- `skills/rust/flake.nix` - rust
+- `skills/rust/rust-bun.flake.nix` - rust + bun
+- `skills/rust/rust-playwright.flake.nix` - rust + pnpm + playwright
 
 THE system SHALL create a `.envrc` file from `skills/rust/envrc` for direnv integration.
 
 THE `.gitignore` SHALL include direnv entries from `skills/rust/gitignore-additions.txt`.
 
-AFTER creating files THE system SHALL run `git add flake.nix flake.lock rust-toolchain.toml` so the nix flake can read them.
+THE system SHALL create `.cargo/config.toml` from `skills/rust/cargo-config.toml`.
+
+AFTER creating files THE system SHALL run `git add flake.nix flake.lock rust-toolchain.toml .cargo/config.toml` so the nix flake can read them.
 
 AFTER staging flake files THE system SHALL run `direnv allow` to activate the devshell.
 
 ## Code Paradigm: Functional Only
 
-THE system SHALL use pure functions for ALL logic.
+THE system SHALL keep application logic in pure functions.
+
+THE system SHALL isolate I/O and other side effects in separate functions that compose the pure logic.
 
 THE system SHALL NEVER define traits.
 
@@ -54,8 +62,8 @@ pub struct User {
     pub email: String,
 }
 
-pub fn create_user(name: String, email: String) -> User {
-    User { id: 0, name, email }
+pub fn create_user(id: i64, name: String, email: String) -> User {
+    User { id, name, email }
 }
 
 pub fn validate_email(user: &User) -> bool {
@@ -107,9 +115,31 @@ WHERE the project targets unconventional platforms THE toolchain SHALL declare e
 
 ```toml
 [toolchain]
-channel = "1.95.0"
+channel = "1.99.1"
 targets = ["wasm32-wasip1"]
 ```
+
+WHEN upgrading Rust THE system SHALL run `nix flake update rust-overlay` so the locked overlay provides the pinned version.
+
+THE toolchain channel SHALL match the `registry.jruz.io/rust` image tag so containers never download another toolchain.
+
+## Native Builds
+
+THE development builds SHALL target only the host platform, in the flake sandbox and in the `registry.jruz.io/rust` container.
+
+THE toolchain SHALL NOT declare targets for cross-compilation.
+
+THE sandbox SHALL NOT set `CARGO_BUILD_TARGET`.
+
+THE recipes and scripts SHALL reference built binaries under `target/<profile>/`.
+
+WHERE artifacts for other platforms are needed THE project SHALL use the `release` skill's cross-platform builds.
+
+THE project SHALL contain a `.cargo/config.toml` from `skills/rust/cargo-config.toml` to link Linux builds with mold.
+
+ON macOS THE builds SHALL use the default linker.
+
+WHERE the container runs on macOS THE container SHALL keep `target/` in a named volume so Linux and macOS builds do not share it.
 
 ## Error Handling
 
@@ -117,7 +147,7 @@ All errors must be raised, never hidden. Never provide defaults or failsafes.
 
 ### What NOT to Do
 
-THE system SHALL NOT use `.unwrap()`, `.expect()`, or `panic!()`.
+THE system SHALL NOT use `.unwrap()` or `panic!()`.
 
 THE system SHALL NOT use `.ok()` to discard error information.
 
@@ -221,11 +251,9 @@ THE system SHALL use `.and_then()` for chaining optional operations.
 
 WHERE an Option is None THE system SHALL return an error, never provide a default value.
 
-## Environment Variables
+## Configuration and Secrets
 
-THE system SHALL NEVER provide default values for environment variables.
-
-WHERE an environment variable is missing THE application SHALL fail with an error naming the missing variable.
+Follow [Configuration and Secrets in the code-quality skill](../code-quality/SKILL.md#configuration-and-secrets).
 
 ## Ownership and Borrowing
 
@@ -407,13 +435,9 @@ use crate::services::connector::Error;
 
 THE system SHALL organize modules by feature in `src/` directory.
 
-THE system SHALL create a `mod.rs` file that contains only module declarations.
+WHERE a module has multiple Rust implementation files THE system SHALL keep `mod.rs` limited to module declarations and re-exports, with implementation in separate files.
 
-THE `mod.rs` files SHALL contain only `pub mod` and `mod` declarations.
-
-THE `mod.rs` files SHALL NOT contain any implementation code.
-
-WHERE module implementation is needed THE system SHALL create separate files for the implementation.
+WHERE a module folder has only one Rust implementation file THE system SHALL put that implementation in `mod.rs`. Companion assets such as SCSS files do not count as Rust implementation files.
 
 THE system SHALL keep private implementation details unexported.
 
@@ -431,8 +455,6 @@ pub mod main;
 pub mod state;
 ```
 
-WHERE a module folder contains only one implementation file THE system SHALL place all code directly in `mod.rs`.
-
 WHERE a module folder contains multiple implementation files THE system SHALL use descriptive names for each file and declare them in `mod.rs`.
 
 THE system SHALL NOT create a submodule with the same name as its containing module to avoid `module_inception` Clippy warnings.
@@ -441,8 +463,8 @@ Example of single file module (correct):
 
 ```
 calendar/
-├── mod.rs              # Contains all implementation code
-└── calendar.scss       # Styles
+├── mod.rs
+└── calendar.scss
 ```
 
 Example of module inception (incorrect - triggers Clippy warning):
@@ -478,7 +500,7 @@ THE system SHALL use guard clauses with `if let` chains for test setup.
 
 WHERE floating-point comparisons are needed THE system SHALL use epsilon comparison.
 
-WHEN `expect_used` is needed in test code, THE developer MAY use `#[allow(clippy::expect_used)]` within `#[cfg(test)]` modules only.
+THE system SHALL allow `.expect()` only in tests and SHALL NOT use it anywhere else.
 
 ### Imports in Tests
 
@@ -514,7 +536,7 @@ THE project SHALL contain a `justfile` with Rust development recipes.
 
 THE justfile template is available at `skills/rust/justfile`.
 
-This template contains all Rust recipes: build, check, clippy, fmt-check, fmt-fix, fix, test, install, outdated, upgrade.
+This template contains all Rust recipes: build, check, clippy, fmt-check, fmt-fix, fix, test, install, machete, outdated, upgrade.
 
 THE project SHALL have a pre-push git hook as defined in the `checks` skill Git Hooks section.
 
@@ -550,6 +572,10 @@ WHERE dead code is intentional THE system SHALL use `#[allow(dead_code)]` at mod
 
 WHERE items are unused during development THE developer SHALL remove them or justify their presence.
 
+## Dependency Automation
+
+Follow the [Renovate skill](../renovate/SKILL.md) and copy [rust.renovate.json](../renovate/rust.renovate.json) to the project root as `renovate.json`. For frontend dependencies, combine profiles as described there. Toolchain and container upgrades must preserve the Rust version configuration above.
+
 ## Dependencies
 
 THE system SHALL use the latest stable version of crates when adding dependencies.
@@ -559,6 +585,8 @@ WHERE new dependencies are added THE developer SHALL check crates.io for the cur
 THE system SHALL pin dependency versions in `Cargo.toml`.
 
 WHERE new dependencies are added THE developer SHALL verify they are necessary.
+
+THE `rust-check` recipe SHALL run `cargo machete --with-metadata` to fail on unused dependencies.
 
 THE system SHALL prefer pure Rust crates over FFI bindings where possible.
 

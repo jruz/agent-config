@@ -1,5 +1,17 @@
 install:
-    cargo install --path . --force
+    sandbox cargo install \
+        --path . \
+        --locked \
+        --force \
+        --root target/dist
+    install \
+        --directory \
+        --mode=755 \
+        "$HOME/.cargo/bin"
+    install \
+        --mode=755 \
+        target/dist/bin/* \
+        "$HOME/.cargo/bin"
 
 check:
     just rust-check
@@ -19,21 +31,25 @@ fix:
 # ─────────────────────────────── rust ───────────────────────────────
 
 rust-build:
-    cargo build --all-targets
+    sandbox cargo build --all-targets
 
 rust-cargo-check:
-    cargo check --all-targets
+    sandbox cargo check --all-targets
 
 rust-check:
     just rust-cargo-check
     just rust-fmt-check
     just rust-clippy-check
+    just rust-machete
+
+rust-machete:
+    sandbox cargo machete --with-metadata
 
 rust-clippy-check *ARGS='':
-    cargo clippy --all-targets {{ARGS}}
+    sandbox cargo clippy --all-targets {{ARGS}}
 
 rust-clippy-fix *ARGS='':
-    cargo clippy \
+    sandbox cargo clippy \
         --fix \
         --all-targets \
         --allow-dirty \
@@ -44,25 +60,25 @@ rust-fix:
     just rust-clippy-fix
 
 rust-fmt-check:
-    cargo fmt --all -- --check
+    sandbox cargo fmt --all -- --check
 
 rust-fmt-fix:
-    cargo fmt --all
+    sandbox cargo fmt --all
 
 rust-outdated:
-    cargo outdated
+    sandbox cargo outdated
 
 rust-test *FILTER='':
-    cargo nextest run \
+    sandbox cargo nextest run \
         --no-tests=pass \
         {{FILTER}}
 
 rust-run *ARGS='':
-    cargo run -- {{ARGS}}
+    sandbox cargo run -- {{ARGS}}
 
 rust-watch:
-    cargo watch --exec run
+    sandbox cargo watch --exec run
 
 rust-upgrade:
-    cargo upgrade --incompatible
-    cargo update
+    sandbox cargo upgrade --incompatible
+    sandbox cargo update
