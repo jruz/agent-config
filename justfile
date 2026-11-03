@@ -16,43 +16,42 @@ ci-check:
     woodpecker-cli lint .woodpecker/
 
 link:
-  just link-codex
-  just link-claude
-  just link-pi
+    just link-codex
+    just link-claude
+    just link-pi
 
 link-pi:
     mkdir --parents ~/.pi/agent/themes
     rm --force ~/.pi/agent/hooks
-    ln -sfnT {{root}}/pi/settings.json ~/.pi/agent/settings.json
-    ln -sfnT {{root}}/pi/keybindings.json ~/.pi/agent/keybindings.json
-    ln -sfnT {{root}}/global/AGENTS.md ~/.pi/agent/AGENTS.md
-    ln -sfnT {{root}}/skills ~/.pi/agent/skills
-    ln -sfnT {{root}}/hooks ~/.pi/agent/agent-config-hooks
+    ln -sfnT {{ root }}/pi/settings.json ~/.pi/agent/settings.json
+    ln -sfnT {{ root }}/pi/keybindings.json ~/.pi/agent/keybindings.json
     ln -sfnT {{ root }}/pi/mcp.json ~/.pi/agent/mcp.json
+    ln -sfnT {{ root }}/global/AGENTS.md ~/.pi/agent/AGENTS.md
+    ln -sfnT {{ root }}/skills ~/.pi/agent/skills
+    ln -sfnT {{ root }}/hooks ~/.pi/agent/agent-config-hooks
     ln -sfnT {{ root }}/pi/prompts ~/.pi/agent/prompts
     ln -sfnT \
-        {{root}}/pi/themes/agent-config-dark.json \
+        {{ root }}/pi/themes/agent-config-dark.json \
         ~/.pi/agent/themes/agent-config-dark.json
 
 link-codex:
     mkdir --parents ~/.codex ~/.agents
     rm --force ~/.codex/hooks
-    ln -sfnT {{root}}/hooks ~/.codex/hooks
-    ln -sfnT {{root}}/codex/hooks.json ~/.codex/hooks.json
-    ln -sfnT {{root}}/skills ~/.codex/skills
-    ln -sfnT {{root}}/skills ~/.agents/skills
-    ln -sfnT {{root}}/global/AGENTS.md ~/.codex/AGENTS.md
+    ln -sfnT {{ root }}/hooks ~/.codex/hooks
+    ln -sfnT {{ root }}/codex/hooks.json ~/.codex/hooks.json
+    ln -sfnT {{ root }}/skills ~/.codex/skills
+    ln -sfnT {{ root }}/skills ~/.agents/skills
+    ln -sfnT {{ root }}/global/AGENTS.md ~/.codex/AGENTS.md
 
 link-claude:
-    ln -sfn {{justfile_directory()}}/agents ~/.claude/agents
-    ln -sfn {{justfile_directory()}}/commands ~/.claude/commands
-    ln -sfn {{justfile_directory()}}/hooks ~/.claude/hooks
-    ln -sfn {{justfile_directory()}}/skills ~/.claude/skills
-    ln -sfn \
-        {{justfile_directory()}}/claude/settings.json \
-        ~/.claude/settings.json
-    ln -sfn {{justfile_directory()}}/global/CLAUDE.md ~/.claude/CLAUDE.md
-    ln -sfn {{justfile_directory()}}/output-styles ~/.claude/output-styles
+    ln -sfnT {{ root }}/agents ~/.claude/agents
+    ln -sfnT {{ root }}/commands ~/.claude/commands
+    ln -sfnT {{ root }}/hooks ~/.claude/hooks
+    ln -sfnT {{ root }}/skills ~/.claude/skills
+    ln -sfnT {{ root }}/claude/settings.json ~/.claude/settings.json
+    ln -sfnT {{ root }}/global/CLAUDE.md ~/.claude/CLAUDE.md
+    ln -sfnT {{ root }}/output-styles ~/.claude/output-styles
+    ln -sfnT {{ root }}/keybindings.json ~/.claude/keybindings.json
 
 # TypeScript
 ts-test:
