@@ -28,6 +28,7 @@ link-pi:
     ln -sfnT {{root}}/global/AGENTS.md ~/.pi/agent/AGENTS.md
     ln -sfnT {{root}}/skills ~/.pi/agent/skills
     ln -sfnT {{root}}/hooks ~/.pi/agent/agent-config-hooks
+    ln -sfnT {{ root }}/pi/mcp.json ~/.pi/agent/mcp.json
     ln -sfnT {{ root }}/pi/prompts ~/.pi/agent/prompts
     ln -sfnT \
         {{root}}/pi/themes/agent-config-dark.json \
