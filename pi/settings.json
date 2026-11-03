@@ -15,6 +15,7 @@
   "extensions": [
     "~/dev/projects/pi-extensions/extensions/agent-hooks.ts",
     "~/dev/projects/pi-extensions/extensions/clear.ts",
+    "~/dev/projects/pi-extensions/extensions/codex-account-swap.ts",
     "~/dev/projects/pi-extensions/extensions/context-handoff.ts",
     "~/dev/projects/pi-extensions/extensions/messenger/index.ts",
     "~/dev/projects/pi-extensions/extensions/status-line.ts",
