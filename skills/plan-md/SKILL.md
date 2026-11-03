@@ -30,6 +30,7 @@ max_iterations: 20
 - Why or approach details
 - Mark todos complete as work is done
 - Review: after each phase | at the end
+- Commits: after each phase | once at the end
 
 ## Specs
 
@@ -101,13 +102,33 @@ THE plan description SHALL include a bullet specifying the review strategy: revi
 
 WHEN creating a new plan, ASK the user whether they want review after each phase or at the end of the plan.
 
+ASK planning decisions one at a time. Do not ask when the user has already stated their preference.
+
+BEFORE requesting user review THE developer SHALL stage only the changes being reviewed so the user can inspect the staged diff.
+
+THE developer SHALL keep unrelated files and unrelated hunks in shared files unstaged.
+
 WHEN the review strategy is per-phase, STOP after completing each phase and wait for user review before moving to the next phase.
 
 WHEN the review strategy is end-of-plan, proceed through all phases and wait for user review at the end.
 
-## Core Principle
+## Commit Strategy
 
-**Each checkmark = One atomic commit with `just check` passing**
+THE plan description SHALL include one commit strategy:
+
+- `after each phase`: commit after all phase acceptance criteria pass
+- `once at the end`: create one commit after every phase's acceptance criteria pass
+
+WHEN creating a new plan, ASK the user which commit strategy they want.
+
+THE selected commit strategy SHALL control when commits are created during implementation.
+
+THE plan SHALL NOT assume that todos, phases, and commits have the same boundaries.
+
+## Core Principles
+
+- Each phase = One independently verifiable outcome
+- Each completed phase = Its implementation has passed its acceptance criteria
 
 ## File Structure
 
@@ -125,7 +146,15 @@ THE `PLAN.md` file SHALL include a "Loop Log" section tracking what was tried ea
 
 ## Phases
 
-THE plan SHALL organize work into phases, one phase per component or feature.
+THE plan SHALL organize work into phases based on independently verifiable outcomes.
+
+EACH phase SHALL leave the project in a coherent state that can be verified before starting the next phase.
+
+DEFINE the phase acceptance criteria before finalizing the phase boundary.
+
+WHEN a phase cannot be verified until work in a later phase exists, merge the phases or move the dependent work and its acceptance criteria to the later phase.
+
+DO NOT split phases solely by file, repository, technology, or implementation layer when those pieces cannot be verified independently.
 
 EACH phase SHALL contain:
 
@@ -138,15 +167,33 @@ EACH phase SHALL contain:
 
 THE phases SHALL be separated by horizontal rules (`---`).
 
+### File Lists
+
+THE "Files" subsection SHALL list one explicit file path per bullet, with one bullet per line.
+
+THE file lists SHALL NOT combine multiple files on one line or abbreviate them with brace expansions, globs or directory paths.
+
 THE phase todolist items SHALL be concise (one line each).
 
-THE phase acceptance criteria SHALL always include `just check` passes and `just test` passes.
+THE phase acceptance criteria SHALL include the project's applicable check and test commands.
 
 ## Acceptance Criteria
 
 THE phase acceptance criteria SHALL define concrete, verifiable conditions for phase completion.
 
-THE acceptance criteria SHALL always include that `just check` passes and `just test` passes.
+THE acceptance criteria SHALL validate that the phase's intended outcome works, not merely that implementation steps were performed or configuration exists.
+
+WHERE the phase changes runtime behavior, THE acceptance criteria SHALL exercise and observe that runtime behavior.
+
+STATIC validation alone SHALL NOT be used to accept a phase whose intended outcome is runtime behavior.
+
+EACH acceptance criterion SHALL be satisfiable by the end of its phase without depending on unfinished later phases.
+
+THE acceptance criteria SHALL name the command, probe, test, or observable evidence used for verification where practical.
+
+THE acceptance criteria SHALL include `just check` and `just test` when those executable recipes exist.
+
+WHEN an aggregate check or test recipe does not exist, THE acceptance criteria SHALL list the applicable verification commands instead of treating the missing recipe as evidence of correctness.
 
 THE acceptance criteria SHALL be testable and specific to the phase.
 
@@ -182,9 +229,9 @@ THE user SHALL clear the Blocker section content manually to resume.
 
 THE todolist items SHALL use markdown checkboxes (`- [ ]` or `- [x]`).
 
-THE todolist items SHALL represent atomic, committable units of work.
+THE todolist items SHALL represent atomic units of work.
 
-THE todolist items SHALL be designed such that `just check` passes after each item is completed and committed.
+THE todolist items SHALL be designed so the project remains valid after each item is completed.
 
 THE completed items SHALL be marked with `[x]`.
 
@@ -202,9 +249,10 @@ WHERE investigation reveals new information THE todolist MAY be updated to refle
 2. Complete first unchecked todolist item
 3. Verify `just check` passes
 4. Mark item `[x]`
-5. Commit
-6. Repeat until phase acceptance criteria met
-7. Move to next phase
+5. Repeat until all phase acceptance criteria pass
+6. Commit if the selected strategy is `after each phase`
+7. Move to the next phase
+8. After the final phase, commit if the selected strategy is `once at the end`
 
 **Keep it updated:**
 
