@@ -28,11 +28,11 @@ path/to/file.rs
 
 ```toml
 [ignore]
-rules = []          # globally ignore rules by name
-files = []          # globally ignore files by path
+rules = [] # globally ignore rules by name
+files = [] # globally ignore files by path
 
 [ignore.by-rule]
-rule-name = ["file1.rs", "file2.rs"]  # ignore rule for specific files
+rule-name = ["file1.rs", "file2.rs"] # ignore rule for specific files
 ```
 
 ## Rules

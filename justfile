@@ -1,16 +1,38 @@
+mod ts '.just/ts.justfile'
+mod bun '.just/bun.justfile'
+
 root := justfile_directory()
 
+parallel +RECIPES:
+    #!/usr/bin/env nu
+    let runs = ([{{ RECIPES }}] | par-each {|recipe|
+        ^just $recipe o+e>| complete | insert recipe $recipe })
+    for run in $runs {
+        if $run.exit_code == 0 {
+            print $"PASS ($run.recipe)"
+        } else {
+            print $"FAIL ($run.recipe)" $run.stdout
+        }
+    }
+    if ($runs | any {|run| $run.exit_code != 0 }) { exit 1 }
+
 setup:
-    sandbox bun install
+    just ts::install
 
 fix:
-    just nix-fix
-    just ts-fix
+    just parallel nix-fix nu-fix ts::fix md-fix
 
 check:
-    just ci-check
-    just nix-check
-    just ts-check
+    just parallel \
+        ci-check \
+        nix-check \
+        nu-check \
+        ts::check \
+        md-check
+
+test:
+    just ts::test
+    just bun::test
 
 ci-check:
     woodpecker-cli lint .woodpecker/
@@ -53,35 +75,24 @@ link-claude:
     ln -sfnT {{ root }}/output-styles ~/.claude/output-styles
     ln -sfnT {{ root }}/keybindings.json ~/.claude/keybindings.json
 
-# TypeScript
-ts-test:
-    sandbox bun run vitest
+md-check:
+    sandbox pnpm exec markdownlint-cli2 "**/*.md"
 
-test:
-    just ts-test
-
-ts-check:
-    #!/usr/bin/env nu
-    let results = [
-        (do { ^sandbox bun run prettier --check . } | complete)
-        (do { ^sandbox bun run tsc --noEmit } | complete)
-        (do { ^sandbox bun run eslint . } | complete)
-    ]
-    $results | each { |r|
-        if ($r.stdout | str trim) != "" { print $r.stdout }
-        if ($r.stderr | str trim) != "" { print --stderr $r.stderr }
-    }
-    if ($results | any { |r| $r.exit_code != 0 }) { exit 1 }
-
-ts-fix:
-    sandbox bun run prettier --write .
-    sandbox bun run eslint . --fix
+md-fix:
+    sandbox pnpm exec markdownlint-cli2 --fix "**/*.md"
 
 nix-check:
+    just parallel nix-nixfmt-check nix-statix-check nix-deadnix-check
+
+nix-nixfmt-check:
     fd \
         --extension nix \
         --exec nixfmt --check
+
+nix-statix-check:
     statix check .
+
+nix-deadnix-check:
     deadnix --fail .
 
 nix-fix:
@@ -91,9 +102,19 @@ nix-fix:
     statix fix .
     deadnix --edit .
 
+nu-check:
+    #!/usr/bin/env nu
+    (^fd --absolute-path --extension nu
+        --exec nu --commands 'nu-check --debug {} | ignore')
+    ^nu-lint --config nu-lint.toml
+
+nu-fix:
+    nu-lint \
+        --config nu-lint.toml \
+        --fix
 
 claude-migrate OLD_PATH NEW_PATH:
-    bun scripts/migrate-project.ts {{OLD_PATH}} {{NEW_PATH}}
+    bun scripts/migrate-project.ts {{ OLD_PATH }} {{ NEW_PATH }}
 
 codex-config-sync:
     bun scripts/codex-config-sync.ts

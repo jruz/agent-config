@@ -1,4 +1,4 @@
-const severity = {
+const SEVERITY = {
     TRACE: {text: "TRACE", number: 1}
     DEBUG: {text: "DEBUG", number: 5}
     INFO: {text: "INFO", number: 9}

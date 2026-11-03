@@ -12,6 +12,7 @@ Isolate untrusted package managers (bun, cargo, pnpm) using bubblewrap (bwrap) t
 During setup, the `sandbox` command won't exist until the user reloads their shell (direnv). To prevent git hooks from failing:
 
 1. Add an early return to the `check` recipe while setting up:
+
    ```just
    check:
        #!/usr/bin/env nu
@@ -20,6 +21,7 @@ During setup, the `sandbox` command won't exist until the user reloads their she
        ^just ts-check
        ...
    ```
+
 2. Tell the user to reload the shell
 3. Once reloaded, remove the early return and restore normal `check` recipe
 

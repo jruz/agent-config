@@ -19,13 +19,13 @@ git tag --sort=-v:refname | head -1
 grep '^version' Cargo.toml | head -1
 ```
 
-2. List commits since last tag:
+1. List commits since last tag:
 
 ```bash
 git log <last-tag>..HEAD --oneline
 ```
 
-3. Read the actual diff to understand what changed:
+1. Read the actual diff to understand what changed:
 
 ```bash
 git diff <last-tag>..HEAD --stat
@@ -38,7 +38,7 @@ git show <hash> --stat
 git show <hash>
 ```
 
-4. Categorize changes by reading the code, not just commit titles:
+1. Categorize changes by reading the code, not just commit titles:
    - **Breaking** — changed public API, removed config fields, renamed CLI flags, changed behavior in backwards-incompatible ways
    - **Feature** (`[feat]`) — new user-visible functionality
    - **Fix** (`[bugs]`) — bug fixes
@@ -46,12 +46,12 @@ git show <hash>
    - **Tooling** (`[tool]`) — CI, config, dev setup, tests
    - **Dependencies** (`[deps]`) — dependency updates
 
-5. Determine semver bump:
+2. Determine semver bump:
    - **major** — any breaking change found in the code
    - **minor** — any new feature found in the code
    - **patch** — only fixes, refactors, tooling, deps
 
-6. Present the analysis:
+3. Present the analysis:
 
 **Current version:** `<version>`
 **Last release tag:** `<tag>`
@@ -63,6 +63,6 @@ git show <hash>
 **Proposed bump:** `<current>` -> `<proposed>` (`<major|minor|patch>`)
 **Reason:** <why this bump level, referencing actual code changes>
 
-7. Wait for user confirmation before making any changes
+1. Wait for user confirmation before making any changes
 
-8. Once confirmed, run `just release-bump <version>` to apply the bump (uses `scripts/release-bump.nu` from the release skill)
+2. Once confirmed, run `just release-bump <version>` to apply the bump (uses `scripts/release-bump.nu` from the release skill)

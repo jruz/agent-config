@@ -9,4 +9,6 @@ let env_record = (
 
 load-env $env_record
 
-source env-set-database-url.nu
+use env-set-database-url.nu
+
+env-set-database-url

@@ -39,11 +39,8 @@ This repository is the source of truth for shared Pi, Claude Code, and Codex con
 
 ## Testing
 
-- Vitest is the only unit test runner.
-- Bun is the package manager and runtime used to execute Vitest.
-- Test files use `.test.ts` and import test APIs from `vitest`.
-- Run the full test suite with `just test` or the focused TypeScript recipe `just ts-test`.
-- Do not use `bun:test` or invoke `bun test` for repository tests.
+- Tests use `bun test`; test files use `.test.ts` and import from `bun:test`.
+- Run tests with `just test`.
 
 ## Recipes
 

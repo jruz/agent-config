@@ -81,8 +81,18 @@ NEVER use `native-tls`/OpenSSL. It requires extensive Nix env vars (`OPENSSL_DIR
 THE project SHALL use `rustls` with the `ring` crypto provider:
 
 ```toml
-reqwest = { version = "...", default-features = false, features = ["blocking", "http2", "json", "rustls-no-provider"] }
-rustls = { version = "...", default-features = false, features = ["ring", "logging", "std", "tls12"] }
+reqwest = { version = "...", default-features = false, features = [
+  "blocking",
+  "http2",
+  "json",
+  "rustls-no-provider",
+] }
+rustls = { version = "...", default-features = false, features = [
+  "ring",
+  "logging",
+  "std",
+  "tls12",
+] }
 ```
 
 THE binary entry points SHALL initialize the crypto provider before any HTTP calls:

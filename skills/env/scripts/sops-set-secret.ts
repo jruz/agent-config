@@ -44,4 +44,4 @@ const main = async () => {
     });
 };
 
-void main();
+await main();

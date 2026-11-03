@@ -1,7 +1,7 @@
-#!/usr/bin/env nu
+#!/usr/bin/env -S nu --stdin
 # vim: ft=nu
 
-def main [action: string] {
+def main [action: string]: any -> string {
     let name = (
         ^tmux display-message -p -t $env.TMUX_PANE '#{window_name}'
         | str replace --regex ' (✻|\?)$' ''
