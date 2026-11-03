@@ -1,0 +1,13 @@
+{
+  "entry": [
+    ".oxlint/**/*.test.ts",
+    "scripts/*.ts!",
+    "!scripts/**/*.test.ts!",
+    "scripts/**/*.test.ts",
+    "hooks/*.ts!",
+    "skills/**/*.ts"
+  ],
+  "project": ["**/*.ts"],
+  "ignoreDependencies": ["markdownlint-cli2"],
+  "ignoreBinaries": ["sops", "sandbox"]
+}
