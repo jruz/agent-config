@@ -20,12 +20,13 @@ setup:
     just ts::install
 
 fix:
-    just parallel nix-fix ts::fix md-fix
+    just parallel nix-fix nu-fix ts::fix md-fix
 
 check:
     just parallel \
         ci-check \
         nix-check \
+        nu-check \
         ts::check \
         md-check
 
@@ -100,6 +101,17 @@ nix-fix:
         --exec nixfmt
     statix fix .
     deadnix --edit .
+
+nu-check:
+    #!/usr/bin/env nu
+    (^fd --absolute-path --extension nu
+        --exec nu --commands 'nu-check --debug {} | ignore')
+    ^nu-lint --config nu-lint.toml
+
+nu-fix:
+    nu-lint \
+        --config nu-lint.toml \
+        --fix
 
 claude-migrate OLD_PATH NEW_PATH:
     bun scripts/migrate-project.ts {{ OLD_PATH }} {{ NEW_PATH }}
