@@ -7,8 +7,8 @@
   },
   "enabledModels": [
     "openai-codex/gpt-6.1-sol:medium",
-    "openai-codex/gpt-6-astra:medium",
-    "openai-codex/gpt-6-luna:high"
+    "openai-codex/gpt-6.1-terra:high",
+    "openai-codex/gpt-6-astra:medium"
   ],
   "theme": "agent-config-dark",
   "tuiMode": "regular",
