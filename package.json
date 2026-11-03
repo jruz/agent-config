@@ -24,7 +24,7 @@
     "@types/node": "24.19.1",
     "knip": "6.43.0",
     "markdownlint-cli2": "0.23.3",
-    "next": "16.4.2",
+    "next": "16.4.3",
     "oxfmt": "0.74.0",
     "oxlint": "1.89.0",
     "oxlint-tsgolint": "7.0.2005",
