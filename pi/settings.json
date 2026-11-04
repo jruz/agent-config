@@ -21,5 +21,6 @@
     "~/dev/projects/pi-extensions/extensions/messenger/index.ts",
     "~/dev/projects/pi-extensions/extensions/status-line.ts",
     "~/dev/projects/pi-extensions/extensions/woodpecker/index.ts"
-  ]
+  ],
+  "hideThinkingBlock": true
 }
