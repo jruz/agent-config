@@ -4,7 +4,7 @@
     "@tsconfig/strictest": "2.0.8",
     "@types/bun": "1.4.4",
     "eslint": "10.1.0",
-    "jiti": "2.6.1",
+    "jiti": "2.7.0",
     "prettier": "3.8.1",
     "typescript": "5.9.3",
     "typescript-eslint": "8.57.1"
