@@ -82,8 +82,8 @@
 
 ## commits
 
-- always use the Skill(commit) when creating commits
-- if you made a commit and your next commit is the same topic or a fix amend the previous
+- always follow the Skill(commit) format
+- if you made a commit and your next commit is on the same topic or fixes something in it, amend the previous commit
 - confirm before rewriting history but prefer that over making multiple commits
 - when working on a branch/worktree outside of main you can rewrite history and force push without confirmation
 
