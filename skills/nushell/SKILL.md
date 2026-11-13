@@ -84,6 +84,7 @@ WITHOUT parentheses, each line is treated as a separate statement.
 - Ask before suppressing either.
 - Do not discard stderr merely because a command succeeded.
 - Let external-command failures propagate. Do not add exit-status checks that only rethrow the failure.
+- Assign external output with `let` before piping it. A failing external command in the middle of a pipeline does not stop the pipeline.
 - Review output handling and failure handling together, one case at a time.
 
 ### Justfile Recipes with Nushell
@@ -436,6 +437,11 @@ Errors SHALL propagate unchanged unless the user has agreed to a handling policy
 - Test meaningful behavior and regressions, not implementation details.
 - Test important failure paths alongside the happy path.
 - Mock external executables through an isolated PATH.
+- Mock built-in commands such as `http post` by defining `def --wrapped "http post" [...args]` before sourcing the code under test.
+- Test script functions in a child process with `nu --commands "source <script>; <function> ..."`; sourcing does not run `main`.
+- Record mock calls as NUON to preserve types such as durations.
+- Hide inherited environment variables the code under test reads, such as `TMUX_PANE`.
+- Never reach the network; stub every request.
 - Use synthetic data and temporary directories; never real secrets.
 - Distinguish mocked command-contract tests from real integration tests.
 
