@@ -6,7 +6,6 @@
     "scripts/**/*.test.ts",
     "skills/**/scripts/*.ts!",
     "skills/**/*.test.ts",
-    "skills/notify/notify.ts!",
     "skills/nextjs/next.config.ts",
     "skills/playwright/playwright.config.ts",
     "skills/playwright/fixtures.ts",
