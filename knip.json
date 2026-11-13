@@ -15,6 +15,7 @@
     "skills/typescript/files/.oxlint/plugin.ts!"
   ],
   "project": ["**/*.ts!", ".oxlint/**/*.ts"],
+  "ignoreFiles": ["scripts/lib/output.ts", "scripts/lib/table*.ts"],
   "ignoreDependencies": ["markdownlint-cli2"],
   "ignoreBinaries": ["sops", "sandbox"]
 }
