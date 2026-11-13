@@ -1,9 +1,10 @@
 {
-  description = "compose: lightweight process orchestrator";
-
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-25.11";
-    rust-overlay.url = "github:oxalica/rust-overlay";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-26.05";
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -20,36 +21,43 @@
       let
         overlays = [ (import rust-overlay) ];
         pkgs = import nixpkgs { inherit system overlays; };
+        rust = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+        rustPlatform = pkgs.makeRustPlatform {
+          cargo = rust;
+          rustc = rust;
+        };
         rustToolchain = builtins.fromTOML (builtins.readFile ./rust-toolchain.toml);
         rustVersion = rustToolchain.toolchain.channel;
-        rust = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
         cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
         revision = self.rev or "dirty";
-        sandboxPath = pkgs.lib.makeBinPath [
-          rust
-          pkgs.bash
-          pkgs.bun
-          pkgs.cargo-edit
-          pkgs.cargo-nextest
-          pkgs.cargo-outdated
-          pkgs.cargo-watch
-          pkgs.coreutils
-          pkgs.docker-client
-          pkgs.findutils
-          pkgs.gcc
-          pkgs.git
-          pkgs.gnugrep
-          pkgs.just
-          pkgs.nushell
-          pkgs.podman
-          pkgs.woodpecker-cli
-        ];
+        sandboxPath = pkgs.lib.makeBinPath (
+          with pkgs;
+          [
+            rust
+            bash
+            cargo-edit
+            cargo-machete
+            cargo-nextest
+            cargo-outdated
+            cargo-watch
+            coreutils
+            findutils
+            git
+            gnugrep
+            gnused
+            just
+            mold
+            nushell
+            stdenv.cc
+          ]
+        );
         sandbox = pkgs.writeShellScriptBin "sandbox" ''
           SELF_DIR="$(dirname "$(readlink -f "$0")")"
           ARGS=(
             --unshare-all
             --share-net
             --die-with-parent
+            --clearenv
             --ro-bind /nix /nix
             --ro-bind /etc/resolv.conf /etc/resolv.conf
             --ro-bind /etc/ssl /etc/ssl
@@ -59,45 +67,42 @@
             --symlink ${pkgs.coreutils}/bin/env /usr/bin/env
             --symlink ${pkgs.bash}/bin/bash /bin/sh
             --tmpfs "$HOME"
+            --tmpfs /tmp
             --bind "$(pwd)" "$(pwd)"
-            --bind /tmp /tmp
-            --bind-try /var/run/docker.sock /var/run/docker.sock
-            --ro-bind "$(git rev-parse --git-common-dir)" "$(git rev-parse --git-common-dir)"
+            --ro-bind "$(git rev-parse --path-format=absolute --git-common-dir)" "$(git rev-parse --path-format=absolute --git-common-dir)"
             --ro-bind-try "$HOME/.gitconfig" "$HOME/.gitconfig"
             --ro-bind-try "$HOME/.ssh/known_hosts" "$HOME/.ssh/known_hosts"
             --setenv PATH "${sandboxPath}:$SELF_DIR"
             --setenv HOME "$HOME"
-            --setenv REVISION "''${REVISION:-dev}"
+            --setenv TMPDIR /tmp
             --dev /dev
             --proc /proc
-            )
-          ARGS+=(
-            --bind-try "$HOME/.cargo" "$HOME/.cargo"
-            --bind-try "$HOME/.bun" "$HOME/.bun"
-            --bind-try "$HOME/.local/share/pnpm" "$HOME/.local/share/pnpm"
-            --setenv npm_config_store_dir "$HOME/.local/share/pnpm/store"
           )
           ARGS+=(
-            --bind-try "$HOME/.config/nvim" "$HOME/.config/nvim"
-            --bind-try "$HOME/.local/share/nvim" "$HOME/.local/share/nvim"
-            --bind-try "$HOME/.local/state/nvim" "$HOME/.local/state/nvim"
-            --bind-try "$HOME/.cache/nvim" "$HOME/.cache/nvim"
-            --bind-try "$HOME/.supermaven" "$HOME/.supermaven"
+            --bind-try "$HOME/.cargo/registry" "$HOME/.cargo/registry"
+            --bind-try "$HOME/.cargo/git" "$HOME/.cargo/git"
           )
           exec ${pkgs.bubblewrap}/bin/bwrap "''${ARGS[@]}" -- "$@"
         '';
-        defaultPackages = with pkgs; [
-          deadnix
-          fd
-          just
-          nixfmt
-          nushell
-          sandbox
-          statix
-        ];
+        defaultPackages =
+          with pkgs;
+          [
+            deadnix
+            fd
+            just
+            nixfmt
+            nu-lint
+            nushell
+            sandbox
+            statix
+          ]
+          ++ pkgs.lib.optionals pkgs.stdenv.isLinux [
+            glibc
+            glibcLocales
+          ];
       in
       {
-        packages.default = pkgs.rustPlatform.buildRustPackage {
+        packages.default = rustPlatform.buildRustPackage {
           pname = cargoToml.package.name;
           inherit (cargoToml.package) version;
           src = ./.;
@@ -105,22 +110,25 @@
           REVISION = revision;
           CARGO_HOME = "$TMPDIR";
           doCheck = false;
+          nativeBuildInputs = pkgs.lib.optionals pkgs.stdenv.isLinux [ pkgs.mold ];
           buildInputs = pkgs.lib.optionals pkgs.stdenv.isDarwin [ pkgs.libiconv ];
         };
 
         devShells.default = pkgs.mkShell {
-          buildInputs = defaultPackages;
+          packages = defaultPackages;
 
           shellHook = ''
             echo ""
-            echo "  Compose Dev Shell"
+            echo "  ${cargoToml.package.name} Development Shell"
             echo "  ───────────────────────────"
+            echo "  nixpkgs      ${pkgs.lib.trivial.release}"
             echo "  rust         ${rustVersion} (sandbox)"
-            echo "  bun          ${pkgs.bun.version} (sandbox)"
             echo ""
+          ''
+          + pkgs.lib.optionalString pkgs.stdenv.isLinux ''
+            export LOCALE_ARCHIVE="${pkgs.glibcLocales}/lib/locale/locale-archive"
           '';
         };
-
       }
     );
 }

@@ -1,0 +1,12 @@
+check:
+    just sandbox-check
+    just ts-check
+
+ts-check:
+    sandbox pnpm exec prettier --check .
+    sandbox pnpm exec tsc --noEmit
+    sandbox pnpm exec eslint .
+
+sandbox-check:
+    sandbox bun scripts/sandbox-isolation-check.ts
+    nu scripts/sandbox-host-check.nu
