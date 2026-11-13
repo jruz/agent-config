@@ -1,14 +1,19 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/usr/bin/env nu
 
-if [[ -v ZELLIJ_SESSION_NAME || -v ZELLIJ_PANE_ID ]]; then
-  ~/.cargo/bin/tab-renamer-hook question
-fi
+use std/log
+use tab-status.nu
 
-if [[ -v TMUX || -v TMUX_PANE ]]; then
-  "$(dirname "$0")/tmux-tab-renamer" question
-fi
+const HOOKS = path self | path dirname
 
-~/.cargo/bin/agent-manager-hook question
+def "main pi" []: nothing -> nothing {
+    main
+}
 
-"$(dirname "$0")/notify" >&2
+# Mark the agent tab as waiting and notify the user
+def main []: nothing -> nothing {
+    tab-status question
+    let output = ^($HOOKS | path join notify)
+    if ($output | is-not-empty) {
+        log info $output
+    }
+}

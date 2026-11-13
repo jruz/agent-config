@@ -1,12 +1,8 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/usr/bin/env nu
 
-if [[ -v ZELLIJ_SESSION_NAME || -v ZELLIJ_PANE_ID ]]; then
-  ~/.cargo/bin/tab-renamer-hook thinking
-fi
+use tab-status.nu
 
-if [[ -v TMUX || -v TMUX_PANE ]]; then
-  "$(dirname "$0")/tmux-tab-renamer" thinking
-fi
-
-~/.cargo/bin/agent-manager-hook thinking
+# Mark the agent tab as thinking
+def main []: nothing -> nothing {
+    tab-status thinking
+}

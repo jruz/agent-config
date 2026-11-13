@@ -26,7 +26,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.codex/hooks/on_stop codex",
+            "command": "~/.codex/hooks/on_stop",
             "timeout": 300
           }
         ]

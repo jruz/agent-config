@@ -17,7 +17,7 @@ def fixture []: nothing -> string {
     for command in [tmux terminal-notifier] { cp $MOCK ($bin | path join $command) }
     cp $MOCK ($cargo | path join agent-manager-hook)
     cp $MOCK ($hooks | path join notify)
-    cp ($HOOKS | path join on_stop) $hooks
+    cp ($HOOKS | path join on_stop) ($HOOKS | path join tab-status.nu) $hooks
     ^chmod +x ...(glob $"($root)/{bin,hooks,home/.cargo/bin}/*")
     '' | save ($root | path join calls)
     $root
@@ -65,7 +65,19 @@ def test-on-stop-notifies-without-polluting-stdout []: nothing -> nothing {
     let result = {} | run-on-stop $root
     assert equal $result.exit_code 0 $result.stderr
     assert equal $result.stdout ''
-    assert equal $result.stderr "notification output\n"
+    assert ($result.stderr | str contains 'notification output')
+    assert equal (calls $root | get command) [agent-manager-hook notify]
+    rm --permanent --recursive $root
+}
+def test-on-stop-accepts-pi-from-running-extensions []: nothing -> nothing {
+    let root = fixture
+    let hook = $root | path join hooks on_stop
+    let result = {} | environment $root | run-in $root {
+        ^$hook pi
+    }
+    assert equal $result.exit_code 0 $result.stderr
+    assert equal $result.stdout ''
+    assert ($result.stderr | str contains 'notification output')
     assert equal (calls $root | get command) [agent-manager-hook notify]
     rm --permanent --recursive $root
 }

@@ -211,7 +211,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/on_stop claude",
+            "command": "~/.claude/hooks/on_stop",
             "timeout": 300
           }
         ]

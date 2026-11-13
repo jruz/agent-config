@@ -1,5 +1,8 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/usr/bin/env nu
 
-agent=$1
-exec ~/.cargo/bin/agent-hooks pre-tool-use --agent "$agent"
+# Check a tool call before the agent runs it
+def main [
+    agent: string # Agent requesting the tool call.
+]: nothing -> nothing {
+    exec $"($env.HOME)/.nix-profile/bin/agent-tool-check" $agent
+}
