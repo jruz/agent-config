@@ -14,10 +14,10 @@ export async function log(
   attributes: Record<string, unknown> = {},
 ) {
   const entry = {
-    Timestamp: new Date().toISOString(),
-    SeverityText: level,
-    Body: body,
     Attributes: attributes,
+    Body: body,
+    SeverityText: level,
+    Timestamp: new Date().toISOString(),
   };
 
   await mkdir(LOG_DIR, { recursive: true });

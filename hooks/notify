@@ -1,0 +1,47 @@
+#!/usr/bin/env nu
+
+use std/log
+
+def focused-client [pane: string]: string -> bool {
+    lines
+    | parse '{pane} {flags}'
+    | any {|client| $client.pane == $pane and ('focused' in ($client.flags | split row ',')) }
+}
+
+def pane-focused []: nothing -> bool {
+    if 'TMUX_PANE' not-in $env { return false }
+    let clients = ^tmux list-clients -F '#{pane_id} #{client_flags}'
+    $clients | focused-client $env.TMUX_PANE
+}
+
+def notify-ntfy [title: string, message: string]: nothing -> nothing {
+    let url = $"https://ntfy.sh/($env.NTFY_CHANNEL_DESKTOP)"
+    (http post
+        --headers {Title: $title}
+        --max-time 10sec
+        $url
+        $message)
+    | ignore
+}
+
+def notify-macos [title: string, message: string]: nothing -> nothing {
+    (^terminal-notifier
+        -title $title
+        -message $message
+        -sound default)
+}
+
+# Notify that an agent stopped unless its tmux pane is focused
+def main []: nothing -> nothing {
+    if (pane-focused) { return }
+    let title = pwd | path basename
+    let message = $"@(sys host | get hostname)"
+    match $nu.os-info.name {
+        'linux' => (notify-ntfy $title $message)
+        'macos' => (notify-macos $title $message)
+        $platform => {
+            log error $"unsupported notification platform: ($platform)"
+            exit 1
+        }
+    }
+}

@@ -4,8 +4,6 @@
     "scripts/*.ts!",
     "!scripts/**/*.test.ts!",
     "scripts/**/*.test.ts",
-    "hooks/notify_system.ts!",
-    "hooks/*.test.ts",
     "skills/**/scripts/*.ts!",
     "skills/**/*.test.ts",
     "skills/notify/notify.ts!",

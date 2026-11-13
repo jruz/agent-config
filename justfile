@@ -33,7 +33,11 @@ check:
 test:
     just ts::test
     just bun::test
+    just hooks-test
     just skills-test
+
+hooks-test:
+    nu skills/nushell/files/scripts/nushell-test.nu hooks
 
 skills-test:
     sandbox bun test \
@@ -112,7 +116,12 @@ nu-check:
     #!/usr/bin/env nu
     (^fd --absolute-path --extension nu
         --exec nu --commands 'nu-check --debug {} | ignore')
+    let hooks = (^rg --files-with-matches '^#!/usr/bin/env .*nu' hooks
+        | lines
+        | path expand)
+    for hook in $hooks { nu-check --debug $hook | ignore }
     ^nu-lint --config nu-lint.toml
+    ^nu-lint --config nu-lint.toml ...$hooks
 
 nu-fix:
     nu-lint \

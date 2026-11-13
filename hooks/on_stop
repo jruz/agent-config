@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-agent=$1
-
 if [[ -v ZELLIJ_SESSION_NAME || -v ZELLIJ_PANE_ID ]]; then
   ~/.cargo/bin/tab-renamer-hook question
 fi
@@ -13,4 +11,4 @@ fi
 
 ~/.cargo/bin/agent-manager-hook question
 
-~/.cargo/bin/agent-hooks stop
+"$(dirname "$0")/notify" >&2
