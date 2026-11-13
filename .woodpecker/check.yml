@@ -12,3 +12,4 @@ steps:
     commands:
       - nix develop --command just setup
       - nix develop --command just check
+      - nix develop --command just test

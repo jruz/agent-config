@@ -1,20 +1,19 @@
 {
   "name": "claude-config",
   "version": "1.0.0",
+  "private": true,
+  "type": "module",
   "scripts": {
     "knip-check": "knip",
     "knip-production-check": "knip --production",
     "oxfmt-check": "oxfmt --check",
     "oxlint-check": "oxlint --config .oxlintrc.json --deny-warnings --report-unused-disable-directives-severity error .",
-    "oxlint-rules-check": "node --test .oxlint/*.test.ts",
+    "oxlint-rules-test": "node --test .oxlint/*.test.ts",
     "tsc-check": "tsc"
   },
-  "private": true,
-  "type": "module",
-  "engines": {
-    "bun": "1.4.4",
-    "node": "26.13.0",
-    "pnpm": "12.18.0"
+  "dependencies": {
+    "smol-toml": "1.9.1",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
@@ -33,8 +32,9 @@
     "typescript": "7.0.2",
     "typescript-eslint": "8.72.1"
   },
-  "dependencies": {
-    "smol-toml": "1.9.1",
-    "zod": "4.6.7"
+  "engines": {
+    "bun": "1.4.4",
+    "node": "26.13.0",
+    "pnpm": "12.18.0"
   }
 }

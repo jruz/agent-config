@@ -12,7 +12,6 @@
     "pnpm-lock.yaml",
     "target/",
     "tmp/",
-    ".pnpm-store/",
     "skills/.system/",
     "skills/synced/"
   ]
