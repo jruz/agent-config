@@ -1,0 +1,10 @@
+{
+  "entry": [
+    ".oxlint/**/*.test.ts",
+    "scripts/*.ts!",
+    "!scripts/**/*.test.ts!",
+    "scripts/**/*.test.ts",
+    "src/**/*.test.{ts,tsx}"
+  ],
+  "project": ["**/*.ts!"]
+}

@@ -33,6 +33,12 @@ check:
 test:
     just ts::test
     just bun::test
+    just skills-test
+
+skills-test:
+    sandbox bun test \
+        skills/typescript/skill-check \
+        skills/typescript/skill-pull
 
 ci-check:
     woodpecker-cli lint .woodpecker/

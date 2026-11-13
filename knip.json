@@ -4,10 +4,20 @@
     "scripts/*.ts!",
     "!scripts/**/*.test.ts!",
     "scripts/**/*.test.ts",
-    "hooks/*.ts!",
-    "skills/**/*.ts"
+    "hooks/notify_system.ts!",
+    "hooks/*.test.ts",
+    "skills/**/scripts/*.ts!",
+    "skills/**/*.test.ts",
+    "skills/notify/notify.ts!",
+    "skills/nextjs/next.config.ts",
+    "skills/playwright/playwright.config.ts",
+    "skills/playwright/fixtures.ts",
+    "skills/typescript/skill-check/main.ts!",
+    "skills/typescript/skill-check/report.ts!",
+    "skills/typescript/skill-pull/main.ts!",
+    "skills/typescript/files/.oxlint/plugin.ts!"
   ],
-  "project": ["**/*.ts"],
+  "project": ["**/*.ts!", ".oxlint/**/*.ts"],
   "ignoreDependencies": ["markdownlint-cli2"],
   "ignoreBinaries": ["sops", "sandbox"]
 }

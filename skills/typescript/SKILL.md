@@ -1,23 +1,15 @@
 ---
 name: typescript
-description: Write TypeScript code. Use when working with TypeScript, adding eslint, configuring linting rules, or creating custom eslint rules.
+description: Write TypeScript code. Use when working with TypeScript, configuring Oxlint or Oxfmt, checking unused code and dependencies with Knip, or creating custom lint rules.
 ---
 
 # TypeScript
 
 Use this skill when writing TypeScript code.
 
+For project setup, follow [SETUP.md](SETUP.md).
+
 ## Type Safety
-
-THE system SHALL use the strictest TypeScript configuration.
-
-Copy `tsconfig.json` from this skill folder to the project root.
-
-WHERE the project uses DOM APIs, add `"DOM"` to `lib`: `"lib": ["ESNext", "DOM"]`.
-
-WHERE the project uses JSX, add `"jsx": "react-jsx"` to `compilerOptions`.
-
-THE system SHALL enable all strict type checking options.
 
 WHERE types are defined THE system SHALL use type aliases explicitly.
 
@@ -27,15 +19,62 @@ THE system SHALL NOT use `any` type.
 
 THE system SHALL enforce strict immutability with `Readonly<T>`.
 
-WHERE type assertions are necessary THE system SHALL validate data using Zod schemas.
+## Data Validation with Zod
+
+THE system SHALL use Zod for runtime validation of external data, including request payloads, API responses, persisted files, and test-helper inputs.
+
+THE system SHALL NOT implement handwritten structural validators or type predicates for external data, or use type assertions instead of validation.
+
+THE system SHALL treat unvalidated external data as `unknown`.
+
+THE system SHALL derive validated types using `z.infer<typeof Schema>` rather than maintain parallel handwritten types.
+
+THE system SHALL reuse or compose schemas wherever the same data contract is validated.
+
+WHERE invalid input is an expected failure THE system SHALL use `safeParse` and handle the failure explicitly according to [Module Errors](#module-errors).
+
+WHERE validation failure should propagate as an exception THE system SHALL use `parse`.
+
+THE system SHALL apply `.readonly()` to object and array schemas representing immutable data; nested schemas require their own `.readonly()` because it is not recursive.
+
+Ordinary null checks, discriminant narrowing, and business decisions on already-validated data do not require Zod.
+
+Example:
+
+```typescript
+import { z } from "zod";
+
+const UserSchema = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    email: z.email(),
+  })
+  .readonly();
+
+const UsersSchema = z.array(UserSchema).readonly();
+type User = z.infer<typeof UserSchema>;
+
+const parseUsers = (data: unknown): readonly User[] => UsersSchema.parse(data);
+```
 
 ## Module Structure
 
 THE system SHALL use ES modules with `import` and `export`.
 
-WHERE types do not require runtime validation THE system SHALL define them in dedicated type files.
+THE system SHALL include `.ts` extensions in relative TypeScript imports.
 
-WHERE runtime validation is needed THE system SHALL create Zod schemas.
+THE system SHALL run scripts in `scripts/` with Bun in every project, including Node projects, and use only erasable TypeScript syntax.
+
+THE system SHALL keep executable scripts at the `scripts/` root.
+
+WHERE a module is used by a single script THE system SHALL place it with its tests in `scripts/<script-name>/`.
+
+WHERE a module is shared across scripts THE system SHALL place it in `scripts/lib/`.
+
+WHERE the project uses a bundler, adapt the module configuration to the framework's requirements.
+
+WHERE types do not require runtime validation THE system SHALL define them in dedicated type files.
 
 ## Code Style
 
@@ -69,7 +108,9 @@ type User = Readonly<{
 
 WHERE primitives have domain meaning THE system SHALL create type aliases for clarity.
 
-THE system SHALL use Zod schemas to validate and derive domain types.
+WHERE domain types require runtime validation THE system SHALL follow [Data Validation with Zod](#data-validation-with-zod).
+
+For internal types that do not require runtime validation:
 
 Example:
 
@@ -142,7 +183,7 @@ WHERE DOM elements are accessed THE system SHALL check for null.
 
 THE system SHALL handle missing elements gracefully.
 
-THE system SHALL use type assertions only after null checks.
+WHERE an element's runtime type must be verified THE system SHALL narrow it with `instanceof`; a null check alone does not establish its element type.
 
 Example:
 
@@ -156,13 +197,66 @@ button.addEventListener("click", handleClick);
 
 ## Error Handling
 
-THE system SHALL NOT log to the console.
+WHERE code runs in the browser THE system SHALL NOT log to the console.
+
+WHERE scripts report diagnostics THE system SHALL use [scripts/lib/log.ts](files/scripts/lib/log.ts), which writes every level to stderr.
+
+WHERE scripts return user-facing output THE system SHALL use [scripts/lib/output.ts](files/scripts/lib/output.ts): `text`, `json`, or `table` write to stdout. Its companions are [table.ts](files/scripts/lib/table.ts) and [table.types.ts](files/scripts/lib/table.types.ts). The formatter measures visible widths with `Bun.stringWidth` so Unicode and ANSI-colored cells align.
 
 THE system SHALL NOT use `||` or `??` operators to silently provide default values that mask null/undefined errors.
 
 WHERE a value may be null or undefined THE system SHALL explicitly check and handle the error case.
 
+### Module Errors
+
+WHERE a module has expected failures THE module SHALL define and export one error-code string union and a readonly discriminated failure type.
+
+THE system SHALL return expected failures through a readonly discriminated result union instead of throwing custom error classes.
+
+THE result SHALL follow Zod's `safeParse` naming: `{ success: true, data }` or `{ success: false, error }`. This naming SHALL apply to plain result types without requiring Zod for domain operations.
+
+THE callers SHALL handle failures by code, never by message.
+
+WHERE failure variants need additional context THE system SHALL encode that context in the corresponding discriminated variant.
+
+THE error-code translations SHALL be exhaustive.
+
+THE tests SHALL verify that error handling is independent of message wording.
+
+THE modules without expected failures SHALL NOT introduce an error abstraction.
+
+THE system SHALL NOT use TypeScript `enum` declarations.
+
+```typescript
+type EntryErrorCode = "entry-not-found";
+
+type EntryFailure = Readonly<{
+  code: EntryErrorCode;
+  id: string;
+}>;
+
+type Result<T, E> =
+  | Readonly<{ success: true; data: T }>
+  | Readonly<{ success: false; error: E }>;
+
+const getEntry = (id: string): Result<Entry, EntryFailure> => {
+  const entry = entries.find((entry) => entry.id === id);
+  if (!entry) return { success: false, error: { code: "entry-not-found", id } };
+  return { success: true, data: entry };
+};
+```
+
+### Error Reporting
+
+THE domain modules SHALL return typed expected failures and propagate unexpected exceptions.
+
+THE system SHALL report unexpected exceptions at the responsible boundary using the [Faro skill's browser and backend guidance](../faro/SKILL.md).
+
+THE system SHALL avoid duplicate reports from explicit handling and automatic instrumentation.
+
 ### Throwing Errors
+
+THE unexpected errors SHALL propagate unchanged rather than becoming expected failure results.
 
 WHERE errors are unrecoverable THE system SHALL throw errors with rich developer-friendly messages.
 
@@ -177,94 +271,21 @@ const getUserName = (user: User | null): string => {
 };
 ```
 
-### Result Types with neverthrow
-
-WHERE errors are recoverable THE system SHALL use the `neverthrow` library for type-safe error handling.
-
-THE system SHALL use `Result<T, E>` to represent operations that can fail.
-
-THE system SHALL use `ok(value)` to return successful results.
-
-THE system SHALL use `err(error)` to return error results.
-
-THE system SHALL define domain-specific error types as discriminated unions.
-
-Example:
-
-```typescript
-import { err, ok, type Result } from "neverthrow";
-
-type AppError =
-  | Readonly<{ type: "not_found"; resource: string }>
-  | Readonly<{ type: "validation"; message: string }>
-  | Readonly<{ type: "network"; status: number }>;
-
-const fetchUser = async (id: string): Promise<Result<User, AppError>> => {
-  const response = await fetch(`/users/${id}`);
-  if (response.status === 404) {
-    return err({ type: "not_found", resource: `user:${id}` });
-  }
-  if (!response.ok) {
-    return err({ type: "network", status: response.status });
-  }
-  return ok(await response.json());
-};
-```
-
 ### Error Message Formatting
 
 THE format SHALL be `category: value` (e.g., `no image: prometheus:v3.2.1`).
 
 THE system SHALL omit redundant context and truncate long values.
 
-### Error Type Naming
-
-THE system SHALL use singular nouns in error types (e.g., `no_image` not `no_images`).
-
-WHERE the type describes what's missing THE system SHALL use `value` as the key name.
-
-```typescript
-type AppError =
-  | Readonly<{ type: "no_image"; value: string }>
-  | Readonly<{ type: "no_label"; value: string }>
-  | Readonly<{ type: "no_revision"; value: string }>;
-```
-
-## Data Validation with Zod
-
-WHERE data is received from external sources THE system SHALL validate it using Zod schemas.
-
-THE system SHALL use `z.infer<typeof Schema>` to derive TypeScript types from schemas.
-
-THE system SHALL use `.readonly()` on Zod object schemas to enforce immutability.
-
-WHERE types are derived from Zod schemas THE system SHALL call `.readonly()` on the schema to make all properties readonly in the inferred type.
-
-THE `.readonly()` method SHALL be called after `.object()` and before type inference.
-
-Example:
-
-```typescript
-import { z } from "zod";
-
-const UserSchema = z
-  .object({
-    id: z.string(),
-    name: z.string(),
-    email: z.string().email(),
-  })
-  .readonly();
-
-type User = z.infer<typeof UserSchema>;
-
-const parseUser = (data: unknown): User => {
-  return UserSchema.parse(data);
-};
-```
-
 ## Testing
 
-THE system SHALL use vitest for unit testing.
+THE system SHALL use `bun test` and import from `bun:test` for script tests. `bun::test` SHALL target only `scripts/`.
+
+THE root `test` recipe SHALL run `ts::test` and `bun::test`. `ts::test` SHALL run the custom Oxlint rule tests using the runner configured in [package.json](files/package.json).
+
+THE root `check` recipe SHALL run `ts::check` and other project checks, not tests. `ts::check` SHALL exclude the custom Oxlint rule tests.
+
+Application test tooling belongs in the corresponding framework skill. WHERE application tests use Vitest THE root `test` recipe SHALL also run the application test recipe; Bun SHALL NOT run the Vitest tests in `src/`.
 
 THE test files SHALL be named with `.test.ts` suffix.
 
@@ -277,7 +298,7 @@ THE test doubles SHALL match the same function signature as the real implementat
 Example:
 
 ```typescript
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "bun:test";
 
 describe("calculateTotal", () => {
   it("should sum all item prices", () => {
@@ -339,40 +360,88 @@ declare global {
 
 ## Linting
 
-| Project Type | Tool                                          |
-| ------------ | --------------------------------------------- |
-| Bun/Node CLI | ESLint (see `eslint.md` in this skill folder) |
-| Next.js      | ESLint (see `eslint.md` in this skill folder) |
-| Web frontend | ESLint (see `eslint.md` in this skill folder) |
+Adapt formatter exclusions and Knip entry points to the project.
+
+Projects that intentionally use nested configs must adapt both check and fix commands.
+
+Run `just ts::check` and `just ts::fix`.
 
 THE developer SHALL NOT bypass the linter by adding ignore comments.
 
 THE system SHALL integrate linting into the CI pipeline.
 
+## Development Environment
+
+THE developer SHALL tell the user to reload the shell after creating or changing `.envrc` or `flake.nix`.
+
+THE developer SHALL wait for the user to confirm the shell has been reloaded before running commands that depend on the flake environment.
+
 ## Package Manager
 
-THE system SHALL use `bun` as the default package manager and runtime.
+THE system SHALL use `pnpm` for dependency management and tooling, and run Node 24 applications through `sandbox pnpm run`.
 
-WHERE the project uses Playwright, THE system SHALL use `pnpm` instead of `bun` (available via the project's Nix flake).
+THE system SHALL use Bun only for scripts and script tests, never for application runtime or package management.
+
+THE system SHALL use the Docker sandbox with a running Docker daemon.
+
+THE system SHALL install dependencies and run dependency tools through `sandbox pnpm` in every project.
+
+THE system SHALL run scripts and script tests through `sandbox bun`.
 
 THE system SHALL NOT use `npm` or `yarn`.
+
+THE `package.json` SHALL NOT declare a `packageManager` field; `engines` pins the version.
+
+### Release Age
+
+Use the release-age policy in [pnpm-workspace.yaml](files/pnpm-workspace.yaml).
+
+WHERE a version is needed before it reaches that age THE developer SHALL add it to `minimumReleaseAgeExclude` and remove it once it does.
+
+### Build Scripts
+
+pnpm fails the install while any dependency build script lacks an `allowBuilds` entry in `pnpm-workspace.yaml`.
+
+WHERE pnpm reports ignored builds THE developer SHALL add each package to `allowBuilds` as `false`.
+
+WHERE a package breaks without its build script THE developer SHALL set it to `true`; the sandbox contains the script.
+
+### Upgrading pnpm Major Versions
+
+WHEN pnpm changes major version THE developer SHALL delete `node_modules` and run `sandbox pnpm install`, because pnpm cannot purge it without a TTY.
+
+## Dependency Automation
+
+Use the bundled [renovate.json](files/renovate.json) for dependency automation.
 
 ## Dependencies
 
 ### Runtime
 
-THE project SHALL pin the Bun or Node version (e.g., `.node-version`, `package.json` `engines`).
+THE project SHALL pin exact `node`, `pnpm`, and `bun` versions in `package.json` `engines`. These pins configure [scripts/sandbox.nu](files/scripts/sandbox.nu) and [Dockerfile.node](files/Dockerfile.node).
 
 ### Base Dependencies
 
-Copy `package.json` from this skill folder to the project root, then install:
-
-```bash
-bun install
-```
+After setup, install with `sandbox pnpm install`.
 
 THE system SHALL pin exact dependency versions in `package.json` (no `^` or `~` prefix).
 
-THE developer SHALL check pinned versions for API compatibility.
+THE pins in [package.json](files/package.json) SHALL be the source of truth.
 
-WHERE external libraries are added THE system SHALL install them via `bun add` (or `pnpm add` for Playwright projects).
+Use `just ts::outdated` and `just ts::upgrade` from [.just/ts.justfile](files/.just/ts.justfile) to check newer versions and upgrade with exact pins. Upgrades include major versions; run checks and tests afterward.
+
+## Compare with the Skill
+
+Run `just ts::skill-check` from the project after setup or tooling changes. The checker discovers every template under [files/](files/), including hidden files, and fails if any are missing.
+
+Shared helper sources and tests must match exactly. Project-specific `justfile`, `.envrc`, and `flake.nix` differences require review. Structured configuration follows the checker's field-level comparisons.
+
+Keep [skill-check/](skill-check/) and [skill-pull/](skill-pull/) in this skill repository; do not copy them into projects.
+
+Report every failure and review item. Do not silently accept drift or modify the baseline to make checks pass.
+
+WHEN updating tooling pins THE developer SHALL keep `oxlint` and `@oxlint/plugins` aligned and verify compatibility with `oxlint-tsgolint` and `typescript` by running the copied checks and rule tests.
+
+WHERE external libraries are added THE system SHALL install them via `sandbox pnpm add --save-exact`.
+
+THE system SHALL declare imported packages explicitly instead of relying on transitive dependency hoisting.

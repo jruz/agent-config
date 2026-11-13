@@ -1,0 +1,15 @@
+mod ts '.just/ts.justfile'
+mod bun '.just/bun.justfile'
+
+setup:
+    just ts::install
+
+check:
+    just ts::check
+
+fix:
+    just ts::fix
+
+test:
+    just ts::test
+    just bun::test
