@@ -70,6 +70,21 @@ def test-on-stop-notifies-without-polluting-stdout []: nothing -> nothing {
     assert equal (calls $root | get command) [agent-manager-hook notify]
     rm --permanent --recursive $root
 }
+def test-on-stop-skips-missing-agent-manager []: nothing -> nothing {
+    let root = fixture
+    rm ($root | path join home .cargo bin agent-manager-hook)
+    let result = {} | run-on-stop $root
+    assert equal $result.exit_code 0 $result.stderr
+    assert equal (calls $root | get command) [notify]
+    rm --permanent --recursive $root
+}
+def test-on-stop-propagates-agent-manager-failures []: nothing -> nothing {
+    let root = fixture
+    let result = {HOOK_TEST_AGENT_MANAGER_HOOK_EXIT: '7'} | run-on-stop $root
+    assert equal $result.exit_code 7
+    assert equal (calls $root | get command) [agent-manager-hook]
+    rm --permanent --recursive $root
+}
 def test-on-stop-accepts-pi-from-running-extensions []: nothing -> nothing {
     let root = fixture
     let hook = $root | path join hooks on_stop

@@ -7,5 +7,8 @@ export def main [state: string]: nothing -> nothing {
     if ('TMUX' in $env or 'TMUX_PANE' in $env) {
         ^($HOOKS | path join tmux-tab-renamer) $state
     }
-    ^$"($env.HOME)/.cargo/bin/agent-manager-hook" $state
+    let manager = $"($env.HOME)/.cargo/bin/agent-manager-hook"
+    if ($manager | path exists) {
+        ^$manager $state
+    }
 }
