@@ -17,7 +17,6 @@ This repository is the source of truth for shared Pi, Claude Code, and Codex con
 - `pi/themes/agent-config-dark.json` — global Pi theme
 - `pi/prompts/` — global prompts
 - `~/dev/projects/pi-extensions` — global extensions, explicitly listed in `pi/settings.json`
-- Keep `agent-hooks.ts` before `context-handoff.ts`; omit `chat-preview.ts` from normal loading
 - `just link-pi` — link Pi configuration and shared hooks
 
 ## Codex
