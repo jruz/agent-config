@@ -7,7 +7,19 @@ def --wrapped main [
     {command: $command, args: $args} | to json --raw | $"($in)\n" | save --append $env.HOOK_TEST_CALLS
     match $command {
         'tmux' => (print --no-newline $env.HOOK_TEST_TMUX_CLIENTS)
-        'notify' | 'terminal-notifier' => (print 'notification output')
+        'notify' => {
+            let result = if 'HOOK_TEST_NOTIFY_WARNING' in $env {
+                {
+                    status: warning
+                    reason: 'ntfy rate limit reached (HTTP 429).'
+                    diagnostics: 'provider=ntfy http_status=429'
+                }
+            } else {
+                {status: success}
+            }
+            $result | to json --raw | print
+        }
+        'terminal-notifier' => (print 'notification output')
         _ => null
     }
     let code = $env | get --optional $"HOOK_TEST_($command | str upcase | str replace --all '-' '_')_EXIT"

@@ -50,6 +50,7 @@ def run-on-stop [root: path]: record -> record {
 }
 const HTTP_STUB = 'def --wrapped "http post" [...args] {
     $args | to nuon | save $env.HOOK_TEST_HTTP
+    {status: ($env.HOOK_TEST_HTTP_STATUS | into int), body: "synthetic response"}
 }'
 def call-notify [root: path, expression: string]: record -> record {
     let overrides = $in
@@ -65,7 +66,7 @@ def test-on-stop-notifies-without-polluting-stdout []: nothing -> nothing {
     let result = {} | run-on-stop $root
     assert equal $result.exit_code 0 $result.stderr
     assert equal $result.stdout ''
-    assert ($result.stderr | str contains 'notification output')
+    assert equal $result.stderr ''
     assert equal (calls $root | get command) [agent-manager-hook notify]
     rm --permanent --recursive $root
 }
@@ -77,7 +78,7 @@ def test-on-stop-accepts-pi-from-running-extensions []: nothing -> nothing {
     }
     assert equal $result.exit_code 0 $result.stderr
     assert equal $result.stdout ''
-    assert ($result.stderr | str contains 'notification output')
+    assert equal $result.stderr ''
     assert equal (calls $root | get command) [agent-manager-hook notify]
     rm --permanent --recursive $root
 }
@@ -91,10 +92,16 @@ def test-on-stop-propagates-notification-failures []: nothing -> nothing {
 def test-notify-linux-posts-to-ntfy []: nothing -> nothing {
     let root = fixture
     let request = $root | path join request.nuon
-    let variables = {NTFY_CHANNEL_DESKTOP: test-topic, HOOK_TEST_HTTP: $request}
+    let variables = {
+        NTFY_CHANNEL_DESKTOP: test-topic
+        HOOK_TEST_HTTP: $request
+        HOOK_TEST_HTTP_STATUS: '200'
+    }
     let result = $variables | call-notify $root "notify-ntfy agent-config '@machine'"
     assert equal $result.exit_code 0 $result.stderr
     assert equal (open $request) [
+        --full
+        --allow-errors
         --headers
         {Title: agent-config}
         --max-time
@@ -121,7 +128,7 @@ def test-notify-skips-focused-agent-pane []: nothing -> nothing {
         let root = fixture
         let result = {TMUX_PANE: '%4', HOOK_TEST_TMUX_CLIENTS: $clients} | run-notify $root
         assert equal $result.exit_code 0 $result.stderr
-        assert equal $result.stdout ''
+        assert equal ($result.stdout | from json) {status: success}
         assert equal (calls $root | get command) [tmux]
         rm --permanent --recursive $root
     }
@@ -147,6 +154,68 @@ def test-notify-propagates-tmux-failures []: nothing -> nothing {
     let result = {TMUX_PANE: '%4', HOOK_TEST_TMUX_EXIT: '7'} | run-notify $root
     assert equal $result.exit_code 7
     assert equal (calls $root | get command) [tmux]
+    rm --permanent --recursive $root
+}
+def test-on-stop-forwards-notification-warning-to-pi []: nothing -> nothing {
+    let root = fixture
+    let hook = $root | path join hooks on_stop
+    let result = {HOOK_TEST_NOTIFY_WARNING: '1'} | environment $root | run-in $root {
+        ^$hook pi
+    }
+    assert equal $result.exit_code 0 $result.stderr
+    assert equal $result.stderr ''
+    assert equal ($result.stdout | from json) {
+        status: warning
+        reason: 'ntfy rate limit reached (HTTP 429).'
+        diagnostics: 'provider=ntfy http_status=429'
+    }
+    rm --permanent --recursive $root
+}
+def test-on-stop-shows-human-warning-for-other-agents []: nothing -> nothing {
+    let root = fixture
+    let result = {HOOK_TEST_NOTIFY_WARNING: '1'} | run-on-stop $root
+    assert equal $result.exit_code 0 $result.stderr
+    assert equal $result.stdout ''
+    assert str contains $result.stderr 'Desktop notification couldn’t be sent.'
+    assert str contains $result.stderr 'ntfy rate limit reached (HTTP 429).'
+    rm --permanent --recursive $root
+}
+def test-notify-translates-http-failures-without-exposing-topic []: nothing -> nothing {
+    for status in [429 503] {
+        let root = fixture
+        let request = $root | path join request.nuon
+        let variables = {
+            NTFY_CHANNEL_DESKTOP: test-private-topic
+            HOOK_TEST_HTTP: $request
+            HOOK_TEST_HTTP_STATUS: ($status | into string)
+        }
+        let result = $variables | call-notify $root main
+        assert equal $result.exit_code 0 $result.stderr
+        assert equal $result.stderr ''
+        let warning = $result.stdout | from json
+        assert equal $warning.status warning
+        let reason = if $status == 429 {
+            'ntfy rate limit reached (HTTP 429).'
+        } else {
+            'ntfy rejected the notification (HTTP 503).'
+        }
+        assert equal $warning.reason $reason
+        assert equal $warning.diagnostics $"provider=ntfy http_status=($status)"
+        assert not ($result.stdout | str contains test-private-topic)
+        assert not ($result.stdout | str contains 'synthetic response')
+        rm --permanent --recursive $root
+    }
+}
+def test-notify-propagates-unexpected-http-errors []: nothing -> nothing {
+    let root = fixture
+    let hook = $HOOKS | path join notify
+    let stub = 'def --wrapped "http post" [...args] { open /synthetic-missing-notification-response }'
+    let command = $"($stub); source ($hook | to nuon); main"
+    let result = {NTFY_CHANNEL_DESKTOP: test-topic} | environment $root | run-in $root {
+        ^$nu.current-exe --commands $command
+    }
+    assert not equal $result.exit_code 0
+    assert str contains $result.stderr synthetic-missing-notification-response
     rm --permanent --recursive $root
 }
 def test-notify-fails-without-ntfy-topic []: nothing -> nothing {

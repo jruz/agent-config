@@ -14,29 +14,43 @@ def pane-focused []: nothing -> bool {
     $clients | focused-client $env.TMUX_PANE
 }
 
-def notify-ntfy [title: string, message: string]: nothing -> nothing {
+def notify-ntfy [title: string, message: string]: nothing -> record {
     let url = $"https://ntfy.sh/($env.NTFY_CHANNEL_DESKTOP)"
-    (http post
+    let response = (http post
+        --full
+        --allow-errors
         --headers {Title: $title}
         --max-time 10sec
         $url
         $message)
-    | ignore
+    if $response.status < 400 { return {status: success} }
+    let reason = if $response.status == 429 {
+        'ntfy rate limit reached (HTTP 429).'
+    } else {
+        $"ntfy rejected the notification \(HTTP ($response.status)\)."
+    }
+    {
+        status: warning
+        reason: $reason
+        diagnostics: $"provider=ntfy http_status=($response.status)"
+    }
 }
 
-def notify-macos [title: string, message: string]: nothing -> nothing {
-    (^terminal-notifier
+def notify-macos [title: string, message: string]: nothing -> record {
+    let output = (^terminal-notifier
         -title $title
         -message $message
         -sound default)
+    if ($output | is-not-empty) { log info $output }
+    {status: success}
 }
 
 # Notify that an agent stopped unless its tmux pane is focused
-def main []: nothing -> nothing {
-    if (pane-focused) { return }
+def main []: nothing -> string {
+    if (pane-focused) { return ({status: success} | to json --raw) }
     let title = pwd | path basename
     let message = $"@(sys host | get hostname)"
-    match $nu.os-info.name {
+    let result = match $nu.os-info.name {
         'linux' => (notify-ntfy $title $message)
         'macos' => (notify-macos $title $message)
         $platform => {
@@ -44,4 +58,5 @@ def main []: nothing -> nothing {
             exit 1
         }
     }
+    $result | to json --raw
 }

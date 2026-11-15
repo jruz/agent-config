@@ -5,15 +5,23 @@ use tab-status.nu
 
 const HOOKS = path self | path dirname
 
+def stop-notification []: nothing -> record {
+    tab-status question
+    let output = ^($HOOKS | path join notify)
+    $output | from json
+}
+
 def "main pi" []: nothing -> nothing {
-    main
+    let result = stop-notification
+    if $result.status == warning {
+        $result | to json --raw | print
+    }
 }
 
 # Mark the agent tab as waiting and notify the user
 def main []: nothing -> nothing {
-    tab-status question
-    let output = ^($HOOKS | path join notify)
-    if ($output | is-not-empty) {
-        log info $output
+    let result = stop-notification
+    if $result.status == warning {
+        log warning $"Desktop notification couldn’t be sent. ($result.reason)"
     }
 }
