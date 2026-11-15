@@ -5,24 +5,15 @@ description: Run slop-detector to find anti-patterns. Use when linting code.
 
 # slop-detector
 
-Linter for detecting anti-patterns in CSS, Elixir, Gleam, JS/TS, Just, Playwright, Rust, and OpenTofu code.
+Linter for detecting anti-patterns.
 
 ## Usage
 
-| Command                                        | Purpose                                                                                           |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `slop-detector`                                | Run all checks                                                                                    |
-| `slop-detector <lang>`                         | Run checks for one language: `css`, `elixir`, `gleam`, `js`, `just`, `playwright`, `rust`, `tofu` |
-| `slop-detector --create-config-for-violations` | Generate `slop-detector.toml` with current violations excluded                                    |
-
-## Output Format
-
-```
-path/to/file.rs
-  x rule-name
-    - line N: violation detail
-    hint: how to fix
-```
+| Command                                        | Purpose                                                        |
+| ---------------------------------------------- | -------------------------------------------------------------- |
+| `slop-detector`                                | Run all checks                                                 |
+| `slop-detector <lang>`                         | Run checks for one language                                    |
+| `slop-detector --create-config-for-violations` | Generate `slop-detector.toml` with current violations excluded |
 
 ## Config (`slop-detector.toml`)
 
