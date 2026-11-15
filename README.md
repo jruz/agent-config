@@ -13,4 +13,4 @@ Skills and config files for Pi, Codex, and Claude Code.
 
 ## License
 
-[0BSD](LICENSE)
+Licensed under the [EUPL](LICENSE).
