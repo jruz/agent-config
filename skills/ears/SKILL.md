@@ -99,7 +99,6 @@ When writing specifications, follow these steps:
 Every requirement should be:
 
 - **Unambiguous** - Has one interpretation
-- **Traceable** - Can be identified uniquely
 - **Consistent** - Doesn't conflict with other requirements
 - **Verifiable** - Can be tested or checked
 - **Complete** - Contains all relevant information
@@ -137,7 +136,7 @@ Every requirement should be:
 
 ### Use Templates
 
-- Include requirement identifiers for traceability
+- Don't add requirement identifiers; headings and wording identify requirements
 - Provide space for notes and examples
 - Keep templates lightweight - don't let process overhead slow you down
 
