@@ -170,7 +170,7 @@ THE `git add-lines` tool stages specific lines from a file's diff.
 
 THE line numbers are 1-indexed positions within the diff body, NOT file line numbers.
 
-THE numbering starts at line 1 after each hunk header (`@@`) and counts every line (context, additions, deletions).
+THE numbering starts at line 1 after the first hunk header (`@@`) and continues across hunks, counting every body line but excluding headers.
 
 THE developer can only stage changed lines (additions `+` and deletions `-`), not context lines.
 
@@ -180,12 +180,23 @@ TO see the numbered diff THE developer SHALL run `git add-lines` with only a fil
 git add-lines src/main.rs                   # show numbered diff
 ```
 
-TO stage specific lines THE developer SHALL pass line numbers after the filename:
+TO stage specific lines THE developer SHALL pass line numbers or inclusive ranges after the filename:
 
 ```bash
-git add-lines src/main.rs 10 15 20          # stage diff lines 10, 15, 20
-git add-lines --dry-run src/main.rs 10 15   # preview patch without staging
+git add-lines src/main.rs 10 15 20
+git add-lines src/main.rs 10-15
+git add-lines src/main.rs 10-15 20 25-30
+git add-lines --dry-run src/main.rs 10-15 20
 ```
+
+- Ranges include both endpoints.
+- Context lines inside ranges are skipped.
+- Explicit line numbers must refer to changed lines.
+- Overlapping selections are staged once.
+- Invalid selections fail without staging anything.
+- Selections containing no changed lines fail.
+
+THE developer SHOULD use ranges for contiguous selections and `--dry-run` to preview the patch before staging.
 
 THE developer SHALL use `git add-lines` when `git add -p` hunk boundaries do not align with desired commit boundaries.
 
