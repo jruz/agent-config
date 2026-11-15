@@ -1,21 +1,21 @@
 ---
 name: docker
-description: Write Dockerfiles using registry images and BuildKit cache mounts. Use when writing Dockerfiles, adding Docker images, configuring build caching, or working with container builds.
+description: Write Dockerfiles and run hardened containers using registry images and BuildKit cache mounts. Use when writing Dockerfiles, configuring container isolation, adding Docker images, configuring build caching, or working with container builds.
 ---
 
 # Docker
 
 ## Registry Images
 
-| Image                         | Tag         | Includes                                                                                                                               |
-| ----------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `registry.jruz.io/bun`        | `1.3.11-1`  | bun                                                                                                                                    |
-| `registry.jruz.io/node`       | `24.14.1-1` | node, pnpm                                                                                                                             |
-| `registry.jruz.io/playwright` | `1.58.2-2`  | node, pnpm, playwright, chromium (Debian-based)                                                                                        |
-| `registry.jruz.io/rust`       | `1.94.1-2`  | rust, clippy, rustfmt, cargo-nextest, cargo-watch, cargo-binstall, pkgconf, openssl-dev, musl-dev (Alpine-based, static musl binaries) |
-| `registry.jruz.io/tools`      | `25.11-1`   | nix, deadnix, nixfmt, hadolint, statix, woodpecker-cli                                                                                 |
+| Image                         | Includes                                                                                                              |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `oven/bun`                    | bun                                                                                                                   |
+| `registry.jruz.io/node`       | node, pnpm                                                                                                            |
+| `registry.jruz.io/playwright` | node, pnpm, playwright, chromium (Debian-based)                                                                       |
+| `registry.jruz.io/rust`       | rust, clippy, rustfmt, cargo-binstall, cargo-nextest, cargo-watch, cargo-machete, just, sqlx-cli, mold (Debian-based) |
+| `registry.jruz.io/tools`      | nix, deadnix, nixfmt, hadolint, statix, woodpecker-cli                                                                |
 
-Registry source and version tags: `/mnt/work/projects/registry/justfile`
+Current tags: `~/dev/projects/registry/scripts/images.ts`
 
 ## Cache Mounts
 
@@ -33,6 +33,7 @@ Dummy build caches dependency compilation. Clean the app crate's fingerprints an
 
 ```dockerfile
 COPY Cargo.toml Cargo.lock ./
+COPY .cargo/ .cargo/
 RUN mkdir -p src/bin && echo "fn main() {}" > src/bin/app.rs && touch src/lib.rs
 RUN --mount=type=cache,target=/usr/local/cargo/registry cargo build --release --bin app
 RUN rm -rf src/ target/release/.fingerprint/CRATE-* target/release/deps/CRATE-* target/release/deps/libCRATE-* target/release/app
@@ -41,9 +42,39 @@ COPY src/ src/
 RUN --mount=type=cache,target=/usr/local/cargo/registry cargo build --release --bin app
 ```
 
+## Runtime Isolation
+
+Run from the repository root with `IMAGE` set to a version-pinned Bun image and `tmp/example.ts` present:
+
+```bash
+uid="$(id --user)"
+gid="$(id --group)"
+root="$(git rev-parse --show-toplevel)"
+
+docker run \
+  --rm \
+  --interactive \
+  --user "$uid:$gid" \
+  --read-only \
+  --cap-drop ALL \
+  --security-opt no-new-privileges \
+  --tmpfs /tmp:exec \
+  --tmpfs "$HOME" \
+  --env "HOME=$HOME" \
+  --env TMPDIR=/tmp \
+  --mount "type=bind,src=$root,dst=/app" \
+  --workdir /app \
+  "${IMAGE:?Set IMAGE to a version-pinned Bun image}" \
+  bun /app/tmp/example.ts
+```
+
+- Add `--tty` only when stdin and stdout are terminals.
+- For rootless Podman, also use `--userns keep-id` with the explicit user.
+- Mount writable runtime caches separately from the read-only container filesystem.
+
 ## Rules
 
-- Use `registry.jruz.io/` images, not `docker.io/`
+- Use `registry.jruz.io/` images except Bun, which uses the official `oven/bun` image
 - Add cache mounts to every `RUN` that downloads packages
-- Use `alpine` for runtime stages (rust produces static musl binaries)
-- Pin full image tags (e.g., `1.94.1-2`)
+- Use `debian:trixie-slim` or distroless for rust runtime stages (rust produces glibc binaries)
+- Pin full image tags (e.g., `1.99.1`)
