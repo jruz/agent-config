@@ -12,39 +12,39 @@ if (!process.env["PORT"]) {
 const baseURL = `http://${process.env["APP_DOMAIN"]}:${process.env["PORT"]}`;
 
 export default defineConfig({
-  testDir: "./playwright",
-  snapshotPathTemplate: "playwright/screenshots/{arg}-{projectName}{ext}",
-  fullyParallel: false,
-  forbidOnly: true,
-  retries: 0,
-  workers: 1,
-  timeout: 5_000,
-  reporter: "list",
   expect: {
     timeout: 5_000,
   },
-  use: {
-    baseURL,
-    actionTimeout: 5_000,
-    trace: "retain-on-failure",
-    screenshot: "only-on-failure",
-  },
+  forbidOnly: true,
+  fullyParallel: false,
   projects: [
     {
       name: "desktop",
-      use: { browserName: "chromium", viewport: { width: 1440, height: 900 } },
+      use: { browserName: "chromium", viewport: { height: 900, width: 1440 } },
     },
     {
       name: "mobile",
-      use: { browserName: "chromium", viewport: { width: 390, height: 844 } },
+      use: { browserName: "chromium", viewport: { height: 844, width: 390 } },
     },
   ],
+  reporter: "list",
+  retries: 0,
+  snapshotPathTemplate: "playwright/screenshots/{arg}-{projectName}{ext}",
+  testDir: "./playwright",
+  timeout: 5_000,
+  use: {
+    actionTimeout: 5_000,
+    baseURL,
+    screenshot: "only-on-failure",
+    trace: "retain-on-failure",
+  },
   webServer: {
     command: "just run",
-    url: baseURL,
     reuseExistingServer: false,
-    stdout: "pipe",
     stderr: "pipe",
+    stdout: "pipe",
     timeout: 5_000,
+    url: baseURL,
   },
+  workers: 1,
 });

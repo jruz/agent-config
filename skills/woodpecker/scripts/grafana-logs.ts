@@ -66,7 +66,7 @@ function parseArgs(): { stack: string; limit: number } {
     process.exit(1);
   }
 
-  return { stack, limit };
+  return { limit, stack };
 }
 
 function formatEntries(results: LokiStream[]): string {

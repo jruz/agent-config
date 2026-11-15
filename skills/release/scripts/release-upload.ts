@@ -37,9 +37,9 @@ const ensureRelease = async (
   const createRes = await fetch(
     `https://codeberg.org/api/v1/repos/${repo}/releases`,
     {
-      method: "POST",
+      body: JSON.stringify({ name: tag, tag_name: tag }),
       headers: { ...headers(token), "Content-Type": "application/json" },
-      body: JSON.stringify({ tag_name: tag, name: tag }),
+      method: "POST",
     },
   );
 
@@ -64,9 +64,9 @@ const upload = async (
   const body = await Bun.file(file).arrayBuffer();
 
   const res = await fetch(url, {
-    method: "POST",
-    headers: { ...headers(token), "Content-Type": "application/octet-stream" },
     body,
+    headers: { ...headers(token), "Content-Type": "application/octet-stream" },
+    method: "POST",
   });
 
   if (!res.ok) {

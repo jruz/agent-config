@@ -13,7 +13,7 @@ const headers = (token: string) => ({
 });
 
 const run = async (cmd: string[]): Promise<{ ok: boolean; stdout: string }> => {
-  const proc = Bun.spawn(cmd, { stdout: "pipe", stderr: "pipe" });
+  const proc = Bun.spawn(cmd, { stderr: "pipe", stdout: "pipe" });
   const stdout = await new Response(proc.stdout).text();
   const code = await proc.exited;
   return { ok: code === 0, stdout: stdout.trim() };
@@ -57,7 +57,7 @@ const deleteRemoteTag = async (
     throw new Error(`check tag: ${res.status} ${text}`);
   }
 
-  const del = await fetch(url, { method: "DELETE", headers: headers(token) });
+  const del = await fetch(url, { headers: headers(token), method: "DELETE" });
   if (!del.ok) {
     const text = await del.text();
     throw new Error(`delete tag: ${del.status} ${text}`);
@@ -94,8 +94,8 @@ const deleteRelease = async (
 ): Promise<void> => {
   const url = `https://codeberg.org/api/v1/repos/${repo}/releases/${releaseId}`;
   const res = await fetch(url, {
-    method: "DELETE",
     headers: headers(token),
+    method: "DELETE",
   });
 
   if (!res.ok) {

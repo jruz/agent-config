@@ -132,8 +132,6 @@ const html = `<!DOCTYPE html>
 </html>`;
 
 const server = Bun.serve({
-  hostname: "0.0.0.0",
-  port: 0,
   fetch: async (req) => {
     const url = new URL(req.url);
 
@@ -155,6 +153,8 @@ const server = Bun.serve({
 
     return new Response("not found", { status: 404 });
   },
+  hostname: "0.0.0.0",
+  port: 0,
 });
 
 log.info(`mermaid preview: http://mini-local:${server.port}`);
