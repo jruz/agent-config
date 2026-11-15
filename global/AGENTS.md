@@ -5,7 +5,8 @@
 - don't ask the user to run commands, run them yourself
 - when asking the user to make decisions, present one point at a time. wait for feedback, apply it, then proceed to the next
 - prefer bullet points over paragraphs
-- after making changes make sure `just check; slop-detector` passes
+- after making changes make sure `just check`, `just test` and `slop-detector` pass
+- if you are asked a question while working, reply and continue working
 
 ## environment and secrets
 
@@ -39,6 +40,11 @@
 - early return edge cases
 - last part of the function should return coherently with the name of the function
 
+## testing
+
+- test modules through their public API only
+- never test private or internal functions directly
+
 ## rust
 
 - bubble errors up with `?`
@@ -62,6 +68,7 @@
 
 ## markdown
 
+- State instructions directly. Never append caveats or exceptions.
 - keep them short and focused
 - use references to files for context avoid mentioning information that can grow stale
 - one item per bullet, don't put multiple items separated by commas
@@ -89,8 +96,18 @@
 
 ## plan
 
-- PLAN.md is git ignored
-- always follow the Skill(plan-md) format when writing PLAN.md
+- help me stay organized; always use PLAN.md for implementation work, even when I don't ask
+- quick questions and read-only investigations don't need a plan
+- keep tasks short and clear with one action per todo
+- update the plan as requirements change; remove outdated tasks
+- mark tasks complete as soon as they're done
+- reflect decisions in the relevant todos; don't add separate decision logs or notes
+- keep the next step obvious
+- don't implement changes while we're still discussing them
+- PLAN.md should be git ignored
+- always follow the Skill(plan-md) format when writing PLAN.md, don't add sections out of format
+- follow sequential whole numbers for phases
+- if need to add phases for current work shift the uncompleted phases
 - when user writes p: <issue>, means add that topic to the plan
 
 ## tools
