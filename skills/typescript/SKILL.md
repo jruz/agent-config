@@ -1,13 +1,13 @@
 ---
 name: typescript
-description: Write TypeScript code. Use when working with TypeScript, configuring Oxlint or Oxfmt, checking unused code and dependencies with Knip, or creating custom lint rules.
+description: Use when working with TypeScript code.
 ---
 
 # TypeScript
 
 Use this skill when writing TypeScript code.
 
-For project setup, follow [SETUP.md](SETUP.md).
+For project setup and tooling follow [SETUP.md](SETUP.md).
 
 ## Type Safety
 
@@ -136,8 +136,8 @@ Example:
 
 ```typescript
 type Success = Readonly<{ type: "success"; data: string }>;
-type Error = Readonly<{ type: "error"; message: string }>;
-type Result = Success | Error;
+type Failure = Readonly<{ type: "error"; message: string }>;
+type Result = Success | Failure;
 
 const handleResult = (result: Result): string => {
   switch (result.type) {
@@ -180,8 +180,6 @@ const createChart = (type: ChartType, config: ChartConfig): Chart => {
 ## DOM Interaction
 
 WHERE DOM elements are accessed THE system SHALL check for null.
-
-THE system SHALL handle missing elements gracefully.
 
 WHERE an element's runtime type must be verified THE system SHALL narrow it with `instanceof`; a null check alone does not establish its element type.
 
@@ -279,13 +277,10 @@ THE system SHALL omit redundant context and truncate long values.
 
 ## Testing
 
-THE system SHALL use `bun test` and import from `bun:test` for script tests. `bun::test` SHALL target only `scripts/`.
-
-THE root `test` recipe SHALL run `ts::test` and `bun::test`. `ts::test` SHALL run the custom Oxlint rule tests using the runner configured in [package.json](files/package.json).
-
-THE root `check` recipe SHALL run `ts::check` and other project checks, not tests. `ts::check` SHALL exclude the custom Oxlint rule tests.
-
-Application test tooling belongs in the corresponding framework skill. WHERE application tests use Vitest THE root `test` recipe SHALL also run the application test recipe; Bun SHALL NOT run the Vitest tests in `src/`.
+- Test `scripts/` with `bun test`
+- Test app code in `src/` with Vitest
+- `just test` runs `ts::test` and `bun::test`
+- `just check` runs `ts::check` and other checks, never tests
 
 THE test files SHALL be named with `.test.ts` suffix.
 
@@ -357,91 +352,3 @@ declare global {
   }
 }
 ```
-
-## Linting
-
-Adapt formatter exclusions and Knip entry points to the project.
-
-Projects that intentionally use nested configs must adapt both check and fix commands.
-
-Run `just ts::check` and `just ts::fix`.
-
-THE developer SHALL NOT bypass the linter by adding ignore comments.
-
-THE system SHALL integrate linting into the CI pipeline.
-
-## Development Environment
-
-THE developer SHALL tell the user to reload the shell after creating or changing `.envrc` or `flake.nix`.
-
-THE developer SHALL wait for the user to confirm the shell has been reloaded before running commands that depend on the flake environment.
-
-## Package Manager
-
-THE system SHALL use `pnpm` for dependency management and tooling, and run Node 24 applications through `sandbox pnpm run`.
-
-THE system SHALL use Bun only for scripts and script tests, never for application runtime or package management.
-
-THE system SHALL use the Docker sandbox with a running Docker daemon.
-
-THE system SHALL install dependencies and run dependency tools through `sandbox pnpm` in every project.
-
-THE system SHALL run scripts and script tests through `sandbox bun`.
-
-THE system SHALL NOT use `npm` or `yarn`.
-
-THE `package.json` SHALL NOT declare a `packageManager` field; `engines` pins the version.
-
-### Release Age
-
-Use the release-age policy in [pnpm-workspace.yaml](files/pnpm-workspace.yaml).
-
-WHERE a version is needed before it reaches that age THE developer SHALL add it to `minimumReleaseAgeExclude` and remove it once it does.
-
-### Build Scripts
-
-pnpm fails the install while any dependency build script lacks an `allowBuilds` entry in `pnpm-workspace.yaml`.
-
-WHERE pnpm reports ignored builds THE developer SHALL add each package to `allowBuilds` as `false`.
-
-WHERE a package breaks without its build script THE developer SHALL set it to `true`; the sandbox contains the script.
-
-### Upgrading pnpm Major Versions
-
-WHEN pnpm changes major version THE developer SHALL delete `node_modules` and run `sandbox pnpm install`, because pnpm cannot purge it without a TTY.
-
-## Dependency Automation
-
-Use the bundled [renovate.json](files/renovate.json) for dependency automation.
-
-## Dependencies
-
-### Runtime
-
-THE project SHALL pin exact `node`, `pnpm`, and `bun` versions in `package.json` `engines`. These pins configure [scripts/sandbox.nu](files/scripts/sandbox.nu) and [Dockerfile.node](files/Dockerfile.node).
-
-### Base Dependencies
-
-After setup, install with `sandbox pnpm install`.
-
-THE system SHALL pin exact dependency versions in `package.json` (no `^` or `~` prefix).
-
-THE pins in [package.json](files/package.json) SHALL be the source of truth.
-
-Use `just ts::outdated` and `just ts::upgrade` from [.just/ts.justfile](files/.just/ts.justfile) to check newer versions and upgrade with exact pins. Upgrades include major versions; run checks and tests afterward.
-
-## Compare with the Skill
-
-Run `just ts::skill-check` from the project after setup or tooling changes. The checker discovers every template under [files/](files/), including hidden files, and fails if any are missing.
-
-Shared helper sources and tests must match exactly. Project-specific `justfile`, `.envrc`, and `flake.nix` differences require review. Structured configuration follows the checker's field-level comparisons.
-
-Keep [skill-check/](skill-check/) and [skill-pull/](skill-pull/) in this skill repository; do not copy them into projects.
-
-Report every failure and review item. Do not silently accept drift or modify the baseline to make checks pass.
-
-WHEN updating tooling pins THE developer SHALL keep `oxlint` and `@oxlint/plugins` aligned and verify compatibility with `oxlint-tsgolint` and `typescript` by running the copied checks and rule tests.
-
-WHERE external libraries are added THE system SHALL install them via `sandbox pnpm add --save-exact`.
-
-THE system SHALL declare imported packages explicitly instead of relying on transitive dependency hoisting.
