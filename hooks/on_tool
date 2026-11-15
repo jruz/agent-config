@@ -1,8 +1,15 @@
 #!/usr/bin/env nu
 
+use std/log
+
 # Check a tool call before the agent runs it
 def main [
     agent: string # Agent requesting the tool call.
 ]: nothing -> nothing {
-    exec $"($env.HOME)/.nix-profile/bin/agent-tool-check" $agent
+    let checker = $"($env.HOME)/.nix-profile/bin/agent-tool-check"
+    if not ($checker | path exists) {
+        log error $"Missing required tool: agent-tool-check at ($checker). Install it before running tool calls."
+        exit 1
+    }
+    exec $checker $agent
 }
