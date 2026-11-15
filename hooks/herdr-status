@@ -1,0 +1,30 @@
+#!/usr/bin/env nu
+
+# Report Claude's state to its Herdr terminal.
+def main [
+    record: string # Status record sent through OSC 7501.
+]: nothing -> nothing {
+    if 'HC_TERMINAL_ID' not-in $env {
+        return
+    }
+
+    let parent = ^ps -o ppid= -p $nu.pid
+    mut pid = $parent | str trim | into int
+
+    while $pid > 1 {
+        let terminal = ^ps -o tty= -p $pid
+        let tty = $terminal | str trim
+        if $tty in ['?' '??'] {
+            let parent = ^ps -o ppid= -p $pid
+            $pid = $parent | str trim | into int
+            continue
+        }
+
+        $"\u{1b}]7501;($record):app=claude\u{1b}\\"
+            | save --raw --force $"/dev/($tty)"
+        return
+    }
+
+    print --stderr $"herdr-status: no terminal found for record ($record)"
+    exit 1
+}

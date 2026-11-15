@@ -206,6 +206,27 @@
   },
   "model": "opus",
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/herdr-status state=idle"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt|elicitation_dialog",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/herdr-status state=blocked:kind=permission"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
@@ -213,6 +234,14 @@
             "type": "command",
             "command": "~/.claude/hooks/on_stop",
             "timeout": 300
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/herdr-status state=done"
           }
         ]
       }
@@ -226,6 +255,15 @@
             "command": "~/.claude/hooks/on_tool claude"
           }
         ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/herdr-status state=working"
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -234,6 +272,14 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/on_input"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/herdr-status state=working"
           }
         ]
       }
