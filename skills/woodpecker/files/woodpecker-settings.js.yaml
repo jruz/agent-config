@@ -1,19 +1,6 @@
 repo:
   name: jruz/REPO_NAME
-
-secrets:
-  CODEBERG_TOKEN:
-    events:
-      - tag
-      - push
-    value: ASK_USER
-  SOPS_AGE_KEY:
-    events:
-      - push
-      - pull_request
-      - manual
-    value: ASK_USER
-
+secrets: {}
 settings:
   allow_deploy: false
   allow_pr: true
@@ -23,8 +10,8 @@ settings:
   config_extension_endpoint: ""
   require_approval: forks
   timeout: 60
-  visibility: public
   trusted:
     network: false
     security: false
     volumes: false
+  visibility: private

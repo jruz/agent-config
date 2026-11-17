@@ -1,0 +1,35 @@
+repo:
+  name: jruz/REPO_NAME
+secrets:
+  SOPS_AGE_KEY:
+    events:
+      - push
+      - pull_request
+      - manual
+    images: null
+    value: |
+      -----BEGIN AGE ENCRYPTED FILE-----
+      YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBIL05IdWtKVTM5cll3S3JM
+      cXRrc0lYZjN4OVM4dnpaeDNUZG1pNEkzSDFBCmNEdjJ5RVhWTFl1N01xUCtwNVRC
+      WHA3bnJJUlh1NDF2MTlVTkh5RUNCMk0KLT4gUkJOIipdLWdyZWFzZQpkVnNYaDNj
+      b3kvWTd5NjFJWDd4b3dmUkMwR0JUdU5NbDJZYnFCcUhYdFJGSkhwUTVoQXYvcFJh
+      MUJJdlVPSlRRCisxWkI4REt6eGlpcUcrQXM4eGFMOWsrSnBqajVGdG1oV0JjT05s
+      VU5YeVUvcklZcVBSS3RzZVQrdXQrTHZhWW8KCi0tLSBONU5zRFNENkpzRFN1aENC
+      U1pmaThRVmVBd2NPZG9CUmtKSXFBeHVBNWJVCr2rAChBGpDeO+uJGmRVTbiNdQ5J
+      5eQXg+c0BM5jTn9kADDjKirgYIOftkMyJzoV4u1C8b0Ca3pqXgbtFvFNciaqB79s
+      WhADndaiiCM5WsiVjlheHgy6Trkt89SITlTKOUWuvnupU/cs4BI=
+      -----END AGE ENCRYPTED FILE-----
+settings:
+  allow_deploy: false
+  allow_pr: true
+  cancel_previous_pipeline_events:
+    - push
+    - pull_request
+  config_extension_endpoint: ""
+  require_approval: forks
+  timeout: 60
+  trusted:
+    network: false
+    security: false
+    volumes: false
+  visibility: private

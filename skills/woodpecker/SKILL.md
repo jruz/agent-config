@@ -1,11 +1,36 @@
 ---
 name: woodpecker
-description: Interact with Woodpecker CI. Use when checking pipelines or build logs on Woodpecker CI.
+description: Interact with and configure Woodpecker CI. Use when subscribing to CI status updates in Pi, checking pipelines, investigating build failures, activating repos, or managing repo settings and secrets.
 ---
 
 # Woodpecker CI
 
 Woodpecker is a simple, container-native CI/CD engine. Use `woodpecker-cli` to interact with pipelines.
+
+For project setup follow [SETUP.md](SETUP.md).
+
+## Workflow Examples
+
+| Project type      | Skill                          |
+| ----------------- | ------------------------------ |
+| Web apps on Nomad | [nomad](../nomad/SKILL.md)     |
+| Rust CLI releases | [release](../release/SKILL.md) |
+
+## Pi: Subscribe to CI Status Updates
+
+When the Pi Woodpecker tools are available, use them after pushing to monitor a repository and full commit SHA asynchronously. Commit watching covers push and later tag-release pipelines. Exact branch watching is also available.
+
+| Tool                                                               | Purpose                                          |
+| ------------------------------------------------------------------ | ------------------------------------------------ |
+| `woodpecker_watch({ repo: "owner/repo", commit: "<full SHA>" })`   | Watch push and tag pipelines for a commit        |
+| `woodpecker_watch({ repo: "owner/repo", branch: "feature" })`      | Watch an exact branch, excluding branchless tags |
+| `woodpecker_status({})`                                            | List active subscriptions and cached statuses    |
+| `woodpecker_unwatch({ repo: "owner/repo", commit: "<same SHA>" })` | Stop a commit subscription                       |
+| `woodpecker_unwatch({ repo: "owner/repo", branch: "feature" })`    | Stop a branch subscription                       |
+
+- Assume CI access is already configured. Use the tools directly; do not inspect environment variables or search for credentials.
+- Provide exactly one `branch` or `commit`. Get the full lowercase 40-character SHA with `git rev-parse HEAD` after pushing.
+- Prefer commit watches for release workflows: tag pipelines can have an empty branch. Push success does not imply release success; keep watching for the subsequent tag pipeline.
 
 ## Common Commands
 
@@ -55,9 +80,12 @@ Woodpecker is a simple, container-native CI/CD engine. Use `woodpecker-cli` to i
 
 ## Activating a Repo
 
+- The Woodpecker server uses GitHub as its forge.
+- For Codeberg-to-GitHub migrations, follow the [migration guide](../github/migration.md).
+
 To activate a new repo in Woodpecker:
 
-1. Sync repos from Codeberg to discover new repos:
+1. Sync repos from GitHub to discover new repos:
 
    ```bash
    woodpecker-cli repo sync
@@ -73,75 +101,6 @@ To activate a new repo in Woodpecker:
 
 Note: `woodpecker-cli repo add owner/repo` does not work — use the numeric forge remote ID.
 
-## Repo Format
-
-Repos use the format `owner/repo-name` (e.g., `jruz/jruz.io`).
-
-## Multiline Commands
-
-Use YAML `|` block and bash `\` continuations for long commands:
-
-```yaml
-commands:
-  - |
-    echo "$TOKEN" | kaniko \
-      --context . \
-      --destination $IMAGE \
-      --label org.opencontainers.image.revision=${CI_COMMIT_SHA} \
-      --registry-username jruz \
-      --registry-password-stdin
-```
-
-## Workflow Templates
-
-Templates are in this skill folder:
-
-### Web projects (Docker Swarm)
-
-| File                          | Purpose                                                                                                        |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `.woodpecker/check.yml`       | Push to main, manual, or PR: run checks via nix develop                                                        |
-| `.woodpecker/playwright.yml`  | Push to main, manual, or PR: run Playwright E2E tests                                                          |
-| `.woodpecker/build-main.yml`  | Push to main: build frontend + podman image                                                                    |
-| `.woodpecker/build-pr.yml`    | Pull request: build frontend + podman image                                                                    |
-| `.woodpecker/deploy-main.yml` | Push to main: push image, deploy to production (depends on check, playwright, build-main)                      |
-| `.woodpecker/deploy-pr.yml`   | Pull request: push image, deploy preview, seed data, cleanup on close (depends on check, playwright, build-pr) |
-| `docker-compose.yaml`         | Docker Swarm service definition with Traefik, Postgres                                                         |
-| `woodpecker-settings.yaml`    | Default repo settings template                                                                                 |
-
-### Binary projects (Codeberg releases)
-
-| File                       | Purpose                                                 |
-| -------------------------- | ------------------------------------------------------- |
-| `.woodpecker/check.yml`    | Push to main, manual, or PR: run checks via nix develop |
-| `woodpecker-settings.yaml` | Default repo settings template                          |
-
-Release pipelines, scripts, and justfile recipes are defined in the **release** skill.
-
-### Dockerfile templates
-
-| File                | Purpose                                                        |
-| ------------------- | -------------------------------------------------------------- |
-| `Dockerfile.rust`   | Multi-stage: nix build + debian-slim runtime for Rust web apps |
-| `Dockerfile.gleam`  | Multi-stage: nix build + erlang-alpine runtime for Gleam apps  |
-| `Dockerfile.static` | Multi-stage: nix build + static-web-server for static sites    |
-
-Copy the appropriate Dockerfile template as `Dockerfile` in the project root.
-
-### Setup
-
-Copy the appropriate files to the project root.
-
-THE project SHALL add `bun` and `woodpecker-cli` to the nix flake devshell packages.
-
-THE project SHALL add `bun` and `woodpecker-cli` versions to the flake shellHook output.
-
-## Linting
-
-THE project SHALL lint woodpecker config using `woodpecker-cli lint`.
-
-THE linter recipe SHALL be set up according to the checks skill.
-
 ## woodpecker-settings
 
 Declarative repo settings via `woodpecker-settings.yaml`.
@@ -155,46 +114,13 @@ Declarative repo settings via `woodpecker-settings.yaml`.
 | `secrets edit`       | Edit secrets in $EDITOR               |
 | `--list-settings`    | Show schema                           |
 
-### Setup
-
-1. `woodpecker-settings init`
-2. `woodpecker-settings apply`
-
 ### Secrets
 
-THE `woodpecker-settings.yaml` template includes an age-encrypted `CODEBERG_TOKEN` secret.
-
-THE agent SHALL NOT set secrets directly.
-
-THE agent SHALL ask the user to run:
-
-```bash
-woodpecker-settings secrets set CODEBERG_TOKEN
-```
-
-## Server Logs (Grafana/Loki)
-
-When deploying containers to Docker Swarm, use `scripts/grafana-logs.ts` to query container logs from Loki via Grafana.
-
-### Setup
-
-When adding deploy workflows to a project, copy `scripts/grafana-logs.ts` and `scripts/log.ts` from this skill, and add this justfile recipe:
-
-```just
-grafana-logs stack limit="20":
-  bun scripts/grafana-logs.ts {{stack}} {{limit}}
-```
-
-### Usage
-
-```bash
-just grafana-logs money-pr-6
-just grafana-logs money-pr-6 100
-```
+- Copy encrypted values between projects as they are.
+- The agent SHALL NOT set new secrets directly. For a secret not in the settings files, ask the user to run `woodpecker-settings secrets set <NAME>`.
 
 ## Key Rules
 
-- Use `woodpecker-cli` not `woodpecker` (deprecated)
 - Always specify repo in `owner/repo` format
 - Pipeline numbers are integers, not commit hashes
 - Logs require `log show` subcommand (not `logs`)
