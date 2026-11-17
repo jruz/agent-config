@@ -19,7 +19,6 @@ THE `PLAN.md` file SHALL NOT be committed to version control.
 
 ```markdown
 ---
-active_loop: true
 iteration: 1
 max_iterations: 20
 ---
@@ -71,28 +70,20 @@ max_iterations: 20
 ---
 
 ## Blocker
-
----
-
-## Loop Log
-
-- **Loop 1**: [What was tried] → [Outcome]
 ```
 
 ## Frontmatter Fields
 
-| Field            | Purpose                                                          |
-| ---------------- | ---------------------------------------------------------------- |
-| `active_loop`    | `true` = auto-loop until done, `false` = user confirms each step |
-| `iteration`      | Current iteration count (incremented by stop hook)               |
-| `max_iterations` | Safety limit - loop stops even if acceptance criteria not met    |
+| Field            | Purpose                                                            |
+| ---------------- | ------------------------------------------------------------------ |
+| `iteration`      | Automatic continuation count maintained by the plan loop extension |
+| `max_iterations` | Safety limit for automatic continuation                            |
 
 THE frontmatter SHALL always be present in PLAN.md.
 
-THE `active_loop` field determines the workflow mode:
+WHEN automatic execution is needed THE user SHALL activate it with `/plan-loop`.
 
-- `true`: Stop hook blocks exit and loops until acceptance criteria met or max_iterations reached
-- `false`: User confirms after each step, no automatic looping
+THE phase details SHALL contain current progress and verification evidence.
 
 ## Review Checkpoints
 
@@ -141,8 +132,6 @@ THE `PLAN.md` file SHALL include a "Specs" section listing non-component specifi
 THE `PLAN.md` file SHALL contain phases, each as a level-2 heading separated by horizontal rules.
 
 THE `PLAN.md` file SHALL include a "Blocker" section for signaling unresolvable issues.
-
-THE `PLAN.md` file SHALL include a "Loop Log" section tracking what was tried each iteration.
 
 ## Phases
 
@@ -201,19 +190,9 @@ THE acceptance criteria SHALL NOT be vague (avoid "working properly", "looks goo
 
 WHERE a phase has specific verification needs THE acceptance criteria SHALL list them explicitly.
 
-## Loop Log
-
-THE "Loop Log" section SHALL track what was attempted each iteration.
-
-THE loop log entries SHALL follow the format: `- **Loop N**: [What was tried] → [Outcome]`
-
-THE loop log entries SHALL be concise, one line per iteration.
-
-THE loop log SHALL be updated at the end of each iteration before stopping.
-
 ## Blocker
 
-THE `PLAN.md` file SHALL contain a "Blocker" section after the last phase and before the Loop Log.
+THE `PLAN.md` file SHALL contain a "Blocker" section after the last phase.
 
 THE Blocker section SHALL be empty by default.
 
@@ -259,7 +238,6 @@ WHERE investigation reveals new information THE todolist MAY be updated to refle
 - Mark items `[x]` immediately when done
 - Add/modify todolist items as you learn
 - Update description bullets if approach changes
-- Add Loop Log entry before each loop ends: `- **Loop N**: [What tried] → [Outcome]`
 - Keep it concise - no verbose text
 - Update plan before stopping work
 
