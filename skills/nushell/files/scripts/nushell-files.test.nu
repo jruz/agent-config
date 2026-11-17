@@ -1,8 +1,10 @@
 use std/assert
 use nushell-files.nu discover
 
+const TMP = path self | path dirname | path dirname | path join tmp
+
 def fixture []: nothing -> path {
-    let root = mktemp --directory
+    let root = mktemp --directory --tmpdir-path $TMP
     ^git init --initial-branch main $root
     $root
 }

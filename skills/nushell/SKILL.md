@@ -443,6 +443,9 @@ Errors SHALL propagate unchanged unless the user has agreed to a handling policy
 - Hide inherited environment variables the code under test reads, such as `TMUX_PANE`.
 - Never reach the network; stub every request.
 - Use synthetic data and temporary directories; never real secrets.
+- Create temporary directories under the repository `tmp/` with `mktemp --directory --tmpdir-path`, never the system temp directory.
+- Locate the repository `tmp/` from the test file with `path self`.
+- Remove each temporary directory at the end of its test.
 - Distinguish mocked command-contract tests from real integration tests.
 
 ## Linting

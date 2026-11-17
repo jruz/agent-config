@@ -1,10 +1,11 @@
 use std/assert
 
 const RUNNER = path self | path dirname | path join nushell-test.nu
+const TMP = path self | path dirname | path dirname | path join tmp
 
 def fixture []: list<string> -> path {
     let lines = $in
-    let root = mktemp --directory
+    let root = mktemp --directory --tmpdir-path $TMP
     $lines | str join (char newline) | save ($root | path join fixture.test.nu)
     $root
 }
@@ -97,7 +98,7 @@ def test-runner-supports-apostrophes-in-paths []: nothing -> nothing {
 }
 
 def test-runner-empty-directory-succeeds []: nothing -> nothing {
-    let root = mktemp --directory
+    let root = mktemp --directory --tmpdir-path $TMP
     let result = invoke $root
     assert equal $result.exit_code 0 $result.stderr
     assert str contains $result.stdout 'No tests found.'
