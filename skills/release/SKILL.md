@@ -1,131 +1,51 @@
 ---
 name: release
-description: Configure release versioning for Rust projects. Use when adding --version output, build metadata, or release configuration.
+description: Set up Rust CLI releases. Use when copying release templates into a repository or wiring version metadata and release CI.
 ---
 
-# Release Specification
+# Release Setup
 
-## Overview
+Copy-ready templates live in [files/](files/). Copy its contents into the repository root, including hidden directories, preserving the directory structure. Copy symlink targets as regular files.
 
-This specification defines the release versioning pattern for Rust CLI projects. It embeds version, revision, and build time into the binary via `--version`.
+The skill templates are the source of truth. Preserve unrelated repository configuration. If existing release configuration differs from the templates, ask for confirmation before resolving the deviation.
 
-## Build Script
+## Files to Copy
 
-THE project SHALL contain a `build.rs` from the template at `skills/release/src/build.rs`.
+Copy every file inside [files/](files/) except `.gitignore`, which is merged.
 
-## Version Module
+Files outside `files/` are merge guidance, not part of the root copy.
 
-THE project SHALL contain a `src/version.rs` from the template at `skills/release/src/version.rs`.
+Remove obsolete split Rust release scripts and recipes when replacing an existing setup.
 
-THE clap command SHALL use `#[command(version = version::clap_version())]`.
+Remove `.woodpecker/tag.yml`; `.woodpecker/release.yml` publishes the tag from pushes to `main`.
 
-THE `main.rs` SHALL declare `mod version;`.
+## Files to Modify
 
-## REVISION Environment Variable
+| Repository file       | Change                                                                                                                                                  |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/main.rs`         | Declare `mod version;` and set the clap parser's `#[command(version = version::clap_version())]`. Adapt the path if the parser lives in another module. |
+| `justfile`            | Add the `release` recipe from [references/justfile](references/justfile).                                                                               |
+| `.just/rust.justfile` | Replace the `build`, `build-host`, `install` and `run` recipes with [references/rust.justfile](references/rust.justfile).                               |
+| `AGENTS.md`           | Merge the Release section from [references/AGENTS.md](references/AGENTS.md).                                                                            |
+| `README.md`           | Merge the installation section from [references/README.md](references/README.md), replacing `<project>` with the Cargo package name.                    |
+| `.gitignore`          | Merge entries from [files/.gitignore](files/.gitignore) instead of overwriting.                                                                         |
+| `Cargo.toml`          | Add the `build.rs` error dependency with `cargo add --build thiserror`.                                                                                 |
 
-THE project SHALL contain a `.envrc` from the template at `skills/release/.envrc`.
+## Conditional Changes
 
-THE `.envrc` SHALL append `export REVISION=dev` for local development.
+- Existing `flake.nix`: merge project-specific dev shell tools into [files/flake.nix](files/flake.nix).
+- `release.json` is missing until the first release publishes; `nix build` fails until then.
+- Existing `build.rs`: merge the version metadata setup.
+- OpenSSL/native TLS dependencies: change `Cargo.toml` to use Rustls with the `ring` provider; initialize that provider in binary entry points before HTTP calls.
+- CI runner not configured: use the [woodpecker skill](../woodpecker/SKILL.md).
+- Check `woodpecker-settings.yaml` if `GITHUB_TOKEN` is set, if not copy it over from the [woodpecker setup](../woodpecker/SETUP.md).
 
-THE Woodpecker CI steps SHALL set `REVISION: ${CI_COMMIT_SHA}` in their environment.
+## Skill Development
 
-AFTER modifying `.envrc` THE system SHALL tell the user to reload their shell and wait for confirmation before proceeding with any build or check commands.
+[scripts/](scripts/) holds the release script tests and mocks. Copy them into a project only while developing [release.nu](files/scripts/release.nu) there, and remove them before committing.
 
-## Nix Flake
+Run the release tests after editing [release.nu](files/scripts/release.nu):
 
-THE project SHALL contain a `flake.nix` from the template at `skills/release/flake.nix`.
-
-THE `description` field SHALL be replaced with the project description.
-
-THE `devShells.default` packages list SHALL include any additional project dependencies.
-
-## Codeberg Releases
-
-THE Codeberg repo SHALL have releases enabled (`has_releases = true` in `codeberg-settings.toml`).
-
-THE system SHALL use the codeberg skill to enable releases via `codeberg-settings apply`.
-
-## CI Pipelines
-
-THE project SHALL contain `.woodpecker/tag.yml` from the template at `skills/release/.woodpecker/tag.yml`.
-
-THE project SHALL contain `.woodpecker/release.yml` from the template at `skills/release/.woodpecker/release.yml`.
-
-## Release Scripts
-
-THE project SHALL contain `scripts/release-build.nu` from the template at `skills/release/scripts/release-build.nu`.
-
-THE project SHALL contain `scripts/release-upload.ts` from the template at `skills/release/scripts/release-upload.ts`.
-
-THE project SHALL contain `scripts/release-delete.ts` from the template at `skills/release/scripts/release-delete.ts`.
-
-THE project SHALL contain `scripts/log.ts` from the template at `skills/release/scripts/log.ts`.
-
-THE project SHALL contain `scripts/log.nu` from the template at `skills/nushell/scripts/log.nu`.
-
-THE skill provides two variants of the version bump script:
-
-- `skills/release/scripts/release-bump-rs.nu` — for Rust projects (bumps `Cargo.toml` and `Cargo.lock`)
-- `skills/release/scripts/release-bump-js.nu` — for Bun/Node projects (bumps `package.json`)
-
-THE project SHALL copy the appropriate variant and rename it to `scripts/release-bump.nu`.
-
-## Justfile Recipes
-
-THE project SHALL merge recipes from `skills/release/justfile` into the project justfile.
-
-## Cross-Platform Builds and TLS
-
-NEVER use `native-tls`/OpenSSL. It requires extensive Nix env vars (`OPENSSL_DIR`, `OPENSSL_LIB_DIR`, etc.) and breaks cargo-zigbuild cross-compilation.
-
-THE project SHALL use `rustls` with the `ring` crypto provider:
-
-```toml
-reqwest = { version = "...", default-features = false, features = [
-  "blocking",
-  "http2",
-  "json",
-  "rustls-no-provider",
-] }
-rustls = { version = "...", default-features = false, features = [
-  "ring",
-  "logging",
-  "std",
-  "tls12",
-] }
+```sh
+nu "$HOME/.pi/agent/skills/nushell/files/scripts/nushell-test.nu" "$HOME/.pi/agent/skills/release/scripts"
 ```
-
-THE binary entry points SHALL initialize the crypto provider before any HTTP calls:
-
-```rust
-rustls::crypto::ring::default_provider()
-    .install_default()?;
-```
-
-## Gitignore
-
-THE project SHALL contain a `.gitignore` from the template at `skills/release/.gitignore`, preserving any existing content.
-
-## Required Changes Checklist
-
-WHEN adding release versioning to a project THE system SHALL:
-
-1. Create `build.rs` from `skills/release/src/build.rs`
-2. Create `src/version.rs` from `skills/release/src/version.rs`
-3. Add `mod version;` to `main.rs`
-4. Set `#[command(version = version::clap_version())]` on the clap parser
-5. Create `.envrc` from `skills/release/.envrc`, preserving any existing content
-6. Tell the user to reload their shell and wait for confirmation before running any build or check commands
-7. Add `REVISION: ${CI_COMMIT_SHA}` to all Woodpecker CI build steps
-8. Create `flake.nix` from `skills/release/flake.nix`, replacing `description` and adding project-specific dev dependencies
-9. Create `.woodpecker/tag.yml` from `skills/release/.woodpecker/tag.yml`
-10. Create `.woodpecker/release.yml` from `skills/release/.woodpecker/release.yml`
-11. Create `scripts/release-build.nu` from `skills/release/scripts/release-build.nu`
-12. Create `scripts/release-upload.ts` from `skills/release/scripts/release-upload.ts`
-13. Create `scripts/release-delete.ts` from `skills/release/scripts/release-delete.ts`
-14. Create `scripts/log.ts` from `skills/release/scripts/log.ts`
-15. Create `scripts/log.nu` from `skills/release/scripts/log.nu`
-16. Copy the appropriate `release-bump-*.nu` variant and rename to `scripts/release-bump.nu`
-17. Merge recipes from `skills/release/justfile` into the project justfile
-18. Merge entries from `skills/release/.gitignore` into the project `.gitignore`
-19. Enable releases on Codeberg (`has_releases = true`) via the codeberg skill
