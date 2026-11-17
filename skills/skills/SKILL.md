@@ -71,6 +71,16 @@ WHERE skills provide quick reference THE skill SHALL use tables for scanability.
 
 WHERE skills have multiple sections THE skill SHALL organize them logically (structure, patterns, rules).
 
+## Source of Truth
+
+- Files own implementation; skills own workflow.
+- Treat supporting files as the source of truth.
+- Link to files instead of restating their values, rules, commands, or behavior.
+- Keep prose for when to use files, how to integrate them, and decisions they cannot express.
+- Before adding instructions, inspect supporting files for existing coverage.
+- If changing a supporting file would require updating prose describing it, replace that prose with a file reference.
+- Put executable requirements in configuration or checks rather than repeated prose.
+
 ## Supporting Files
 
 Skills MAY contain additional files beyond `SKILL.md`:
@@ -80,6 +90,19 @@ Skills MAY contain additional files beyond `SKILL.md`:
 - Helper scripts
 
 Claude loads supporting files only when needed, keeping context usage minimal.
+
+## Templates and Setup
+
+See [typescript](../typescript/) for an example.
+
+| File       | Purpose                                                           |
+| ---------- | ----------------------------------------------------------------- |
+| `files/`   | Templates copied into projects, mirroring the project root layout |
+| `SETUP.md` | Setup instructions, linked from `SKILL.md`                        |
+
+- Put every file copied into projects inside `files/`.
+- Put setup instructions in `SETUP.md`.
+- Put setup instructions in `SKILL.md` when the skill only covers setup.
 
 ## Tool Restrictions
 
