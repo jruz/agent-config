@@ -11,21 +11,7 @@ This specification defines Rust-specific patterns and requirements for writing r
 
 ## Project Initialization
 
-THE system SHALL create a `flake.nix` from the closest template:
-
-- `skills/rust/flake.nix` - rust
-- `skills/rust/rust-bun.flake.nix` - rust + bun
-- `skills/rust/rust-playwright.flake.nix` - rust + pnpm + playwright
-
-THE system SHALL create a `.envrc` file from `skills/rust/envrc` for direnv integration.
-
-THE `.gitignore` SHALL include direnv entries from `skills/rust/gitignore-additions.txt`.
-
-THE system SHALL create `.cargo/config.toml` from `skills/rust/cargo-config.toml`.
-
-AFTER creating files THE system SHALL run `git add flake.nix flake.lock rust-toolchain.toml .cargo/config.toml` so the nix flake can read them.
-
-AFTER staging flake files THE system SHALL run `direnv allow` to activate the devshell.
+Follow the [template skill](../template/SKILL.md) to create projects and sync files from template-rs.
 
 ## Code Paradigm: Functional Only
 
@@ -98,48 +84,6 @@ impl User {
     }
 }
 ```
-
-## Rust Version Configuration
-
-THE project SHALL contain a `rust-toolchain.toml` file in the project root.
-
-THE `rust-toolchain.toml` file SHALL specify the exact Rust version channel.
-
-THE toolchain configuration SHALL use a pinned version number, not channel names like "stable" or "nightly".
-
-WHERE the project targets unconventional platforms THE `rust-toolchain.toml` SHALL declare explicit targets.
-
-THE toolchain configuration template is available at `skills/rust/rust-toolchain.toml`.
-
-WHERE the project targets unconventional platforms THE toolchain SHALL declare explicit targets:
-
-```toml
-[toolchain]
-channel = "1.99.1"
-targets = ["wasm32-wasip1"]
-```
-
-WHEN upgrading Rust THE system SHALL run `nix flake update rust-overlay` so the locked overlay provides the pinned version.
-
-THE toolchain channel SHALL match the `registry.jruz.io/rust` image tag so containers never download another toolchain.
-
-## Native Builds
-
-THE development builds SHALL target only the host platform, in the flake sandbox and in the `registry.jruz.io/rust` container.
-
-THE toolchain SHALL NOT declare targets for cross-compilation.
-
-THE sandbox SHALL NOT set `CARGO_BUILD_TARGET`.
-
-THE recipes and scripts SHALL reference built binaries under `target/<profile>/`.
-
-WHERE artifacts for other platforms are needed THE project SHALL use the `release` skill's cross-platform builds.
-
-THE project SHALL contain a `.cargo/config.toml` from `skills/rust/cargo-config.toml` to link Linux builds with mold.
-
-ON macOS THE builds SHALL use the default linker.
-
-WHERE the container runs on macOS THE container SHALL keep `target/` in a named volume so Linux and macOS builds do not share it.
 
 ## Error Handling
 
@@ -516,29 +460,11 @@ THE fully qualified path requirement SHALL make it immediately clear which crate
 
 ## Linting Configuration
 
-THE project SHALL enforce strict linting using the `[lints]` table in `Cargo.toml`.
-
-THE linting configuration template is available at `skills/rust/Cargo.toml`.
-
 WHERE a project requires additional allows THE developer SHALL add them with a comment explaining the reason.
 
 THE developer SHALL NOT use `#[allow(...)]` attributes in code to bypass linting.
 
 WHERE linting errors occur THE developer SHALL refactor code to satisfy the linter.
-
-THE system SHALL integrate linting into CI pipeline.
-
-WHERE the project uses sqlx THE `rust-check` recipe SHALL also run `db-check` before clippy.
-
-## Just Recipes
-
-THE project SHALL contain a `justfile` with Rust development recipes.
-
-THE justfile template is available at `skills/rust/justfile`.
-
-This template contains all Rust recipes: build, check, clippy, fmt-check, fmt-fix, fix, test, install, machete, outdated, upgrade.
-
-THE project SHALL have a pre-push git hook as defined in the `checks` skill Git Hooks section.
 
 ## Serialization
 
@@ -552,6 +478,12 @@ THE system SHALL use `#[serde(rename = "...")]` for field name mapping.
 
 THE system SHALL use `#[serde(tag = "type")]` for tagged enum serialization.
 
+WHERE a type deserializes user-authored input such as config files THE system SHALL reject unknown fields with `#[serde(deny_unknown_fields)]` on every nested struct.
+
+WHERE the same type also deserializes third-party responses that carry extra fields THE system SHALL reject unknown fields at the user-input boundary with `serde_ignored` instead.
+
+WHERE such a type derives `schemars::JsonSchema` THE system SHALL add `#[schemars(deny_unknown_fields)]` so the schema sets `additionalProperties: false`.
+
 ## Type Conversions
 
 THE system SHALL use `TryFrom` for fallible conversions.
@@ -564,18 +496,6 @@ THE system SHALL NOT use `as` casting for numeric types without justification.
 
 WHERE precision loss is possible THE system SHALL use `try_from` and handle errors.
 
-## Conditional Compilation
-
-THE system SHALL use `#[cfg(test)]` for test modules.
-
-WHERE dead code is intentional THE system SHALL use `#[allow(dead_code)]` at module level only.
-
-WHERE items are unused during development THE developer SHALL remove them or justify their presence.
-
-## Dependency Automation
-
-Follow the [Renovate skill](../renovate/SKILL.md) and copy [rust.renovate.json](../renovate/rust.renovate.json) to the project root as `renovate.json`. For frontend dependencies, combine profiles as described there. Toolchain and container upgrades must preserve the Rust version configuration above.
-
 ## Dependencies
 
 THE system SHALL use the latest stable version of crates when adding dependencies.
@@ -586,8 +506,4 @@ THE system SHALL pin dependency versions in `Cargo.toml`.
 
 WHERE new dependencies are added THE developer SHALL verify they are necessary.
 
-THE `rust-check` recipe SHALL run `cargo machete --with-metadata` to fail on unused dependencies.
-
 THE system SHALL prefer pure Rust crates over FFI bindings where possible.
-
-THE system SHALL use feature flags to minimize compilation time.
