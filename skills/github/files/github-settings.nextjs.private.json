@@ -1,0 +1,51 @@
+{
+  "repository": null,
+  "settings": {
+    "allow_auto_merge": false,
+    "allow_merge_commit": false,
+    "allow_rebase_merge": false,
+    "allow_squash_merge": true,
+    "archived": false,
+    "default_branch": "main",
+    "delete_branch_on_merge": true,
+    "has_issues": true,
+    "has_projects": false,
+    "has_wiki": false,
+    "description": null,
+    "private": true,
+    "is_template": false
+  },
+  "topics": {
+    "names": null
+  },
+  "branch_protection": null,
+  "actions": {
+    "enabled": false
+  },
+  "security": {
+    "vulnerability-alerts": true,
+    "automated-security-fixes": false
+  },
+  "labels": [
+    {
+      "name": "bugs",
+      "color": "d73a4a"
+    },
+    {
+      "name": "deps",
+      "color": "0075ca"
+    },
+    {
+      "name": "feat",
+      "color": "2da44e"
+    },
+    {
+      "name": "refa",
+      "color": "a2eeef"
+    },
+    {
+      "name": "tool",
+      "color": "7057ff"
+    }
+  ]
+}
