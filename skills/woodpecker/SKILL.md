@@ -1,6 +1,6 @@
 ---
 name: woodpecker
-description: Interact with and configure Woodpecker CI. Use when subscribing to CI status updates in Pi, checking pipelines, investigating build failures, activating repos, or managing repo settings and secrets.
+description: Interact with and configure Woodpecker CI. Use when subscribing to CI status updates in Pi or Claude Code, checking pipelines, investigating build failures, activating repos, or managing repo settings and secrets.
 ---
 
 # Woodpecker CI
@@ -16,21 +16,27 @@ For project setup follow [SETUP.md](SETUP.md).
 | Web apps on Nomad | [nomad](../nomad/SKILL.md)     |
 | Rust CLI releases | [release](../release/SKILL.md) |
 
-## Pi: Subscribe to CI Status Updates
+## Subscribe to CI Status Updates
 
-When the Pi Woodpecker tools are available, use them after pushing to monitor a repository and full commit SHA asynchronously. Commit watching covers push and later tag-release pipelines. Exact branch watching is also available.
+When the Woodpecker watch tools are available, use them after pushing to monitor a repository and full commit SHA asynchronously. Commit watching covers push and later tag-release pipelines. Exact branch watching is also available.
 
-| Tool                                                               | Purpose                                          |
-| ------------------------------------------------------------------ | ------------------------------------------------ |
-| `woodpecker_watch({ repo: "owner/repo", commit: "<full SHA>" })`   | Watch push and tag pipelines for a commit        |
-| `woodpecker_watch({ repo: "owner/repo", branch: "feature" })`      | Watch an exact branch, excluding branchless tags |
-| `woodpecker_status({})`                                            | List active subscriptions and cached statuses    |
-| `woodpecker_unwatch({ repo: "owner/repo", commit: "<same SHA>" })` | Stop a commit subscription                       |
-| `woodpecker_unwatch({ repo: "owner/repo", branch: "feature" })`    | Stop a branch subscription                       |
+| Action            | Pi                   | Claude Code                             |
+| ----------------- | -------------------- | --------------------------------------- |
+| Watch             | `woodpecker_watch`   | `mcp__woodpecker-channel__watch`        |
+| List watches      | `woodpecker_status`  | `mcp__woodpecker-channel__status`       |
+| Stop a watch      | `woodpecker_unwatch` | `mcp__woodpecker-channel__unwatch`      |
+| Updates arrive as | follow-up messages   | `<channel source="woodpecker-channel">` |
+
+| Arguments                                      | Purpose                                          |
+| ---------------------------------------------- | ------------------------------------------------ |
+| `{ repo: "owner/repo", commit: "<full SHA>" }` | Watch push and tag pipelines for a commit        |
+| `{ repo: "owner/repo", branch: "feature" }`    | Watch an exact branch, excluding branchless tags |
 
 - Assume CI access is already configured. Use the tools directly; do not inspect environment variables or search for credentials.
 - Provide exactly one `branch` or `commit`. Get the full lowercase 40-character SHA with `git rev-parse HEAD` after pushing.
-- Prefer commit watches for release workflows: tag pipelines can have an empty branch. Push success does not imply release success; keep watching for the subsequent tag pipeline.
+- Prefer commit watches for release workflows: tag pipelines can have an empty branch.
+- Push success does not imply release success; keep watching until the release pipeline finishes.
+- Unwatch once the expected pipelines have finished.
 
 ## Common Commands
 
