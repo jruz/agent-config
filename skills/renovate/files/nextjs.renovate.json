@@ -1,0 +1,55 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "enabledManagers": ["npm"],
+  "rangeStrategy": "pin",
+  "minimumReleaseAge": "7 days",
+  "semanticCommits": "disabled",
+  "commitMessagePrefix": "[deps] {{{depName}}}:",
+  "commitMessageTopic": "",
+  "commitMessageLowerCase": "never",
+  "automerge": true,
+  "automergeType": "pr",
+  "platformAutomerge": true,
+  "automergeStrategy": "squash",
+  "rebaseWhen": "behind-base-branch",
+  "packageRules": [
+    {
+      "matchPackageNames": ["typescript"],
+      "allowedVersions": "<7"
+    },
+    {
+      "matchPackageNames": [
+        "next",
+        "eslint-config-next",
+        "@next/eslint-plugin-next",
+        "eslint",
+        "@eslint/js",
+        "typescript-eslint",
+        "@typescript-eslint/*",
+        "typescript"
+      ],
+      "groupName": "Next.js + ESLint + TypeScript",
+      "groupSlug": "nextjs-tooling",
+      "separateMajorMinor": false,
+      "commitMessagePrefix": "[deps] Next.js + ESLint + TypeScript:",
+      "commitMessageAction": "Update",
+      "commitMessageExtra": "",
+      "group": {
+        "commitMessageTopic": "dependencies"
+      }
+    },
+    {
+      "matchPackageNames": ["stylelint", "stylelint-config-standard"],
+      "groupName": "Stylelint",
+      "groupSlug": "stylelint",
+      "separateMajorMinor": false,
+      "commitMessagePrefix": "[deps] Stylelint:",
+      "commitMessageAction": "Update",
+      "commitMessageExtra": "",
+      "group": {
+        "commitMessageTopic": "dependencies"
+      }
+    }
+  ]
+}
