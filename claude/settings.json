@@ -287,7 +287,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "~/.cargo/bin/claude-statusline"
+    "command": "~/.nix-profile/bin/claude-statusline"
   },
   "enabledPlugins": {},
   "outputStyle": "Direct",
