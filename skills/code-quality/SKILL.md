@@ -71,6 +71,44 @@ WHERE operations can fail THE system SHALL return error types, not success-or-fa
 
 WHERE I/O operations fail THE system SHALL propagate errors with context about what was attempted.
 
+## Failure Isolation
+
+WHERE partial success is valid THE system SHALL preserve successful independent results when another operation fails.
+
+THE system SHALL represent failed operations separately from missing data.
+
+THE system SHALL surface and log failures without hiding successful independent results.
+
+WHERE an operation requires all dependencies to succeed THE system SHALL fail that operation explicitly.
+
+THE tests SHALL verify that a dependency failure does not discard successful independent results.
+
+## Retries
+
+WHEN implementing an external operation THE developer SHALL design its retry policy.
+
+THE system SHALL retry transient failures unless repeating the operation risks duplicate or irreversible side effects.
+
+WHERE retries risk duplicate effects THE developer SHALL investigate idempotency support before omitting retries.
+
+WHEN retries are omitted THE developer SHALL explain why.
+
+WHERE retries are enabled THE system SHALL use capped exponential backoff with jitter.
+
+THE retry policy SHALL explicitly bound the number of attempts.
+
+THE retry policy SHALL explicitly bound total elapsed time.
+
+WHERE a service provides a retry delay THE system SHALL respect it or stop if it exceeds the remaining retry budget.
+
+THE system SHALL handle retries at one designated layer to avoid multiplying attempts.
+
+WHEN an operation is cancelled THE system SHALL stop retrying.
+
+WHEN retries are exhausted THE system SHALL propagate the final failure.
+
+THE tests SHALL verify retry behavior using controlled time and randomness.
+
 ## Testing
 
 THE system SHALL have unit tests for all public functions.
