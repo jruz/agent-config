@@ -313,6 +313,49 @@ def test-sandbox-build-force-rebuilds-all-runtime-images []: nothing -> nothing 
     assert ('RUST_VERSION=1.85.0' in $recorded.1.args)
     rm --permanent --recursive $root
 }
+def test-sandbox-forwards-docker-options-before-the-image []: nothing -> nothing {
+    let root = fixture
+    add-rust-image $root
+    let options = [--hostname cargo --env 'EXAMPLE=a b' --network host]
+    let result = $READY | invoke $root [...$options -- cargo test -- --nocapture]
+    assert equal $result.exit_code 0 $result.stderr
+    let run = calls $root | last | get args
+    assert equal ($run | last 11 | take 6) $options
+    assert (($run | last 5 | first) =~ '^sandbox-rust:')
+    assert equal ($run | last 4) [cargo test -- --nocapture]
+    rm --permanent --recursive $root
+}
+
+def test-sandbox-preserves-empty-and-literal-arguments []: nothing -> nothing {
+    let root = fixture
+    add-rust-image $root
+    let arguments = [cargo 'a b' '' '*' '--' tail]
+    let result = $READY | invoke $root [--env 'EMPTY=' -- ...$arguments]
+    assert equal $result.exit_code 0 $result.stderr
+    let run = calls $root | last | get args
+    assert equal ($run | last 6) $arguments
+    assert equal ($run | last 9 | take 2) [--env 'EMPTY=']
+    rm --permanent --recursive $root
+}
+
+def test-sandbox-requires-a-command-after-the-separator []: nothing -> nothing {
+    let root = fixture
+    let result = $READY | invoke $root [--network host --]
+    assert ($result.exit_code != 0)
+    assert equal (calls $root) []
+    rm --permanent --recursive $root
+}
+
+def test-sandbox-keeps-runtime-command-separators []: nothing -> nothing {
+    let root = fixture
+    add-rust-image $root
+    let arguments = [cargo test -- --nocapture]
+    let result = $READY | invoke $root $arguments
+    assert equal $result.exit_code 0 $result.stderr
+    assert equal (calls $root | last | get args | last 4) $arguments
+    rm --permanent --recursive $root
+}
+
 def test-sandbox-docker-failures-propagate []: nothing -> nothing {
     for stage in [image build run] {
         let root = fixture

@@ -5,13 +5,15 @@ description: Sandbox untrusted package managers with Docker. Use when adding bun
 
 # Sandbox
 
-Projects get `scripts/sandbox.nu` and [flake.nix](flake.nix) through the [TypeScript setup](../typescript/SETUP.md).
+Projects get `scripts/sandbox.nu` and [flake.nix](files/flake.nix) through the [TypeScript setup](../typescript/SETUP.md).
 
 Docker is the only supported method. Migrate projects that still use Bubblewrap to the Docker wrapper.
 
 ## Usage
 
 - `sandbox <command> [...args]` runs a command in its runtime container
+- `sandbox <docker options> -- <command> [...args]` passes explicit Docker run options
+- Use `--` to separate Docker options from the runtime command
 - `sandbox build` builds missing runtime images
 - `sandbox build --force` rebuilds all runtime images
 - `sandbox --help` lists the supported commands
@@ -40,7 +42,7 @@ Both keys are optional. A declared manifest must exist.
 
 ## Skill Development
 
-[scripts/](scripts/) tests the skill itself. Never copy it into projects; they only receive [files/](files/).
+[scripts/](scripts/) holds the wrapper tests and mocks. Copy them into a project only while developing [sandbox.nu](files/scripts/sandbox.nu) there, and remove them before committing.
 
 Run the wrapper tests after editing [sandbox.nu](files/scripts/sandbox.nu):
 
