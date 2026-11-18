@@ -221,22 +221,14 @@ Use `git rebase -i` to reorganize messy commits into a clean story.
 
 Common actions: `pick`, `reword`, `squash`, `fixup`, `drop`
 
-### Reword Alias
+### git reword
 
-THE `git reword` alias enables non-interactive commit message editing:
+THE `git reword` command replaces a commit message non-interactively:
 
 ```bash
-git reword <commit-hash> "new message"
+git reword <commit> "new message"
 ```
 
-THE alias is defined in `~/.gitconfig`:
-
-```ini
-[alias]
-    reword = "!f() { old=$(git log --format=%s -n 1 $1); git commit --allow-empty --only -m \"amend! $old\" -m \"$2\"; GIT_SEQUENCE_EDITOR=: git rebase --interactive --autosquash $1~1; }; f"
-```
-
-THE alias works by:
-
-1. Creating an "amend!" commit with the new message
-2. Running `git rebase --autosquash` non-interactively via `GIT_SEQUENCE_EDITOR=:`
+- `<commit>` accepts a hash or a relative ref such as `HEAD~1`.
+- The new message replaces both title and body.
+- The command creates an `amend!` commit and autosquashes it into the target.
