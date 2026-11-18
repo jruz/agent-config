@@ -113,6 +113,7 @@
 ## tools
 
 - if there's a flake it's probably loaded already with .envrc and the tools you have access to are defined there
+- when running commands in another project, use `cd <dir> && nix develop . --command just <recipe>` so its flake tools are available
 - if you make changes to the flake confirm the flake builds then ask the user to reload the shell or you won't have access to them
 - use ripgrep (rg) instead of grep for searching
 - use fd instead of find for finding files
