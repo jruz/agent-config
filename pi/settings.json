@@ -1,16 +1,15 @@
 {
   "defaultProvider": "openai-codex",
   "defaultThinkingLevel": "medium",
-  "lastChangelogVersion": "1.4.0",
   "compaction": {
     "enabled": false
   },
   "enabledModels": [
-    "openai-codex/gpt-6.1-sol:medium",
+    "openai-codex/gpt-6.2-sol:medium",
     "openai-codex/gpt-6-luna:high",
-    "openai-codex/gpt-6.1-terra:high",
-    "openai-codex/gpt-6-astra:medium"
+    "openai-codex/gpt-6.2-astra:medium"
   ],
+  "lastChangelogVersion": "1.4.0",
   "theme": "agent-config-dark",
   "tuiMode": "regular",
   "extensions": [
