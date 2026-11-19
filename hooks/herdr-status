@@ -1,5 +1,7 @@
 #!/usr/bin/env nu
 
+use std/log
+
 # Report Claude's state to its Herdr terminal.
 def main [
     record: string # Status record sent through OSC 7501.
@@ -25,6 +27,6 @@ def main [
         return
     }
 
-    print --stderr $"herdr-status: no terminal found for record ($record)"
+    log error $"herdr-status: no terminal found for record ($record)"
     exit 1
 }

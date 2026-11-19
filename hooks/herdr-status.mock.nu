@@ -1,8 +1,10 @@
 #!/usr/bin/env nu
 
+use std/log
+
 def --wrapped main [...args: string]: nothing -> nothing {
     if $env.HERDR_TEST_MODE == 'failure' {
-        print --stderr 'synthetic-ps-failure'
+        log error 'synthetic-ps-failure'
         exit 7
     }
 
