@@ -23,7 +23,7 @@
     "@types/bun": "1.4.4",
     "@types/node": "26.6.6",
     "knip": "6.45.1",
-    "markdownlint-cli2": "0.24.0",
+    "markdownlint-cli2": "0.24.1",
     "oxfmt": "0.78.0",
     "oxlint": "1.90.0",
     "oxlint-tsgolint": "7.0.2005",
