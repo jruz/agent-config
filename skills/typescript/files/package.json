@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@oxlint/plugins": "1.89.0",
-    "@tsconfig/strictest": "2.0.8",
+    "@tsconfig/strictest": "2.0.9",
     "@types/bun": "1.4.4",
     "knip": "6.45.1",
     "oxfmt": "0.78.0",
