@@ -6,10 +6,9 @@ use std/log
 def main [
     agent: string # Agent requesting the tool call.
 ]: nothing -> nothing {
-    let checker = $"($env.HOME)/.nix-profile/bin/agent-tool-check"
-    if not ($checker | path exists) {
-        log error $"Missing required tool: agent-tool-check at ($checker). Install it before running tool calls."
+    if (which agent-tool-check | is-empty) {
+        log error "Missing required tool: agent-tool-check. Install it and make sure it is on PATH."
         exit 1
     }
-    exec $checker $agent
+    exec agent-tool-check $agent
 }
