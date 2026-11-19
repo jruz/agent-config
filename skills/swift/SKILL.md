@@ -7,9 +7,9 @@ description: Write Swift code for macOS apps. Use when writing Swift, SwiftUI, m
 
 ## Project Initialization
 
-THE system SHALL create a `flake.nix` from the template at `skills/swift/flake.nix`.
+THE system SHALL create a `flake.nix` from the template at [files/flake.nix](files/flake.nix).
 
-THE system SHALL create a `justfile` from the template at `skills/swift/justfile`, replacing `APP_NAME` with the project name.
+THE system SHALL create a `justfile` from the template at [files/justfile](files/justfile), replacing `APP_NAME` with the project name.
 
 ## SwiftUI
 
