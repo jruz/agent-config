@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "@oxlint/plugins": "1.90.0",
-    "@playwright/test": "1.65.0",
+    "@playwright/test": "1.65.1",
     "@tsconfig/strictest": "2.0.9",
     "@types/bun": "1.4.4",
     "@types/node": "26.6.6",
