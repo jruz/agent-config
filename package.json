@@ -17,7 +17,7 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "@oxlint/plugins": "1.90.0",
+    "@oxlint/plugins": "1.94.0",
     "@playwright/test": "1.65.1",
     "@tsconfig/strictest": "2.0.9",
     "@types/bun": "1.4.4",
@@ -25,8 +25,8 @@
     "knip": "6.45.1",
     "markdownlint-cli2": "0.24.1",
     "oxfmt": "0.79.0",
-    "oxlint": "1.90.0",
-    "oxlint-tsgolint": "7.0.2005",
+    "oxlint": "1.94.0",
+    "oxlint-tsgolint": "7.0.2007",
     "typescript": "7.0.2"
   },
   "engines": {
