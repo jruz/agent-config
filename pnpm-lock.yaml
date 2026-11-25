@@ -31,8 +31,8 @@ importers:
         specifier: 26.6.6
         version: 26.6.6
       knip:
-        specifier: 6.45.1
-        version: 6.45.1
+        specifier: 6.46.0
+        version: 6.46.0
       markdownlint-cli2:
         specifier: 0.24.1
         version: 0.24.1
@@ -882,8 +882,8 @@ packages:
     resolution: {integrity: sha512-Eeo8Ys1doU1z+x8AZsPpQu+p/QcZBI5PeOo7QGQdy2x2m0MU/hYagBbGOmXwr5KVbEfVuWv9LpnQWeehogurjg==}
     hasBin: true
 
-  knip@6.45.1:
-    resolution: {integrity: sha512-zp3zXKy2cZWiIttdlWU5fisKxVQaLSU6471ej0KGz1GdHdaHxpzTAO/LIyFNc3gU3v1W7LJaqvYumoO3l/u+6A==}
+  knip@6.46.0:
+    resolution: {integrity: sha512-Ms9cSOHL27A3uSG5IG0BR/Xd6ArXWtqg7PmZib2upe52C3Ka08jMtGIWG9ROBiTMUUaeZJD6HrU8g/b7VA82cQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
 
@@ -1659,7 +1659,7 @@ snapshots:
     dependencies:
       commander: 8.3.0
 
-  knip@6.45.1:
+  knip@6.46.0:
     dependencies:
       formatly: 0.11.4
       get-tsconfig: 4.14.3
